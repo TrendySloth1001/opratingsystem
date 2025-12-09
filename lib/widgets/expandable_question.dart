@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/manga_theme.dart';
 import '../models/study_content.dart';
+import 'manga_text_renderer.dart';
 
 class ExpandableQuestion extends StatefulWidget {
   final PYQ question;
@@ -134,14 +135,7 @@ class _ExpandableQuestionState extends State<ExpandableQuestion>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (widget.question.answer != null) ...[
-                    Text(
-                      widget.question.answer!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        height: 1.6,
-                        color: MangaTheme.inkBlack,
-                      ),
-                    ),
+                    MangaTextRenderer(text: widget.question.answer!),
                     if (widget.diagram != null) const SizedBox(height: 20),
                   ],
                   if (widget.diagram != null) widget.diagram!,

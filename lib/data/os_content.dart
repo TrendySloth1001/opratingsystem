@@ -5849,13 +5849,975 @@ Process spending more time paging than executing.
             question:
                 'Explain Page Replacement Strategies with suitable examples.',
             type: 'theory',
+            answer: '''Page replacement is like playing Tetris with RAM - when memory is full and you need space, which page do you kick out? Let's explore the drama! 🎮
+
+---
+
+## 🎯 THE PROBLEM
+
+**SITUATION:**
+```
+RAM: [Page A][Page B][Page C][Page D] ← ALL FULL
+New Process needs: Page E
+What to do? KICK SOMEONE OUT!
+```
+
+**PAGE REPLACEMENT** = When all frames are occupied and new page needs loading, which existing page gets evicted?
+
+---
+
+## 📊 THE CONTENDERS
+
+---
+
+### **1️⃣ FIFO (First In, First Out)**
+
+**🎪 THE CONCEPT:**
+Oldest page in memory gets replaced. Like a queue at McDonald's - first person in line, first to leave!
+
+**ALGORITHM:**
+```
+1. Maintain queue of pages in order of arrival
+2. New page arrives → Remove page at FRONT of queue
+3. Add new page to BACK of queue
+```
+
+**✨ COMPLETE EXAMPLE:**
+
+**GIVEN:**
+- Frames: 3
+- Reference String: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5
+
+**STEP-BY-STEP:**
+
+```
+Time | Ref | Frame 1 | Frame 2 | Frame 3 | Hit/Miss? | Queue Order
+-----|-----|---------|---------|---------|-----------|-------------
+  1  |  1  |    1    |    -    |    -    |   MISS    | [1]
+  2  |  2  |    1    |    2    |    -    |   MISS    | [1, 2]
+  3  |  3  |    1    |    2    |    3    |   MISS    | [1, 2, 3]
+  4  |  4  |    4    |    2    |    3    |   MISS    | [4, 2, 3] ← 1 out
+  5  |  1  |    4    |    1    |    3    |   MISS    | [4, 1, 3] ← 2 out
+  6  |  2  |    4    |    1    |    2    |   MISS    | [4, 1, 2] ← 3 out
+  7  |  5  |    5    |    1    |    2    |   MISS    | [5, 1, 2] ← 4 out
+  8  |  1  |    5    |    1    |    2    |   HIT ✓   | [5, 1, 2]
+  9  |  2  |    5    |    1    |    2    |   HIT ✓   | [5, 1, 2]
+ 10  |  3  |    5    |    3    |    2    |   MISS    | [5, 3, 2] ← 1 out
+ 11  |  4  |    5    |    3    |    4    |   MISS    | [5, 3, 4] ← 2 out
+ 12  |  5  |    5    |    3    |    4    |   HIT ✓   | [5, 3, 4]
+
+📊 RESULT: 9 Page Faults, 3 Hits
+```
+
+**🎯 ADVANTAGES:**
+✅ Super simple to implement (just a queue!)
+✅ Low overhead
+✅ Fair (everyone gets kicked eventually)
+
+**❌ DISADVANTAGES:**
+❌ **BELADY'S ANOMALY** - More frames can = MORE page faults! 😱
+❌ Ignores page usage frequency
+❌ Might kick out heavily used page
+❌ Not optimal performance
+
+**💥 BELADY'S ANOMALY EXAMPLE:**
+
+```
+Reference: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5
+
+WITH 3 FRAMES: 9 page faults
+WITH 4 FRAMES: 10 page faults ← WORSE with MORE memory! WTF?!
+```
+
+---
+
+### **2️⃣ OPTIMAL (OPT / MIN)**
+
+**🔮 THE CONCEPT:**
+Replace page that won't be used for the LONGEST time in the FUTURE. It's like having a crystal ball!
+
+**ALGORITHM:**
+```
+1. Look at FUTURE references
+2. Find page used farthest in future (or never)
+3. Replace that page
+4. Prophet mode activated 🧙‍♂️
+```
+
+**✨ COMPLETE EXAMPLE:**
+
+**GIVEN:**
+- Frames: 3
+- Reference String: 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2
+
+**STEP-BY-STEP:**
+
+```
+Time | Ref | F1 | F2 | F3 | Hit/Miss? | Decision Logic
+-----|-----|----|----|----|-----------|---------------------------------
+  1  |  7  | 7  | -  | -  |   MISS    | Load 7
+  2  |  0  | 7  | 0  | -  |   MISS    | Load 0
+  3  |  1  | 7  | 0  | 1  |   MISS    | Load 1
+  4  |  2  | 2  | 0  | 1  |   MISS    | Replace 7 (used at time 1, never again)
+  5  |  0  | 2  | 0  | 1  |   HIT ✓   | 0 already in memory
+  6  |  3  | 2  | 0  | 3  |   MISS    | Replace 1 (next used at time 11)
+  7  |  0  | 2  | 0  | 3  |   HIT ✓   | 0 already in memory
+  8  |  4  | 2  | 4  | 3  |   MISS    | Replace 0 (next used at time 11)
+  9  |  2  | 2  | 4  | 3  |   HIT ✓   | 2 already in memory
+ 10  |  3  | 2  | 4  | 3  |   HIT ✓   | 3 already in memory
+ 11  |  0  | 0  | 4  | 3  |   MISS    | Replace 2 (next used at time 13)
+ 12  |  3  | 0  | 4  | 3  |   HIT ✓   | 3 already in memory
+ 13  |  2  | 0  | 2  | 3  |   MISS    | Replace 4 (never used again)
+
+📊 RESULT: 6 Page Faults, 7 Hits (BEST POSSIBLE!)
+```
+
+**🎯 ADVANTAGES:**
+✅ **BEST** performance possible
+✅ Minimum page faults guaranteed
+✅ No Belady's Anomaly
+✅ Used as benchmark
+
+**❌ DISADVANTAGES:**
+❌ **IMPOSSIBLE TO IMPLEMENT** (need future knowledge!)
+❌ Only for theoretical comparison
+❌ "If only we could predict the future..." 🔮
+
+**🎓 WHY STUDY IT?**
+To compare other algorithms: "How close to optimal are we?"
+
+---
+
+### **3️⃣ LRU (Least Recently Used)**
+
+**⏰ THE CONCEPT:**
+Replace page that hasn't been used for the LONGEST time in the PAST. Past predicts future!
+
+**ALGORITHM:**
+```
+1. Track last use time for each page
+2. Replace page with OLDEST timestamp
+3. Update timestamp on every access
+```
+
+**✨ COMPLETE EXAMPLE:**
+
+**GIVEN:**
+- Frames: 3
+- Reference String: 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2
+
+**STEP-BY-STEP (with timestamps):**
+
+```
+Time | Ref | F1(time) | F2(time) | F3(time) | Hit/Miss? | LRU Page
+-----|-----|----------|----------|----------|-----------|-----------
+  1  |  7  |   7(1)   |    -     |    -     |   MISS    | -
+  2  |  0  |   7(1)   |   0(2)   |    -     |   MISS    | -
+  3  |  1  |   7(1)   |   0(2)   |   1(3)   |   MISS    | -
+  4  |  2  |   2(4)   |   0(2)   |   1(3)   |   MISS    | 7 (time 1)
+  5  |  0  |   2(4)   |   0(5)   |   1(3)   |   HIT ✓   | -
+  6  |  3  |   2(4)   |   0(5)   |   3(6)   |   MISS    | 1 (time 3)
+  7  |  0  |   2(4)   |   0(7)   |   3(6)   |   HIT ✓   | -
+  8  |  4  |   4(8)   |   0(7)   |   3(6)   |   MISS    | 2 (time 4)
+  9  |  2  |   4(8)   |   0(7)   |   2(9)   |   MISS    | 3 (time 6)
+ 10  |  3  |   4(8)   |   3(10)  |   2(9)   |   MISS    | 0 (time 7)
+ 11  |  0  |   0(11)  |   3(10)  |   2(9)   |   MISS    | 4 (time 8)
+ 12  |  3  |   0(11)  |   3(12)  |   2(9)   |   HIT ✓   | -
+ 13  |  2  |   0(11)  |   3(12)  |   2(13)  |   HIT ✓   | -
+
+📊 RESULT: 8 Page Faults, 5 Hits
+```
+
+**🔧 IMPLEMENTATION METHODS:**
+
+**Method 1: COUNTER**
+```
+Each page has counter
+On access: counter = current_time++
+On replacement: pick MIN counter
+```
+
+**Method 2: STACK**
+```
+Maintain stack of page numbers
+On access: Move page to TOP
+On replacement: Remove from BOTTOM
+```
+
+**Example Stack Implementation:**
+```
+Access 7: Stack = [7]
+Access 0: Stack = [0, 7]
+Access 1: Stack = [1, 0, 7]
+Access 0: Stack = [0, 1, 7] ← 0 moved to top
+Replace: Remove 7 (bottom)
+```
+
+**🎯 ADVANTAGES:**
+✅ Better than FIFO (considers usage)
+✅ No Belady's Anomaly
+✅ **ACTUALLY IMPLEMENTABLE!**
+✅ Good performance (close to optimal)
+
+**❌ DISADVANTAGES:**
+❌ Needs hardware support (expensive)
+❌ Overhead of tracking timestamps
+❌ Complex implementation
+
+---
+
+## 📊 **PERFORMANCE COMPARISON**
+
+**SAME REFERENCE STRING: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5**
+**Frames: 3**
+
+| Algorithm | Page Faults | Hit Ratio | Complexity |
+|-----------|-------------|-----------|------------|
+| **FIFO** | 9 | 25% | ⭐ Simple |
+| **Optimal** | 6 | 50% | 🔮 Impossible |
+| **LRU** | 7 | 42% | ⭐⭐⭐ Medium |
+
+**🏆 WINNER:** Optimal (but can't implement!)
+**🥈 REAL WINNER:** LRU (best implementable)
+
+---
+
+## 🔥 **OTHER ALGORITHMS (BONUS)**
+
+### **4️⃣ LFU (Least Frequently Used)**
+```
+Replace page with LOWEST access count
+Problem: Old pages never leave!
+```
+
+### **5️⃣ MFU (Most Frequently Used)**
+```
+Replace page with HIGHEST access count
+Logic: It's been used a lot, probably done now
+Weird but sometimes works!
+```
+
+### **6️⃣ Second Chance (Clock)**
+```
+FIFO + Reference bit
+Give pages a "second chance" before replacement
+Practical compromise!
+```
+
+---
+
+## 🎓 **EXAM TIPS**
+
+**For Theory Questions:**
+1. Define algorithm clearly
+2. Explain replacement logic
+3. Give step-by-step example
+4. List advantages/disadvantages
+5. Compare with others
+
+**For Numerical:**
+1. Draw table with columns: Time, Reference, Frames, Hit/Miss
+2. Show decision process for each replacement
+3. Count total page faults
+4. Calculate hit ratio = Hits / Total References
+
+**KEY FORMULAS:**
+```
+Hit Ratio = (Total Hits / Total References) × 100%
+Miss Ratio = (Total Faults / Total References) × 100%
+Hit + Miss Ratio = 100%
+```
+
+**DON'T FORGET:**
+- FIFO can suffer Belady's Anomaly
+- Optimal is theoretical (impossible to implement)
+- LRU is best practical choice
+- Always show your working!
+
+Now go crush those page replacement questions! 💪🔥
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question:
-                'Calculate page faults for FIFO, Optimal and LRU for the following reference string.',
+                'Calculate page faults for FIFO, Optimal and LRU for the following reference string: 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1. Frames = 4.',
             type: 'numerical',
+            answer: '''Time to crunch numbers like a boss! Let's calculate page faults for all three algorithms step by step. 📊
+
+---
+
+## 📝 **GIVEN DATA**
+
+**Reference String:** 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1
+**Number of Frames:** 4
+**Total References:** 14
+
+---
+
+## 🔴 **SOLUTION 1: FIFO (First In, First Out)**
+
+**RULE:** Replace the oldest page (first one loaded)
+
+```
+╔═══════╦═════╦═════════╦═════════╦═════════╦═════════╦═══════════╗
+║ Time  ║ Ref ║ Frame 1 ║ Frame 2 ║ Frame 3 ║ Frame 4 ║ Hit/Fault ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║   1   ║  7  ║    7    ║    -    ║    -    ║    -    ║   FAULT   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║   2   ║  0  ║    7    ║    0    ║    -    ║    -    ║   FAULT   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║   3   ║  1  ║    7    ║    0    ║    1    ║    -    ║   FAULT   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║   4   ║  2  ║    7    ║    0    ║    1    ║    2    ║   FAULT   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║   5   ║  0  ║    7    ║    0    ║    1    ║    2    ║   HIT ✓   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║   6   ║  3  ║    3    ║    0    ║    1    ║    2    ║   FAULT   ║
+║       ║     ║ (7 OUT) ║         ║         ║         ║  oldest   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║   7   ║  0  ║    3    ║    0    ║    1    ║    2    ║   HIT ✓   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║   8   ║  4  ║    3    ║    4    ║    1    ║    2    ║   FAULT   ║
+║       ║     ║         ║ (0 OUT) ║         ║         ║  oldest   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║   9   ║  2  ║    3    ║    4    ║    1    ║    2    ║   HIT ✓   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║  10   ║  3  ║    3    ║    4    ║    1    ║    2    ║   HIT ✓   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║  11   ║  0  ║    3    ║    4    ║    0    ║    2    ║   FAULT   ║
+║       ║     ║         ║         ║ (1 OUT) ║         ║  oldest   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║  12   ║  3  ║    3    ║    4    ║    0    ║    2    ║   HIT ✓   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║  13   ║  2  ║    3    ║    4    ║    0    ║    2    ║   HIT ✓   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╣
+║  14   ║  1  ║    3    ║    1    ║    0    ║    2    ║   FAULT   ║
+║       ║     ║         ║ (4 OUT) ║         ║         ║  oldest   ║
+╚═══════╩═════╩═════════╩═════════╩═════════╩═════════╩═══════════╝
+```
+
+**📊 FIFO RESULT:**
+```
+🔴 Total Page Faults: 8
+🟢 Total Hits: 6
+📈 Hit Ratio: 6/14 = 42.86%
+📉 Miss Ratio: 8/14 = 57.14%
+```
+
+**FIFO Queue Order:**
+```
+After T1: [7]
+After T2: [7, 0]
+After T3: [7, 0, 1]
+After T4: [7, 0, 1, 2]
+After T6: [3, 0, 1, 2] ← 7 replaced
+After T8: [3, 4, 1, 2] ← 0 replaced
+After T11: [3, 4, 0, 2] ← 1 replaced
+After T14: [3, 1, 0, 2] ← 4 replaced
+```
+
+---
+
+## 🔮 **SOLUTION 2: OPTIMAL (OPT)**
+
+**RULE:** Replace page that will NOT be used for the longest time in future
+
+```
+╔═══════╦═════╦═════════╦═════════╦═════════╦═════════╦═══════════╦══════════════════╗
+║ Time  ║ Ref ║ Frame 1 ║ Frame 2 ║ Frame 3 ║ Frame 4 ║ Hit/Fault ║ Decision Logic   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   1   ║  7  ║    7    ║    -    ║    -    ║    -    ║   FAULT   ║ Load 7           ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   2   ║  0  ║    7    ║    0    ║    -    ║    -    ║   FAULT   ║ Load 0           ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   3   ║  1  ║    7    ║    0    ║    1    ║    -    ║   FAULT   ║ Load 1           ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   4   ║  2  ║    7    ║    0    ║    1    ║    2    ║   FAULT   ║ Load 2           ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   5   ║  0  ║    7    ║    0    ║    1    ║    2    ║   HIT ✓   ║ -                ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   6   ║  3  ║    3    ║    0    ║    1    ║    2    ║   FAULT   ║ Replace 7        ║
+║       ║     ║         ║         ║         ║         ║           ║ (never used)     ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   7   ║  0  ║    3    ║    0    ║    1    ║    2    ║   HIT ✓   ║ -                ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   8   ║  4  ║    3    ║    0    ║    4    ║    2    ║   FAULT   ║ Replace 1        ║
+║       ║     ║         ║         ║         ║         ║           ║ (used at T14)    ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   9   ║  2  ║    3    ║    0    ║    4    ║    2    ║   HIT ✓   ║ -                ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║  10   ║  3  ║    3    ║    0    ║    4    ║    2    ║   HIT ✓   ║ -                ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║  11   ║  0  ║    3    ║    0    ║    4    ║    2    ║   HIT ✓   ║ -                ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║  12   ║  3  ║    3    ║    0    ║    4    ║    2    ║   HIT ✓   ║ -                ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║  13   ║  2  ║    3    ║    0    ║    4    ║    2    ║   HIT ✓   ║ -                ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║  14   ║  1  ║    3    ║    0    ║    1    ║    2    ║   FAULT   ║ Replace 4        ║
+║       ║     ║         ║         ║         ║         ║           ║ (never used)     ║
+╚═══════╩═════╩═════════╩═════════╩═════════╩═════════╩═══════════╩══════════════════╝
+```
+
+**📊 OPTIMAL RESULT:**
+```
+🔴 Total Page Faults: 7
+🟢 Total Hits: 7
+📈 Hit Ratio: 7/14 = 50%
+📉 Miss Ratio: 7/14 = 50%
+
+🏆 BEST POSSIBLE PERFORMANCE!
+```
+
+**Future Analysis for Key Decisions:**
+
+**At T6 (Replace which?):**
+```
+Pages in memory: 7, 0, 1, 2
+Future occurrences:
+- 7: Never used again ← REPLACE THIS!
+- 0: Used at T7, T11
+- 1: Used at T14
+- 2: Used at T9, T13
+```
+
+**At T8 (Replace which?):**
+```
+Pages in memory: 3, 0, 1, 2
+Future occurrences:
+- 3: Used at T10, T12
+- 0: Used at T11
+- 1: Used at T14 (FARTHEST!) ← REPLACE THIS!
+- 2: Used at T9, T13
+```
+
+---
+
+## ⏰ **SOLUTION 3: LRU (Least Recently Used)**
+
+**RULE:** Replace page not used for longest time in PAST
+
+```
+╔═══════╦═════╦═════════╦═════════╦═════════╦═════════╦═══════════╦══════════════════╗
+║ Time  ║ Ref ║ Frame 1 ║ Frame 2 ║ Frame 3 ║ Frame 4 ║ Hit/Fault ║ LRU Order        ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   1   ║  7  ║   7(1)  ║    -    ║    -    ║    -    ║   FAULT   ║ [7]              ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   2   ║  0  ║   7(1)  ║   0(2)  ║    -    ║    -    ║   FAULT   ║ [0, 7]           ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   3   ║  1  ║   7(1)  ║   0(2)  ║   1(3)  ║    -    ║   FAULT   ║ [1, 0, 7]        ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   4   ║  2  ║   7(1)  ║   0(2)  ║   1(3)  ║   2(4)  ║   FAULT   ║ [2, 1, 0, 7]     ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   5   ║  0  ║   7(1)  ║   0(5)  ║   1(3)  ║   2(4)  ║   HIT ✓   ║ [0, 2, 1, 7]     ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   6   ║  3  ║   3(6)  ║   0(5)  ║   1(3)  ║   2(4)  ║   FAULT   ║ [3, 0, 2, 1]     ║
+║       ║     ║  (7→3)  ║         ║         ║         ║           ║ 7=LRU (time 1)   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   7   ║  0  ║   3(6)  ║   0(7)  ║   1(3)  ║   2(4)  ║   HIT ✓   ║ [0, 3, 2, 1]     ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   8   ║  4  ║   3(6)  ║   0(7)  ║   4(8)  ║   2(4)  ║   FAULT   ║ [4, 0, 3, 2]     ║
+║       ║     ║         ║         ║  (1→4)  ║         ║           ║ 1=LRU (time 3)   ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║   9   ║  2  ║   3(6)  ║   0(7)  ║   4(8)  ║   2(9)  ║   HIT ✓   ║ [2, 4, 0, 3]     ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║  10   ║  3  ║  3(10)  ║   0(7)  ║   4(8)  ║   2(9)  ║   HIT ✓   ║ [3, 2, 4, 0]     ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║  11   ║  0  ║  3(10)  ║  0(11)  ║   4(8)  ║   2(9)  ║   HIT ✓   ║ [0, 3, 2, 4]     ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║  12   ║  3  ║  3(12)  ║  0(11)  ║   4(8)  ║   2(9)  ║   HIT ✓   ║ [3, 0, 2, 4]     ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║  13   ║  2  ║  3(12)  ║  0(11)  ║   4(8)  ║  2(13)  ║   HIT ✓   ║ [2, 3, 0, 4]     ║
+╠═══════╬═════╬═════════╬═════════╬═════════╬═════════╬═══════════╬══════════════════╣
+║  14   ║  1  ║  3(12)  ║  0(11)  ║  1(14)  ║  2(13)  ║   FAULT   ║ [1, 2, 3, 0]     ║
+║       ║     ║         ║         ║  (4→1)  ║         ║           ║ 4=LRU (time 8)   ║
+╚═══════╩═════╩═════════╩═════════╩═════════╩═════════╩═══════════╩══════════════════╝
+```
+
+**📊 LRU RESULT:**
+```
+🔴 Total Page Faults: 8
+🟢 Total Hits: 6
+📈 Hit Ratio: 6/14 = 42.86%
+📉 Miss Ratio: 8/14 = 57.14%
+```
+
+---
+
+## 📊 **FINAL COMPARISON**
+
+```
+╔════════════╦═══════════════╦═══════╦═══════════╗
+║ Algorithm  ║ Page Faults   ║ Hits  ║ Hit Ratio ║
+╠════════════╬═══════════════╬═══════╬═══════════╣
+║ FIFO       ║      8        ║   6   ║  42.86%   ║
+╠════════════╬═══════════════╬═══════╬═══════════╣
+║ OPTIMAL    ║      7 🏆     ║   7   ║  50.00%   ║
+╠════════════╬═══════════════╬═══════╬═══════════╣
+║ LRU        ║      8        ║   6   ║  42.86%   ║
+╚════════════╩═══════════════╩═══════╩═══════════╝
+```
+
+**🎯 KEY OBSERVATIONS:**
+
+1️⃣ **OPTIMAL wins** (as always) with only 7 faults
+2️⃣ **FIFO and LRU tied** at 8 faults each
+3️⃣ **Optimal improves** by 12.5% over FIFO/LRU
+4️⃣ **LRU not always better** than FIFO (depends on reference pattern!)
+
+---
+
+## 🎓 **EXAM WRITING TIPS**
+
+**1. STRUCTURE YOUR ANSWER:**
+```
+✓ Show table with all columns clearly
+✓ Indicate Hit/Fault for each step
+✓ Explain replacement decisions
+✓ Calculate final statistics
+```
+
+**2. DON'T FORGET:**
+```
+✓ Count page faults carefully
+✓ Show which page gets replaced
+✓ Update timestamps for LRU
+✓ Look ahead for Optimal
+```
+
+**3. COMMON MISTAKES:**
+```
+❌ Counting initial loads as hits
+❌ Forgetting to update LRU order
+❌ Wrong future analysis for Optimal
+❌ Not showing working clearly
+```
+
+**4. SCORING POINTS:**
+```
+✓ Clear tabular format
+✓ Correct page fault count
+✓ Explanation of replacements
+✓ Final comparison summary
+```
+
+Now you're ready to ace any page replacement numerical! 💪🔥
+''',
+            hasDiagram: false,
           ),
-          PYQ(question: 'Thrashing.', type: 'theory'),
+          PYQ(
+            question: 'Thrashing.',
+            type: 'theory',
+            answer: '''Thrashing is when your computer becomes a sweaty, panicking mess - spending all its time swapping pages in and out instead of doing ACTUAL WORK. It's like spinning wheels in mud! 🚗💨
+
+---
+
+## 💀 **WHAT IS THRASHING?**
+
+**THRASHING** = When a process spends MORE time **paging** (swapping pages in/out) than **executing** instructions.
+
+**THE NIGHTMARE SCENARIO:**
+```
+CPU: "Let me execute this instruction..."
+OS: "WAIT! Page fault! Loading from disk..."
+CPU: "Ok, ready now—"
+OS: "ANOTHER page fault! Loading again..."
+CPU: "FOR REAL?!"
+OS: "YET ANOTHER page fault!"
+CPU: "I GIVE UP!" 😭
+
+Result: 99% paging, 1% actual work = THRASHING
+```
+
+---
+
+## 🎭 **THE DRAMA UNFOLDS**
+
+**NORMAL OPERATION:**
+```
+Time Distribution:
+[███████████████ EXECUTION 90%]
+[█ PAGING 10%]
+
+CPU Usage: HIGH ✓
+Throughput: GOOD ✓
+Everyone: HAPPY 😊
+```
+
+**THRASHING:**
+```
+Time Distribution:
+[█ EXECUTION 5%]
+[███████████████████ PAGING 95%]
+
+CPU Usage: LOW 💀
+Throughput: TERRIBLE 💀
+Disk: ON FIRE 🔥
+Everyone: CRYING 😭
+```
+
+---
+
+## 🔥 **HOW THRASHING HAPPENS**
+
+**THE VICIOUS CYCLE:**
+
+```
+STEP 1: Too many processes loaded
+        ↓
+STEP 2: Each process gets FEW frames
+        ↓
+STEP 3: Processes can't keep working set in memory
+        ↓
+STEP 4: FREQUENT page faults
+        ↓
+STEP 5: All processes BLOCKED waiting for I/O
+        ↓
+STEP 6: CPU idle, OS thinks: "Load more processes!"
+        ↓
+STEP 7: Even LESS frames per process
+        ↓
+STEP 8: EVEN MORE page faults
+        ↓
+STEP 9: SYSTEM DEATH 💀
+```
+
+---
+
+## 📊 **THE THRASHING GRAPH**
+
+```
+CPU
+Util
+ ↑
+100%│           ╭──────╮
+    │          ╱        ╲
+ 80%│         ╱          ╲
+    │        ╱            ╲
+ 60%│       ╱              ╲
+    │      ╱                ╲
+ 40%│     ╱                  ╲___
+    │    ╱                       ╲___
+ 20%│   ╱                            ╲___
+    │  ╱                                 ╲___
+  0%│─╯─────────────────────────────────────→
+    0   5   10  15  20  25  30  35  40     Degree of
+                                           Multiprogramming
+         ↑                    ↑
+      OPTIMAL          THRASHING ZONE!
+```
+
+**EXPLANATION:**
+- **Left side:** More processes = Better CPU utilization
+- **Peak:** OPTIMAL multiprogramming level
+- **Right side:** TOO many processes = THRASHING!
+
+---
+
+## 🎯 **CAUSES OF THRASHING**
+
+### **1. INSUFFICIENT FRAMES**
+
+```
+Process needs: 10 pages for working set
+Allocated: 3 frames
+
+Result:
+Load page 1 → Fault
+Load page 2 → Fault  
+Load page 3 → Fault
+Need page 4 → Replace page 1 → Fault
+Need page 1 again → Replace page 2 → Fault
+Need page 2 again → Replace page 3 → Fault
+
+INFINITE PAGE FAULTS! 💀
+```
+
+### **2. HIGH DEGREE OF MULTIPROGRAMMING**
+
+```
+Memory: 4 GB
+Process Size: 500 MB each
+Loaded: 20 processes (20 × 500 = 10 GB needed!)
+
+Available per process: 4 GB / 20 = 200 MB
+Needed per process: 500 MB
+
+Result: CONSTANT paging! 🔥
+```
+
+### **3. POOR PAGE REPLACEMENT**
+
+```
+Using FIFO:
+- Kicks out frequently-used pages
+- Process keeps faulting on same pages
+- Thrashing ensues
+
+LRU would help but still not enough!
+```
+
+### **4. LOCALITY LOSS**
+
+```
+Working Set: Pages 1, 2, 3, 4, 5
+Frames: 3
+
+Can't fit working set!
+Every access causes fault
+Thrashing guaranteed
+```
+
+---
+
+## 💥 **REAL-WORLD EXAMPLE**
+
+**SCENARIO:**
+
+**System:**
+- RAM: 8 GB
+- Running: 30 Chrome tabs, Photoshop, VS Code, Spotify, Discord
+- Each needs ~500 MB actively
+
+**Math:**
+```
+Total needed: 30 × 500 MB = 15 GB
+Available: 8 GB
+Deficit: 7 GB! 😱
+```
+
+**What happens:**
+```
+T1: Click Chrome tab → Page fault → Load from disk (2 sec)
+T2: Photoshop updates → Page fault → Load (2 sec)
+T3: VS Code saves → Page fault → Load (2 sec)
+T4: Chrome tab again → Page fault AGAIN → Load (2 sec)
+
+You: *clicks button*
+Computer: *spinning wheel of death for 10 seconds*
+
+THIS IS THRASHING!
+```
+
+---
+
+## 🛡️ **PREVENTION STRATEGIES**
+
+### **1. WORKING SET MODEL**
+
+**CONCEPT:**
+Track which pages process ACTUALLY uses in time window.
+
+```
+Working Set = Set of pages used in last Δ time
+
+Example:
+Last 10 references: 1, 2, 3, 2, 1, 4, 1, 2, 5, 2
+Working Set = {1, 2, 3, 4, 5} (5 pages)
+
+Allocate AT LEAST 5 frames!
+```
+
+**IMPLEMENTATION:**
+```
+IF (Working Set Size > Allocated Frames):
+    Suspend process (swap out)
+    Wait for memory availability
+ELSE:
+    Run process normally
+```
+
+### **2. PAGE FAULT FREQUENCY (PFF)**
+
+**CONCEPT:**
+Monitor page fault rate. If too high = need more frames!
+
+```
+┌─────────────────────────────────────┐
+│ Page Fault Rate                     │
+│  ↑                                   │
+│  │  Upper Threshold ───────────────┐│
+│  │                                  ││
+│  │         ACCEPTABLE ZONE          ││
+│  │                                  ││
+│  │  Lower Threshold ───────────────┘│
+│  │                                   │
+│  └─────────────────────────────→    │
+│                          Time        │
+└─────────────────────────────────────┘
+
+IF (PFF > Upper Threshold):
+    Allocate MORE frames
+ELSE IF (PFF < Lower Threshold):
+    Remove frames (reallocate elsewhere)
+```
+
+**EXAMPLE:**
+```
+Upper Threshold: 100 faults/sec
+Lower Threshold: 10 faults/sec
+
+Process A: 150 faults/sec → Add 2 more frames
+Process B: 5 faults/sec → Remove 1 frame
+```
+
+### **3. LOCAL REPLACEMENT POLICY**
+
+**GLOBAL vs LOCAL:**
+
+```
+GLOBAL REPLACEMENT:
+Process A faults → Can steal ANY frame (even from Process B)
+Problem: Process A thrashing affects Process B!
+
+LOCAL REPLACEMENT:
+Process A faults → Can only replace OWN frames
+Benefit: Thrashing contained! 🛡️
+```
+
+**EXAMPLE:**
+```
+Process A: 10 frames allocated
+Process B: 10 frames allocated
+
+With LOCAL:
+- A thrashing? Only affects A's 10 frames
+- B continues happily with its 10 frames
+- Isolation maintained!
+```
+
+### **4. ADEQUATE FRAME ALLOCATION**
+
+**STRATEGIES:**
+
+**Equal Allocation:**
+```
+Total Frames: 100
+Processes: 5
+Each gets: 100 / 5 = 20 frames
+
+Simple but unfair (big and small processes same!)
+```
+
+**Proportional Allocation:**
+```
+Process A size: 40 KB
+Process B size: 60 KB
+Total: 100 KB
+Available Frames: 100
+
+Allocation:
+A: (40/100) × 100 = 40 frames
+B: (60/100) × 100 = 60 frames
+
+Fair! Bigger process gets more frames
+```
+
+**Priority Allocation:**
+```
+High priority → More frames
+Low priority → Fewer frames
+
+Example:
+System process: 50 frames
+User process: 10 frames
+```
+
+### **5. SUSPEND PROCESSES**
+
+**SWAPPING:**
+```
+IF (System thrashing):
+    Select low-priority process
+    Swap ENTIRE process to disk
+    Free up ALL its frames
+    Reduce multiprogramming degree
+    
+Result: Remaining processes run smoothly!
+```
+
+---
+
+## 📊 **DETECTION METHODS**
+
+**1. CPU UTILIZATION MONITORING**
+```
+IF (CPU Usage < 20% AND Disk Usage > 90%):
+    ALERT: "THRASHING DETECTED!"
+```
+
+**2. PAGE FAULT RATE**
+```
+IF (Page Faults > 1000 per second):
+    ALERT: "THRASHING!"
+```
+
+**3. I/O QUEUE LENGTH**
+```
+IF (Disk Queue > 50 requests):
+    ALERT: "Possible thrashing"
+```
+
+---
+
+## 🔧 **SOLUTIONS SUMMARY**
+
+| Strategy | How It Works | Effectiveness |
+|----------|--------------|---------------|
+| **Working Set** | Allocate based on usage | ⭐⭐⭐⭐⭐ |
+| **PFF** | Monitor fault rate | ⭐⭐⭐⭐ |
+| **Local Replacement** | Isolate processes | ⭐⭐⭐⭐ |
+| **Suspend Process** | Reduce load | ⭐⭐⭐⭐⭐ |
+| **More RAM** | Add memory | ⭐⭐⭐⭐⭐ (expensive!) |
+
+---
+
+## 🎓 **EXAM TIPS**
+
+**Definition (must include):**
+- Time spent paging > Time executing
+- Caused by insufficient frames
+- Results in low CPU utilization
+
+**Key Points:**
+- Explain vicious cycle
+- Mention working set
+- Discuss PFF
+- Prevention strategies
+- Detection methods
+
+**Common Questions:**
+1. What is thrashing? (definition + causes)
+2. How to prevent thrashing? (working set, PFF, etc.)
+3. Draw CPU utilization vs multiprogramming graph
+4. Difference between local and global replacement
+
+**DON'T FORGET:**
+- **Thrashing = High page fault rate**
+- **Solution = Give more frames OR reduce processes**
+- **Working set** is KEY concept
+- **Local replacement** prevents cascade effect
+
+---
+
+## 💡 **REAL TALK**
+
+**Thrashing is like:**
+- Having 20 browser tabs open on 2GB RAM 💀
+- Your laptop fan going BRRRRR 🔥
+- Everything taking FOREVER to respond 🐌
+- Task Manager showing 100% disk usage 📊
+
+**Solution:**
+- Close some tabs (reduce multiprogramming)
+- Add more RAM (increase frames)
+- Use lighter apps (reduce working set)
+- Restart computer (reset everything)
+
+Now you understand why your computer sometimes becomes a potato! 🥔
+''',
+            hasDiagram: false,
+          ),
         ],
       ),
     ],
