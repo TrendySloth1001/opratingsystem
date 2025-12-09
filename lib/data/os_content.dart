@@ -3141,7 +3141,8 @@ Master these 5 and you've mastered memory management fundamentals!
           PYQ(
             question: 'Explain concept of Paging with an example.',
             type: 'theory',
-            answer: '''Paging is like cutting a pizza into equal slices so everyone gets a fair share - except the pizza is your program and the slices go into random spots in memory. Let's break it down.
+            answer:
+                '''Paging is like cutting a pizza into equal slices so everyone gets a fair share - except the pizza is your program and the slices go into random spots in memory. Let's break it down.
 
 ---
 
@@ -3391,7 +3392,8 @@ Paging is FUNDAMENTAL to modern operating systems. Every OS uses it (Windows, Li
           PYQ(
             question: 'Explain Segmentation with an example.',
             type: 'theory',
-            answer: '''Segmentation is when memory organization actually MAKES SENSE to humans. Unlike paging (equal-sized random chunks), segmentation divides memory the way YOU think about your program.
+            answer:
+                '''Segmentation is when memory organization actually MAKES SENSE to humans. Unlike paging (equal-sized random chunks), segmentation divides memory the way YOU think about your program.
 
 ---
 
@@ -3722,7 +3724,8 @@ Segmentation makes memory management HUMAN-FRIENDLY instead of just hardware-fri
             question:
                 'Explain Memory Allocation Strategies with suitable examples.',
             type: 'theory',
-            answer: '''Memory allocation is basically "find a parking spot" but for your programs in RAM. Let's see the different strategies for finding that perfect spot!
+            answer:
+                '''Memory allocation is basically "find a parking spot" but for your programs in RAM. Let's see the different strategies for finding that perfect spot!
 
 ---
 
@@ -4009,7 +4012,8 @@ Now you can allocate memory like a pro!
             question:
                 'Given five memory partitions, allocate using first-fit, best-fit and worst-fit.',
             type: 'numerical',
-            answer: '''Let's solve a classic memory allocation problem step by step!
+            answer:
+                '''Let's solve a classic memory allocation problem step by step!
 
 ---
 
@@ -4343,7 +4347,8 @@ Now you can crush any memory allocation numerical! 💪
           PYQ(
             question: 'Explain MFT with an example.',
             type: 'theory',
-            answer: '''MFT = Multiprogramming with Fixed Tasks. It's like dividing a dorm into rooms, each room same size, no changes allowed. Simple but wasteful!
+            answer:
+                '''MFT = Multiprogramming with Fixed Tasks. It's like dividing a dorm into rooms, each room same size, no changes allowed. Simple but wasteful!
 
 ---
 
@@ -4660,7 +4665,8 @@ MFT was used in old systems (1960s-70s) but modern systems use **Paging** instea
           PYQ(
             question: 'What is External Fragmentation? Explain with example.',
             type: 'theory',
-            answer: '''External Fragmentation is when you have ENOUGH total free memory but it's scattered in tiny pieces nobody can use. Like having \$100 but in pennies - technically you're rich but good luck buying anything!
+            answer:
+                '''External Fragmentation is when you have ENOUGH total free memory but it's scattered in tiny pieces nobody can use. Like having \$100 but in pennies - technically you're rich but good luck buying anything!
 
 ---
 
@@ -4973,7 +4979,8 @@ External Fragmentation is why modern systems use **PAGING** - it completely elim
           PYQ(
             question: 'How to solve the fragmentation problem using Paging?',
             type: 'theory',
-            answer: '''Paging is the ULTIMATE solution to fragmentation! It's like a jigsaw puzzle where pieces don't need to be next to each other - just map them correctly and boom, problem solved!
+            answer:
+                '''Paging is the ULTIMATE solution to fragmentation! It's like a jigsaw puzzle where pieces don't need to be next to each other - just map them correctly and boom, problem solved!
 
 ---
 
@@ -5346,7 +5353,8 @@ Paging is why modern systems don't suffer from fragmentation problems!
           PYQ(
             question: 'TLB.',
             type: 'theory',
-            answer: '''TLB = Translation Lookaside Buffer. It's basically a speed hack for paging - a tiny super-fast cache that remembers recent page-to-frame translations so you don't keep looking up the same thing in the slow page table!
+            answer:
+                '''TLB = Translation Lookaside Buffer. It's basically a speed hack for paging - a tiny super-fast cache that remembers recent page-to-frame translations so you don't keep looking up the same thing in the slow page table!
 
 ---
 
