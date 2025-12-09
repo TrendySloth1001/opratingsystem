@@ -3141,31 +3141,2636 @@ Master these 5 and you've mastered memory management fundamentals!
           PYQ(
             question: 'Explain concept of Paging with an example.',
             type: 'theory',
+            answer: '''Paging is like cutting a pizza into equal slices so everyone gets a fair share - except the pizza is your program and the slices go into random spots in memory. Let's break it down.
+
+---
+
+**WHAT IS PAGING?**
+
+**PAGING** = Memory management scheme that eliminates need for contiguous memory allocation by dividing memory into **fixed-size blocks**.
+
+**KEY IDEA:** Break both physical memory AND logical memory into same-sized chunks, then play memory Tetris.
+
+---
+
+**THE COMPONENTS:**
+
+**1. PAGES (Logical Memory)**
+- **Fixed-size** blocks of process's logical memory
+- Typical size: **4KB** (4096 bytes)
+- Numbered: 0, 1, 2, 3, ...
+
+**2. FRAMES (Physical Memory)**  
+- **Fixed-size** blocks of physical RAM
+- **SAME size** as pages (4KB)
+- Numbered: 0, 1, 2, 3, ...
+
+**3. PAGE TABLE**
+- Maps page numbers to frame numbers
+- Each process has its own page table
+- Maintained by OS
+
+---
+
+**HOW IT WORKS:**
+
+**STEP 1:** OS divides process into pages
+**STEP 2:** OS finds free frames in physical memory
+**STEP 3:** OS loads pages into frames (any available frame!)
+**STEP 4:** OS creates page table to track where each page went
+
+---
+
+**COMPLETE EXAMPLE:**
+
+**SCENARIO:**
+- **Page size:** 4 bytes (small for demo)
+- **Process size:** 16 bytes (4 pages)
+- **Physical memory:** 32 bytes (8 frames)
+
+**PROCESS IN LOGICAL MEMORY:**
+```
+Page 0: [A B C D]
+Page 1: [E F G H]
+Page 2: [I J K L]
+Page 3: [M N O P]
+```
+
+**PHYSICAL MEMORY (FRAMES):**
+```
+Frame 0: [? ? ? ?] (other process)
+Frame 1: [? ? ? ?] (other process)
+Frame 2: [? ? ? ?] (FREE)
+Frame 3: [? ? ? ?] (other process)
+Frame 4: [? ? ? ?] (FREE)
+Frame 5: [? ? ? ?] (FREE)
+Frame 6: [? ? ? ?] (other process)
+Frame 7: [? ? ? ?] (FREE)
+```
+
+**ALLOCATION:**
+```
+OS loads:
+Page 0 → Frame 2: [A B C D]
+Page 1 → Frame 5: [E F G H]
+Page 2 → Frame 4: [I J K L]
+Page 3 → Frame 7: [M N O P]
+```
+
+**PAGE TABLE:**
+```
+Page Number | Frame Number
+-------------------------
+     0      |      2
+     1      |      5
+     2      |      4
+     3      |      7
+```
+
+---
+
+**ADDRESS TRANSLATION:**
+
+**LOGICAL ADDRESS FORMAT:**
+```
+| Page Number | Offset |
+```
+
+**Example with 4KB pages (12 bits for offset):**
+- Page size = 4KB = 2^12 bytes
+- Offset needs 12 bits
+- Remaining bits = page number
+
+**TRANSLATION PROCESS:**
+
+**Given logical address: 8196**
+
+```
+STEP 1: Find page size
+Page size = 4KB = 4096 bytes
+
+STEP 2: Calculate page number and offset
+Page number = 8196 / 4096 = 2
+Offset = 8196 % 4096 = 4
+
+STEP 3: Look up page table
+Page 2 → Frame 4
+
+STEP 4: Calculate physical address
+Physical address = (Frame × Page size) + Offset
+                 = (4 × 4096) + 4
+                 = 16384 + 4
+                 = 16388
+```
+
+---
+
+**REAL-WORLD EXAMPLE:**
+
+```c
+// Process wants to access: variable at address 5000
+
+// LOGICAL VIEW (what programmer sees):
+int array[2000];  // Starts at address 0
+array[1250] = 42; // Accessing address 5000 (1250 * 4 bytes)
+
+// BEHIND THE SCENES:
+Address 5000:
+- Page number = 5000 / 4096 = 1 (page 1)
+- Offset = 5000 % 4096 = 904 (904 bytes into page)
+
+// PAGE TABLE LOOKUP:
+Page 1 → Frame 5
+
+// PHYSICAL MEMORY ACCESS:
+Frame 5, Offset 904
+Physical address = (5 × 4096) + 904 = 21384
+
+// CPU actually accesses physical address 21384!
+```
+
+---
+
+**ADVANTAGES:**
+
+✅ **NO EXTERNAL FRAGMENTATION**
+- All frames same size
+- Any page fits any frame
+- No weird gaps
+
+✅ **NO NEED FOR CONTIGUOUS MEMORY**
+- Pages scattered anywhere
+- Don't need big continuous block
+
+✅ **EASY ALLOCATION**
+- Just need N free frames for N pages
+- Don't care where they are
+
+✅ **PROTECTION**
+- Each process has own page table
+- Can't access other process's frames
+
+✅ **SHARING**
+- Multiple page tables point to same frame
+- Shared libraries work great
+
+---
+
+**DISADVANTAGES:**
+
+❌ **INTERNAL FRAGMENTATION**
+- Last page might not be full
+- If process = 10.5 pages, waste 0.5 page
+- Average waste = 0.5 × page size
+
+❌ **PAGE TABLE OVERHEAD**
+- Need to store page table
+- Large address space = large page table
+- 32-bit system, 4KB pages = 1 million entries!
+
+❌ **MEMORY ACCESS TIME**
+- Need to access page table first (extra memory access)
+- Solution: TLB (Translation Lookaside Buffer)
+
+---
+
+**PAGE TABLE ENTRY CONTAINS:**
+
+```
+| Frame Number | Valid Bit | Protection Bits | Reference Bit | Dirty Bit |
+```
+
+- **Frame Number:** Where page is in physical memory
+- **Valid Bit:** Is page in memory or swapped out?
+- **Protection Bits:** Read/Write/Execute permissions
+- **Reference Bit:** Has page been accessed? (for page replacement)
+- **Dirty Bit:** Has page been modified? (need to write back?)
+
+---
+
+**COMPARISON:**
+
+**WITHOUT PAGING:**
+```
+Process needs: 20KB continuous block
+Memory: [10KB free] [15KB used] [10KB free]
+Result: Can't load! (no 20KB continuous block)
+Total free: 20KB but FRAGMENTED
+```
+
+**WITH PAGING:**
+```
+Process needs: 5 pages (4KB each = 20KB)
+Memory: 5 frames available (anywhere)
+Result: Load successfully! Pages scattered across frames
+```
+
+---
+
+**EXAM TIP:**
+
+**They love asking:**
+1. Calculate page number and offset from logical address
+2. Calculate physical address using page table
+3. Calculate page table size
+4. Advantages/disadvantages
+
+**Formula to remember:**
+```
+Page number = Logical address / Page size
+Offset = Logical address % Page size
+Physical address = (Frame number × Page size) + Offset
+```
+
+**Practice this calculation MULTIPLE TIMES!**
+
+Paging is FUNDAMENTAL to modern operating systems. Every OS uses it (Windows, Linux, macOS). Master this and you've mastered memory management!
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question: 'Explain Segmentation with an example.',
             type: 'theory',
+            answer: '''Segmentation is when memory organization actually MAKES SENSE to humans. Unlike paging (equal-sized random chunks), segmentation divides memory the way YOU think about your program.
+
+---
+
+**WHAT IS SEGMENTATION?**
+
+**SEGMENTATION** = Divide program into **variable-sized** logical units based on how code is naturally organized.
+
+**THE IDEA:** Your program isn't just random bytes - it has STRUCTURE!
+
+---
+
+**LOGICAL SEGMENTS:**
+
+**1. CODE SEGMENT (Text)**
+- Your actual program instructions
+- Read + Execute only
+- Can be SHARED between processes
+
+**2. DATA SEGMENT**
+- Global variables, static data
+- Read + Write
+- Process-specific
+
+**3. STACK SEGMENT**
+- Function calls, local variables
+- Grows/shrinks dynamically
+- Read + Write
+
+**4. HEAP SEGMENT**
+- Dynamic memory allocation (malloc, new)
+- Grows dynamically
+- Read + Write
+
+**5. LIBRARY SEGMENTS**
+- Shared library code
+- Can be shared across processes
+
+---
+
+**HOW IT WORKS:**
+
+**SEGMENT TABLE:**
+Each process has a segment table with entries:
+
+```
+| Segment # | Base Address | Limit (Size) | Protection |
+|-----------|--------------|--------------|------------|
+|     0     |    5000      |    1000      |   R-X      |
+|     1     |   10000      |    2000      |   RW-      |
+|     2     |   20000      |    500       |   RW-      |
+```
+
+- **Base:** Starting physical address
+- **Limit:** Size of segment (in bytes)
+- **Protection:** Read/Write/Execute permissions
+
+---
+
+**COMPLETE EXAMPLE:**
+
+**PROGRAM:**
+```c
+// CODE SEGMENT
+int main() {
+    int x = 10;          // STACK
+    int* ptr = malloc(100);  // HEAP
+    printf("Hello");     // CODE
+    free(ptr);
+}
+
+int globalVar = 42;      // DATA SEGMENT
+```
+
+**SEGMENT BREAKDOWN:**
+
+**Segment 0 (CODE):** 800 bytes
+```
+Contains: main() function, printf() code
+Base: 5000
+Limit: 800
+Protection: Read + Execute
+Physical: 5000-5800
+```
+
+**Segment 1 (DATA):** 100 bytes
+```
+Contains: globalVar = 42
+Base: 10000
+Limit: 100
+Protection: Read + Write
+Physical: 10000-10100
+```
+
+**Segment 2 (STACK):** 500 bytes
+```
+Contains: local variable x, return addresses
+Base: 15000
+Limit: 500
+Protection: Read + Write
+Physical: 15000-15500
+```
+
+**Segment 3 (HEAP):** 1000 bytes
+```
+Contains: malloc'd memory (ptr)
+Base: 20000
+Limit: 1000
+Protection: Read + Write
+Physical: 20000-21000
+```
+
+---
+
+**SEGMENT TABLE:**
+```
+Segment | Base  | Limit | Protection
+--------|-------|-------|------------
+   0    | 5000  |  800  |    R-X
+   1    | 10000 |  100  |    RW-
+   2    | 15000 |  500  |    RW-
+   3    | 20000 | 1000  |    RW-
+```
+
+---
+
+**ADDRESS TRANSLATION:**
+
+**LOGICAL ADDRESS FORMAT:**
+```
+| Segment Number | Offset |
+```
+
+**TRANSLATION STEPS:**
+
+```
+Given: Logical Address = (Segment 1, Offset 40)
+
+STEP 1: Look up segment table
+Segment 1:
+- Base = 10000
+- Limit = 100
+
+STEP 2: Check if offset < limit
+40 < 100 ✓ (Valid!)
+
+STEP 3: Calculate physical address
+Physical = Base + Offset
+         = 10000 + 40
+         = 10040
+
+If offset >= limit → SEGMENTATION FAULT!
+```
+
+---
+
+**EXAMPLE CALCULATION:**
+
+**Access:** `globalVar` (in segment 1, offset 0)
+
+```
+Logical Address: (1, 0)
+
+Segment Table Lookup:
+Segment 1 → Base: 10000, Limit: 100
+
+Validation:
+0 < 100 ✓
+
+Physical Address:
+10000 + 0 = 10040
+```
+
+**Access:** Code at offset 200 in CODE segment
+
+```
+Logical Address: (0, 200)
+
+Segment Table:
+Segment 0 → Base: 5000, Limit: 800
+
+Validation:
+200 < 800 ✓
+
+Physical Address:
+5000 + 200 = 5200
+```
+
+**Invalid Access:** Try to access offset 1000 in DATA segment
+
+```
+Logical Address: (1, 1000)
+
+Segment Table:
+Segment 1 → Base: 10000, Limit: 100
+
+Validation:
+1000 >= 100 ✗ SEGMENTATION FAULT!
+Process terminated.
+```
+
+---
+
+**REAL-WORLD EXAMPLE:**
+
+```c
+// SEGMENT 0: CODE (base=1000, limit=500)
+void function() {
+    // This code at physical: 1000-1500
+}
+
+// SEGMENT 1: DATA (base=3000, limit=200)
+int global = 10;  // At physical: 3000
+
+// SEGMENT 2: STACK (base=5000, limit=1000)
+void main() {
+    int local = 5;  // At physical: 5000-6000
+}
+
+// SEGMENT 3: HEAP (base=8000, limit=2000)
+int* ptr = malloc(100);  // At physical: 8000-10000
+```
+
+**When process runs:**
+- Call `function()` → Access segment 0 (code)
+- Access `global` → Segment 1 (data)
+- Access `local` → Segment 2 (stack)  
+- Access `*ptr` → Segment 3 (heap)
+
+Each segment independent, different size, different permissions!
+
+---
+
+**ADVANTAGES:**
+
+✅ **LOGICAL VIEW**
+- Matches programmer's mental model
+- Code, data, stack are separate (makes sense!)
+
+✅ **PROTECTION**
+- Different permissions per segment
+- Can't execute data, can't modify code
+- Prevents many security exploits
+
+✅ **SHARING**
+- Easy to share CODE segment between processes
+- Each process has own DATA/STACK
+- Efficient library sharing
+
+✅ **DYNAMIC GROWTH**
+- Stack can grow/shrink
+- Heap can expand
+- Each segment independent
+
+✅ **MEANINGFUL ERRORS**
+- "Segmentation Fault" = accessed wrong segment
+- "Stack Overflow" = stack segment full
+- Clear error messages!
+
+---
+
+**DISADVANTAGES:**
+
+❌ **EXTERNAL FRAGMENTATION**
+- Segments are variable size
+- Memory gets fragmented over time
+- Need compaction
+
+❌ **COMPLEX MEMORY MANAGEMENT**
+- Hard to find space for new/growing segments
+- Need first-fit/best-fit algorithms
+
+❌ **SEGMENT SIZE LIMIT**
+- Can't have segment bigger than physical memory
+- Large arrays might not fit in one segment
+
+---
+
+**PAGING vs SEGMENTATION:**
+
+| Feature | Paging | Segmentation |
+|---------|--------|--------------|
+| **Size** | Fixed (4KB) | Variable |
+| **User View** | Invisible | Visible (code, data, stack) |
+| **Fragmentation** | Internal only | External only |
+| **Protection** | Per page | Per segment (better!) |
+| **Sharing** | Harder | Easier |
+| **Growth** | Fixed pages | Segments can grow |
+
+---
+
+**SEGMENTATION WITH PAGING (Best of Both!):**
+
+Modern systems use **BOTH**:
+
+```
+STEP 1: Divide process into segments (logical view)
+STEP 2: Divide each segment into pages (physical view)
+
+Result:
+- Logical organization (segmentation benefits)
+- No external fragmentation (paging benefits)
+- WIN-WIN!
+```
+
+**Example:** Intel x86 uses segmentation + paging
+
+---
+
+**EXAM TIP:**
+
+**Common questions:**
+1. Difference between paging and segmentation
+2. Calculate physical address from (segment, offset)
+3. What happens if offset > limit?
+4. Advantages of segmentation
+
+**Key points to remember:**
+- Segments = **variable size**, based on **logical organization**
+- Physical address = **Base + Offset**
+- Must check **Offset < Limit** (IMPORTANT!)
+- **Protection** per segment (code=R-X, data=RW-)
+
+Segmentation makes memory management HUMAN-FRIENDLY instead of just hardware-friendly!
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question:
                 'Explain Memory Allocation Strategies with suitable examples.',
             type: 'theory',
+            answer: '''Memory allocation is basically "find a parking spot" but for your programs in RAM. Let's see the different strategies for finding that perfect spot!
+
+---
+
+**THE PROBLEM:**
+
+Memory has **HOLES** (free spaces) of different sizes scattered around. When new process arrives, WHERE do we put it?
+
+**Memory State Example:**
+```
+[Process A: 10KB] [HOLE: 15KB] [Process B: 5KB] [HOLE: 20KB] [Process C: 8KB] [HOLE: 30KB]
+```
+
+New process needs **12KB**. Which hole?
+
+---
+
+**STRATEGY 1: FIRST FIT**
+
+**RULE:** Allocate the **FIRST** hole that's big enough.
+
+**ALGORITHM:**
+```
+1. Start from beginning of memory
+2. Check each hole
+3. Found hole >= requested size? USE IT!
+4. Done.
+```
+
+**EXAMPLE:**
+
+Memory: `[A: 10KB] [HOLE: 15KB] [B: 5KB] [HOLE: 20KB] [C: 8KB] [HOLE: 30KB]`
+
+**Request 1:** Process D needs **12KB**
+```
+Search:
+- Hole 1: 15KB >= 12KB ✓ FOUND!
+
+Result:
+[A: 10KB] [D: 12KB] [HOLE: 3KB] [B: 5KB] [HOLE: 20KB] [C: 8KB] [HOLE: 30KB]
+```
+
+**Request 2:** Process E needs **18KB**
+```
+Search:
+- Hole 1: 3KB < 18KB ✗
+- Hole 2: 20KB >= 18KB ✓ FOUND!
+
+Result:
+[A: 10KB] [D: 12KB] [HOLE: 3KB] [B: 5KB] [E: 18KB] [HOLE: 2KB] [C: 8KB] [HOLE: 30KB]
+```
+
+**ADVANTAGES:**
+✅ **FAST** - Stops at first match
+✅ **SIMPLE** - Easy to implement
+✅ **LOW OVERHEAD** - Minimal searching
+
+**DISADVANTAGES:**
+❌ Creates **small holes** at beginning of memory
+❌ **Fragmentation** accumulates near front
+❌ Later searches slower (must skip small holes)
+
+**WHEN TO USE:** When **speed** is priority
+
+---
+
+**STRATEGY 2: BEST FIT**
+
+**RULE:** Allocate the **SMALLEST** hole that's big enough.
+
+**ALGORITHM:**
+```
+1. Search ENTIRE memory
+2. Find ALL holes >= requested size
+3. Pick the SMALLEST one
+4. Allocate there
+```
+
+**EXAMPLE:**
+
+Memory: `[A: 10KB] [HOLE: 15KB] [B: 5KB] [HOLE: 20KB] [C: 8KB] [HOLE: 13KB]`
+
+**Request:** Process D needs **12KB**
+```
+Search ALL holes >= 12KB:
+- Hole 1: 15KB (leftover: 15-12 = 3KB)
+- Hole 2: 20KB (leftover: 20-12 = 8KB)
+- Hole 3: 13KB (leftover: 13-12 = 1KB) ← SMALLEST leftover!
+
+Pick Hole 3 (BEST FIT)
+
+Result:
+[A: 10KB] [HOLE: 15KB] [B: 5KB] [HOLE: 20KB] [C: 8KB] [D: 12KB] [HOLE: 1KB]
+```
+
+**ADVANTAGES:**
+✅ **Minimizes waste** in each allocation
+✅ **Larger holes preserved** for bigger processes
+✅ Seems logical and efficient
+
+**DISADVANTAGES:**
+❌ **SLOWEST** - Must search entire memory
+❌ Creates **tiny useless holes** (1KB leftover)
+❌ **Worst fragmentation overall**
+❌ Many holes too small to use
+
+**IRONY:** Called "BEST" fit but actually produces WORST fragmentation!
+
+**WHEN TO USE:** Almost never (bad in practice)
+
+---
+
+**STRATEGY 3: WORST FIT**
+
+**RULE:** Allocate the **LARGEST** hole available.
+
+**ALGORITHM:**
+```
+1. Search ENTIRE memory
+2. Find ALL holes
+3. Pick the LARGEST one
+4. Allocate there
+```
+
+**EXAMPLE:**
+
+Memory: `[A: 10KB] [HOLE: 15KB] [B: 5KB] [HOLE: 30KB] [C: 8KB] [HOLE: 20KB]`
+
+**Request:** Process D needs **12KB**
+```
+Search ALL holes:
+- Hole 1: 15KB
+- Hole 2: 30KB ← LARGEST!
+- Hole 3: 20KB
+
+Pick Hole 2 (WORST FIT)
+
+Result:
+[A: 10KB] [HOLE: 15KB] [B: 5KB] [D: 12KB] [HOLE: 18KB] [C: 8KB] [HOLE: 20KB]
+```
+
+**ADVANTAGES:**
+✅ **Leftover holes are LARGE** (18KB still useful!)
+✅ Reduces number of tiny unusable holes
+✅ Better than best-fit in practice
+
+**DISADVANTAGES:**
+❌ **SLOW** - Must search entire memory
+❌ **Wastes large holes** quickly
+❌ Big processes might not find space later
+
+**WHEN TO USE:** When you have mix of small and large processes
+
+---
+
+**STRATEGY 4: NEXT FIT**
+
+**RULE:** Like First Fit, but remember where you last allocated and start searching from there.
+
+**ALGORITHM:**
+```
+1. Keep pointer to last allocation
+2. Start search from that pointer
+3. Find first hole >= requested size
+4. Wrap around if reach end
+5. Update pointer
+```
+
+**EXAMPLE:**
+
+Memory: `[A: 10KB] [HOLE: 15KB] [B: 5KB] [HOLE: 20KB] [C: 8KB] [HOLE: 30KB]`
+Pointer starts at beginning.
+
+**Request 1:** Process D needs **12KB**
+```
+Search from pointer (start):
+- Hole 1: 15KB >= 12KB ✓ FOUND!
+Allocate, move pointer here.
+
+Result:
+[A: 10KB] [D: 12KB] [HOLE: 3KB] [B: 5KB] [HOLE: 20KB] [C: 8KB] [HOLE: 30KB]
+                               ↑ pointer
+```
+
+**Request 2:** Process E needs **18KB**
+```
+Search from pointer (after D):
+- Hole 1: 3KB < 18KB ✗
+- Hole 2: 20KB >= 18KB ✓ FOUND!
+Allocate, move pointer.
+
+Result:
+[A: 10KB] [D: 12KB] [HOLE: 3KB] [B: 5KB] [E: 18KB] [HOLE: 2KB] [C: 8KB] [HOLE: 30KB]
+                                                                        ↑ pointer
+```
+
+**ADVANTAGES:**
+✅ **Faster than First Fit** (spreads allocation across memory)
+✅ More **even distribution** of holes
+✅ Less clustering at beginning
+
+**DISADVANTAGES:**
+❌ Still creates fragmentation
+❌ Slightly more complex than First Fit
+
+**WHEN TO USE:** Good compromise between speed and fragmentation
+
+---
+
+**COMPARISON TABLE:**
+
+| Strategy | Speed | Fragmentation | Hole Size | Complexity |
+|----------|-------|---------------|-----------|------------|
+| **First Fit** | Fast | Medium | Small at front | Simple |
+| **Best Fit** | Slow | Worst | Tiny everywhere | Medium |
+| **Worst Fit** | Slow | Better | Large leftover | Medium |
+| **Next Fit** | Fast | Medium | Evenly spread | Simple |
+
+---
+
+**REAL PERFORMANCE COMPARISON:**
+
+**Scenario:** Allocate processes: 10KB, 15KB, 8KB, 12KB, 20KB
+
+**Initial Memory:** `[HOLE: 50KB]`
+
+**FIRST FIT:**
+```
+[10KB][HOLE:40KB] → [10KB][15KB][HOLE:25KB] → ... 
+Final: [10KB][15KB][8KB][12KB][20KB][HOLE:0KB] + many tiny holes
+Fragmentation: HIGH
+Speed: FAST ⭐
+```
+
+**BEST FIT:**
+```
+Searches all, picks smallest each time
+Final: Same allocation but creates 0.5KB, 1KB, 2KB holes
+Fragmentation: WORST 
+Speed: SLOW
+```
+
+**WORST FIT:**
+```
+Always picks biggest hole
+Final: Larger leftover holes (5KB, 8KB)
+Fragmentation: BETTER
+Speed: SLOW
+```
+
+---
+
+**WHICH TO CHOOSE?**
+
+**FOR SPEED:** First Fit or Next Fit
+**FOR LESS FRAGMENTATION:** Worst Fit
+**AVOID:** Best Fit (sounds good, performs bad)
+
+**REAL SYSTEMS:** Most use First Fit or Next Fit with periodic **compaction** to reduce fragmentation.
+
+---
+
+**EXAM TIP:**
+
+**Common question format:**
+"Given memory state and process requests, show allocation using First/Best/Worst Fit"
+
+**Steps:**
+1. Draw initial memory state
+2. For each request, list ALL candidate holes
+3. Apply strategy rule
+4. Show resulting memory state
+5. Calculate leftover in chosen hole
+
+**Don't forget:**
+- Best Fit searches **ALL** holes (mention this!)
+- Worst Fit picks **LARGEST** not best leftover
+- Draw diagrams - they love seeing visual answers!
+
+Now you can allocate memory like a pro!
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question:
                 'Given five memory partitions, allocate using first-fit, best-fit and worst-fit.',
             type: 'numerical',
+            answer: '''Let's solve a classic memory allocation problem step by step!
+
+---
+
+**GIVEN:**
+
+**Memory Partitions (Holes):**
+```
+Partition 1: 100 KB
+Partition 2: 500 KB
+Partition 3: 200 KB
+Partition 4: 300 KB
+Partition 5: 600 KB
+```
+
+**Process Requests (in order):**
+```
+Process P1: 212 KB
+Process P2: 417 KB
+Process P3: 112 KB
+Process P4: 426 KB
+```
+
+**INITIAL MEMORY STATE:**
+```
+[HOLE: 100KB] [HOLE: 500KB] [HOLE: 200KB] [HOLE: 300KB] [HOLE: 600KB]
+    P1           P2            P3           P4            P5
+```
+
+---
+
+**SOLUTION 1: FIRST-FIT**
+
+**RULE:** Allocate to the **FIRST** partition that fits.
+
+**Process P1 (212 KB):**
+```
+Search from start:
+- P1: 100KB < 212KB ✗ Too small
+- P2: 500KB >= 212KB ✓ FITS!
+
+Allocate P1 to Partition 2
+Remaining: 500 - 212 = 288 KB
+```
+
+**Memory after P1:**
+```
+[HOLE: 100KB] [P1: 212KB] [HOLE: 288KB] [HOLE: 200KB] [HOLE: 300KB] [HOLE: 600KB]
+```
+
+**Process P2 (417 KB):**
+```
+Search from start:
+- Partition 1: 100KB < 417KB ✗
+- Partition 2 (remaining): 288KB < 417KB ✗
+- Partition 3: 200KB < 417KB ✗
+- Partition 4: 300KB < 417KB ✗
+- Partition 5: 600KB >= 417KB ✓ FITS!
+
+Allocate P2 to Partition 5
+Remaining: 600 - 417 = 183 KB
+```
+
+**Memory after P2:**
+```
+[HOLE: 100KB] [P1: 212KB] [HOLE: 288KB] [HOLE: 200KB] [HOLE: 300KB] [P2: 417KB] [HOLE: 183KB]
+```
+
+**Process P3 (112 KB):**
+```
+Search from start:
+- Partition 1: 100KB < 112KB ✗
+- Partition 2 (remaining): 288KB >= 112KB ✓ FITS!
+
+Allocate P3 to Partition 2 remaining space
+Remaining: 288 - 112 = 176 KB
+```
+
+**Memory after P3:**
+```
+[HOLE: 100KB] [P1: 212KB] [P3: 112KB] [HOLE: 176KB] [HOLE: 200KB] [HOLE: 300KB] [P2: 417KB] [HOLE: 183KB]
+```
+
+**Process P4 (426 KB):**
+```
+Search from start:
+- Partition 1: 100KB < 426KB ✗
+- Partition 2 (remaining): 176KB < 426KB ✗
+- Partition 3: 200KB < 426KB ✗
+- Partition 4: 300KB < 426KB ✗
+- Partition 5 (remaining): 183KB < 426KB ✗
+
+NO PARTITION FITS!
+P4 CANNOT BE ALLOCATED
+```
+
+**FIRST-FIT FINAL RESULT:**
+```
+[HOLE: 100KB] [P1: 212KB] [P3: 112KB] [HOLE: 176KB] [HOLE: 200KB] [HOLE: 300KB] [P2: 417KB] [HOLE: 183KB]
+
+✓ Allocated: P1, P2, P3
+✗ Failed: P4 (no space)
+Total wasted: 100+176+200+300+183 = 959 KB
+```
+
+---
+
+**SOLUTION 2: BEST-FIT**
+
+**RULE:** Allocate to the **SMALLEST** partition that fits (minimum leftover).
+
+**Process P1 (212 KB):**
+```
+Find ALL partitions >= 212KB:
+- P1: 100KB ✗
+- P2: 500KB ✓ (leftover: 500-212 = 288KB)
+- P3: 200KB ✗
+- P4: 300KB ✓ (leftover: 300-212 = 88KB) ← SMALLEST leftover!
+- P5: 600KB ✓ (leftover: 600-212 = 388KB)
+
+Pick P4 (BEST FIT)
+Allocate P1 to Partition 4
+Remaining: 300 - 212 = 88 KB
+```
+
+**Memory after P1:**
+```
+[HOLE: 100KB] [HOLE: 500KB] [HOLE: 200KB] [P1: 212KB] [HOLE: 88KB] [HOLE: 600KB]
+```
+
+**Process P2 (417 KB):**
+```
+Find ALL partitions >= 417KB:
+- P1: 100KB ✗
+- P2: 500KB ✓ (leftover: 500-417 = 83KB) ← SMALLEST leftover!
+- P3: 200KB ✗
+- P4 (remaining): 88KB ✗
+- P5: 600KB ✓ (leftover: 600-417 = 183KB)
+
+Pick P2 (BEST FIT)
+Allocate P2 to Partition 2
+Remaining: 500 - 417 = 83 KB
+```
+
+**Memory after P2:**
+```
+[HOLE: 100KB] [P2: 417KB] [HOLE: 83KB] [HOLE: 200KB] [P1: 212KB] [HOLE: 88KB] [HOLE: 600KB]
+```
+
+**Process P3 (112 KB):**
+```
+Find ALL partitions >= 112KB:
+- P1: 100KB ✗
+- P2 (remaining): 83KB ✗
+- P3: 200KB ✓ (leftover: 200-112 = 88KB) ← SMALLEST leftover!
+- P4 (remaining): 88KB ✗
+- P5: 600KB ✓ (leftover: 600-112 = 488KB)
+
+Pick P3 (BEST FIT)
+Allocate P3 to Partition 3
+Remaining: 200 - 112 = 88 KB
+```
+
+**Memory after P3:**
+```
+[HOLE: 100KB] [P2: 417KB] [HOLE: 83KB] [P3: 112KB] [HOLE: 88KB] [P1: 212KB] [HOLE: 88KB] [HOLE: 600KB]
+```
+
+**Process P4 (426 KB):**
+```
+Find ALL partitions >= 426KB:
+- P1: 100KB ✗
+- P2 (remaining): 83KB ✗
+- P3 (remaining): 88KB ✗
+- P4 (remaining): 88KB ✗
+- P5: 600KB ✓ (only option!)
+
+Pick P5 (only fit)
+Allocate P4 to Partition 5
+Remaining: 600 - 426 = 174 KB
+```
+
+**BEST-FIT FINAL RESULT:**
+```
+[HOLE: 100KB] [P2: 417KB] [HOLE: 83KB] [P3: 112KB] [HOLE: 88KB] [P1: 212KB] [HOLE: 88KB] [P4: 426KB] [HOLE: 174KB]
+
+✓ Allocated: P1, P2, P3, P4 (ALL!)
+Total wasted: 100+83+88+88+174 = 533 KB
+BUT notice: Multiple 88KB holes (FRAGMENTATION!)
+```
+
+---
+
+**SOLUTION 3: WORST-FIT**
+
+**RULE:** Allocate to the **LARGEST** partition.
+
+**Process P1 (212 KB):**
+```
+Find LARGEST partition:
+- P1: 100KB
+- P2: 500KB
+- P3: 200KB
+- P4: 300KB
+- P5: 600KB ← LARGEST!
+
+Pick P5 (WORST FIT)
+Allocate P1 to Partition 5
+Remaining: 600 - 212 = 388 KB
+```
+
+**Memory after P1:**
+```
+[HOLE: 100KB] [HOLE: 500KB] [HOLE: 200KB] [HOLE: 300KB] [P1: 212KB] [HOLE: 388KB]
+```
+
+**Process P2 (417 KB):**
+```
+Find LARGEST partition:
+- P1: 100KB
+- P2: 500KB ← LARGEST!
+- P3: 200KB
+- P4: 300KB
+- P5 (remaining): 388KB
+
+Pick P2 (WORST FIT)
+Allocate P2 to Partition 2
+Remaining: 500 - 417 = 83 KB
+```
+
+**Memory after P2:**
+```
+[HOLE: 100KB] [P2: 417KB] [HOLE: 83KB] [HOLE: 200KB] [HOLE: 300KB] [P1: 212KB] [HOLE: 388KB]
+```
+
+**Process P3 (112 KB):**
+```
+Find LARGEST partition:
+- P1: 100KB
+- P2 (remaining): 83KB
+- P3: 200KB
+- P4: 300KB
+- P5 (remaining): 388KB ← LARGEST!
+
+Pick P5 remaining (WORST FIT)
+Allocate P3 to Partition 5 remaining space
+Remaining: 388 - 112 = 276 KB
+```
+
+**Memory after P3:**
+```
+[HOLE: 100KB] [P2: 417KB] [HOLE: 83KB] [HOLE: 200KB] [HOLE: 300KB] [P1: 212KB] [P3: 112KB] [HOLE: 276KB]
+```
+
+**Process P4 (426 KB):**
+```
+Find LARGEST partition:
+- P1: 100KB
+- P2 (remaining): 83KB
+- P3: 200KB
+- P4: 300KB ← Best available but NOT enough
+- P5 (remaining): 276KB
+
+ALL TOO SMALL!
+P4 CANNOT BE ALLOCATED
+```
+
+**WORST-FIT FINAL RESULT:**
+```
+[HOLE: 100KB] [P2: 417KB] [HOLE: 83KB] [HOLE: 200KB] [HOLE: 300KB] [P1: 212KB] [P3: 112KB] [HOLE: 276KB]
+
+✓ Allocated: P1, P2, P3
+✗ Failed: P4 (no space)
+Total wasted: 100+83+200+300+276 = 959 KB
+```
+
+---
+
+**COMPARISON SUMMARY:**
+
+| Strategy | P1 | P2 | P3 | P4 | Total Waste |
+|----------|----|----|----|----|-------------|
+| **First-Fit** | ✓ P2 | ✓ P5 | ✓ P2 | ✗ | 959 KB |
+| **Best-Fit** | ✓ P4 | ✓ P2 | ✓ P3 | ✓ P5 | 533 KB |
+| **Worst-Fit** | ✓ P5 | ✓ P2 | ✓ P5 | ✗ | 959 KB |
+
+**WINNER:** **BEST-FIT** (allocated all 4 processes!)
+
+---
+
+**KEY OBSERVATIONS:**
+
+**FIRST-FIT:**
+- Fastest (stops at first match)
+- Failed on P4
+- Left big 300KB hole unused
+
+**BEST-FIT:**
+- Slowest (searched everything)
+- **Only one that allocated ALL processes!**
+- But created many small 88KB holes (fragmentation issue)
+
+**WORST-FIT:**
+- Same result as First-Fit
+- Used largest holes first
+- Still failed on P4
+
+---
+
+**EXAM TIP:**
+
+**Show your work clearly:**
+
+1. **Draw initial state** with partition sizes
+2. **For each process:**
+   - List candidate partitions
+   - Calculate leftover for each
+   - Circle your choice with reasoning
+   - Draw updated memory state
+3. **Final summary table** showing allocation results
+
+**Common mistakes to avoid:**
+❌ Forgetting to search ALL partitions for Best/Worst Fit
+❌ Wrong leftover calculation
+❌ Not updating memory after each allocation
+❌ Confusing "smallest leftover" (Best) with "smallest partition" (wrong!)
+
+Now you can crush any memory allocation numerical! 💪
+''',
+            hasDiagram: false,
           ),
-          PYQ(question: 'Explain MFT with an example.', type: 'theory'),
+          PYQ(
+            question: 'Explain MFT with an example.',
+            type: 'theory',
+            answer: '''MFT = Multiprogramming with Fixed Tasks. It's like dividing a dorm into rooms, each room same size, no changes allowed. Simple but wasteful!
+
+---
+
+**WHAT IS MFT?**
+
+**MFT (Multiprogramming with Fixed Tasks)** = Divide memory into **FIXED-SIZE partitions** at boot time. Each partition can hold ONE process.
+
+**THE IDEA:**
+```
+Total Memory = 1 MB
+Divide into 4 partitions of 250KB each
+
+[OS: 100KB] [P1: 250KB] [P2: 250KB] [P3: 250KB] [P4: 250KB]
+
+Simple, predictable, but WASTEFUL if processes don't fit perfectly.
+```
+
+---
+
+**HOW MFT WORKS:**
+
+**SETUP (at boot time):**
+1. Reserve memory for OS
+2. Divide remaining memory into **N equal-sized partitions**
+3. Size decided by system admin (never changes!)
+
+**ALLOCATION:**
+1. New process arrives
+2. Find empty partition
+3. Load process into partition
+4. Process uses entire partition (even if smaller)
+
+**DEALLOCATION:**
+1. Process terminates
+2. Partition becomes free
+3. Can be reused by another process
+
+---
+
+**COMPLETE EXAMPLE:**
+
+**SYSTEM SETUP:**
+```
+Total Memory: 1024 KB (1 MB)
+OS: 100 KB
+Available: 924 KB
+
+Divide into 4 partitions: 924 / 4 ≈ 230 KB each
+```
+
+**INITIAL STATE:**
+```
+┌──────────────────┐
+│  OS: 100 KB      │ ← Reserved for OS
+├──────────────────┤
+│  P1: 230 KB FREE │ ← Partition 1
+├──────────────────┤
+│  P2: 230 KB FREE │ ← Partition 2
+├──────────────────┤
+│  P3: 230 KB FREE │ ← Partition 3
+├──────────────────┤
+│  P4: 230 KB FREE │ ← Partition 4
+└──────────────────┘
+```
+
+**TIME T1:** Process A arrives (needs 100 KB)
+```
+Allocate to P1:
+┌──────────────────┐
+│  OS: 100 KB      │
+├──────────────────┤
+│  P1: A (100 KB)  │ ← Uses 100KB, wastes 130KB!
+│      Waste: 130  │
+├──────────────────┤
+│  P2: 230 KB FREE │
+├──────────────────┤
+│  P3: 230 KB FREE │
+├──────────────────┤
+│  P4: 230 KB FREE │
+└──────────────────┘
+
+Internal Fragmentation = 130 KB
+```
+
+**TIME T2:** Process B arrives (needs 220 KB)
+```
+Allocate to P2:
+┌──────────────────┐
+│  OS: 100 KB      │
+├──────────────────┤
+│  P1: A (100 KB)  │
+│      Waste: 130  │
+├──────────────────┤
+│  P2: B (220 KB)  │ ← Uses 220KB, wastes 10KB
+│      Waste: 10   │
+├──────────────────┤
+│  P3: 230 KB FREE │
+├──────────────────┤
+│  P4: 230 KB FREE │
+└──────────────────┘
+
+Internal Fragmentation = 130 + 10 = 140 KB
+```
+
+**TIME T3:** Process C arrives (needs 250 KB)
+```
+TOO BIG! C needs 250KB but partitions only 230KB
+C is REJECTED (cannot load)
+
+┌──────────────────┐
+│  OS: 100 KB      │
+├──────────────────┤
+│  P1: A (100 KB)  │
+├──────────────────┤
+│  P2: B (220 KB)  │
+├──────────────────┤
+│  P3: 230 KB FREE │ ← Available but TOO SMALL
+├──────────────────┤
+│  P4: 230 KB FREE │ ← Available but TOO SMALL
+└──────────────────┘
+
+Process C BLOCKED or REJECTED
+```
+
+**TIME T4:** Process D arrives (needs 200 KB)
+```
+Allocate to P3:
+┌──────────────────┐
+│  OS: 100 KB      │
+├──────────────────┤
+│  P1: A (100 KB)  │
+│      Waste: 130  │
+├──────────────────┤
+│  P2: B (220 KB)  │
+│      Waste: 10   │
+├──────────────────┤
+│  P3: D (200 KB)  │ ← Uses 200KB, wastes 30KB
+│      Waste: 30   │
+├──────────────────┤
+│  P4: 230 KB FREE │
+└──────────────────┘
+
+Internal Fragmentation = 130 + 10 + 30 = 170 KB
+```
+
+**TIME T5:** Process A terminates
+```
+P1 becomes free:
+┌──────────────────┐
+│  OS: 100 KB      │
+├──────────────────┤
+│  P1: 230 KB FREE │ ← Now available
+├──────────────────┤
+│  P2: B (220 KB)  │
+├──────────────────┤
+│  P3: D (200 KB)  │
+├──────────────────┤
+│  P4: 230 KB FREE │
+└──────────────────┘
+
+Now can try to load C (250KB)?
+NO! Still too big for any partition.
+```
+
+---
+
+**PARTITION TABLE:**
+
+MFT maintains a **partition table**:
+
+| Partition | Size | Status | Process |
+|-----------|------|--------|---------|
+| P1 | 230 KB | Free | - |
+| P2 | 230 KB | Occupied | B |
+| P3 | 230 KB | Occupied | D |
+| P4 | 230 KB | Free | - |
+
+When process arrives:
+1. Scan table for "Free" partition
+2. If found → Allocate, mark "Occupied"
+3. If not found → Process waits or rejected
+
+---
+
+**ADVANTAGES:**
+
+✅ **SIMPLE**
+- Easy to implement
+- Minimal overhead
+- No complex algorithms
+
+✅ **FAST ALLOCATION**
+- Just find empty partition
+- No searching for "best fit"
+- O(1) time if partition available
+
+✅ **NO EXTERNAL FRAGMENTATION**
+- Memory divided once
+- Never get unusable holes between partitions
+
+✅ **PREDICTABLE**
+- Fixed number of processes
+- Each gets same resources
+- Deterministic behavior
+
+---
+
+**DISADVANTAGES:**
+
+❌ **INTERNAL FRAGMENTATION**
+- Small process in big partition = WASTE
+- Example: 50KB process in 230KB partition wastes 180KB!
+
+❌ **FIXED PARTITION SIZE**
+- Can't change partition sizes
+- Must reboot to reconfigure
+- Inflexible
+
+❌ **PROCESS SIZE LIMITATION**
+- Process > partition size? REJECTED!
+- Even if total memory available
+
+❌ **POOR MEMORY UTILIZATION**
+- Often 20-40% memory wasted
+- Especially if processes vary in size
+
+❌ **LIMITED DEGREE OF MULTIPROGRAMMING**
+- Max processes = Number of partitions
+- If partitions = 4, max 4 processes
+- Even if small processes could fit more
+
+---
+
+**REAL-WORLD ANALOGY:**
+
+**MFT = FIXED PARKING SPACES**
+
+Imagine parking lot with 10 equal-sized spaces:
+- Motorcycle arrives → Gets full space (waste!)
+- Truck arrives → Might not fit (rejected!)
+- Sedan → Fits perfectly (rare!)
+
+Better solution: Variable-sized spaces (MVT) or dynamic parking (Paging)
+
+---
+
+**MFT vs MVT:**
+
+| Feature | MFT | MVT |
+|---------|-----|-----|
+| **Partition Size** | Fixed (equal) | Variable (any size) |
+| **Internal Frag** | YES (big problem) | Less |
+| **External Frag** | NO | YES |
+| **Complexity** | Simple | More complex |
+| **Flexibility** | None | Better |
+| **Modern Use** | Almost never | Also rare |
+
+**Modern systems:** Use Paging or Segmentation (way better than MFT/MVT!)
+
+---
+
+**NUMERICAL EXAMPLE:**
+
+**Given:**
+- Total Memory: 512 KB
+- OS: 64 KB
+- Available: 448 KB
+- Partitions: 4 equal partitions
+
+**Partition size:** 448 / 4 = 112 KB each
+
+**Processes:**
+- P1: 80 KB
+- P2: 112 KB (perfect fit!)
+- P3: 50 KB
+- P4: 120 KB
+
+**Allocation:**
+```
+P1 → Partition 1: 80 KB used, 32 KB wasted
+P2 → Partition 2: 112 KB used, 0 KB wasted
+P3 → Partition 3: 50 KB used, 62 KB wasted
+P4 → REJECTED (120 > 112)
+
+Total Internal Fragmentation: 32 + 0 + 62 = 94 KB
+Memory Utilization: (80+112+50) / 448 = 54%
+Wasted: 46%!
+```
+
+**Ouch!** Almost half memory wasted!
+
+---
+
+**EXAM TIP:**
+
+**If asked "Explain MFT":**
+1. Define (fixed equal-sized partitions)
+2. Draw memory layout diagram
+3. Explain allocation process
+4. Give example with internal fragmentation
+5. List advantages and disadvantages
+6. Mention modern systems don't use it
+
+**Key points:**
+- **Fixed size** (never changes)
+- **Internal fragmentation** (main problem)
+- **No external fragmentation**
+- **Simple but inefficient**
+
+MFT was used in old systems (1960s-70s) but modern systems use **Paging** instead!
+''',
+            hasDiagram: false,
+          ),
           PYQ(
             question: 'What is External Fragmentation? Explain with example.',
             type: 'theory',
+            answer: '''External Fragmentation is when you have ENOUGH total free memory but it's scattered in tiny pieces nobody can use. Like having \$100 but in pennies - technically you're rich but good luck buying anything!
+
+---
+
+**WHAT IS EXTERNAL FRAGMENTATION?**
+
+**EXTERNAL FRAGMENTATION** = Free memory is **broken into small, non-contiguous holes** that are individually too small to satisfy requests, even though the **TOTAL** free memory is enough.
+
+**THE PROBLEM:**
+- Total free: 500 KB
+- Process needs: 400 KB
+- But free memory is: [100KB hole] [150KB hole] [250KB hole]
+- Can't use ANY hole (none big enough!)
+- **WASTED** even though 100+150+250 = 500KB available!
+
+---
+
+**HOW IT HAPPENS:**
+
+**SCENARIO: Memory Over Time**
+
+**TIME T0 (Start):**
+```
+[FREE: 1000 KB]
+Total Free: 1000 KB
+```
+
+**TIME T1:** Load Process A (200 KB)
+```
+[A: 200 KB] [FREE: 800 KB]
+Total Free: 800 KB
+```
+
+**TIME T2:** Load Process B (300 KB)
+```
+[A: 200 KB] [B: 300 KB] [FREE: 500 KB]
+Total Free: 500 KB
+```
+
+**TIME T3:** Load Process C (100 KB)
+```
+[A: 200 KB] [B: 300 KB] [C: 100 KB] [FREE: 400 KB]
+Total Free: 400 KB
+```
+
+**TIME T4:** Process A terminates
+```
+[FREE: 200 KB] [B: 300 KB] [C: 100 KB] [FREE: 400 KB]
+Total Free: 200 + 400 = 600 KB
+But in TWO separate holes!
+```
+
+**TIME T5:** Load Process D (150 KB)
+```
+[D: 150 KB] [FREE: 50 KB] [B: 300 KB] [C: 100 KB] [FREE: 400 KB]
+Total Free: 50 + 400 = 450 KB
+```
+
+**TIME T6:** Process B terminates
+```
+[D: 150 KB] [FREE: 50 KB] [FREE: 300 KB] [C: 100 KB] [FREE: 400 KB]
+Total Free: 50 + 300 + 400 = 750 KB in THREE holes!
+```
+
+**TIME T7:** Try to load Process E (500 KB)
+```
+Available holes:
+- Hole 1: 50 KB ✗
+- Hole 2: 300 KB ✗
+- Hole 3: 400 KB ✗
+
+NO SINGLE HOLE >= 500 KB
+Process E REJECTED!
+
+But total free = 750 KB > 500 KB needed!
+THIS IS EXTERNAL FRAGMENTATION!
+```
+
+---
+
+**COMPLETE EXAMPLE:**
+
+**INITIAL MEMORY:** 1 MB
+```
+[FREE: 1024 KB]
+```
+
+**Step 1:** Allocate 5 processes
+```
+[P1: 100KB] [P2: 200KB] [P3: 150KB] [P4: 250KB] [P5: 100KB] [FREE: 224KB]
+```
+
+**Step 2:** P1, P3, P5 terminate (every other process)
+```
+[FREE: 100KB] [P2: 200KB] [FREE: 150KB] [P4: 250KB] [FREE: 100KB] [FREE: 224KB]
+
+Total Free: 100 + 150 + 100 + 224 = 574 KB
+Holes: 4 separate holes
+```
+
+**Step 3:** New process P6 needs 300 KB
+```
+Available holes:
+- 100 KB ✗
+- 150 KB ✗  
+- 100 KB ✗
+- 224 KB ✗
+
+CANNOT ALLOCATE!
+Even though 574 KB > 300 KB needed!
+
+External Fragmentation = 574 KB unusable!
+```
+
+**VISUAL:**
+```
+┌──────┬──────┬──────┬──────┬──────┬──────┐
+│ FREE │  P2  │ FREE │  P4  │ FREE │ FREE │
+│ 100  │ 200  │ 150  │ 250  │ 100  │ 224  │
+└──────┴──────┴──────┴──────┴──────┴──────┘
+   ↑             ↑             ↑       ↑
+   Can't use these separately for 300KB process!
+   Need CONTIGUOUS 300KB block
+```
+
+---
+
+**WHY IT MATTERS:**
+
+**WASTED MEMORY:**
+- System has free memory but can't use it
+- Low memory utilization (e.g., only 40% usable)
+
+**PROCESS BLOCKING:**
+- Processes wait indefinitely
+- System appears "out of memory" when it's not
+
+**PERFORMANCE DEGRADATION:**
+- Must search many small holes
+- More swapping to/from disk
+- System gets SLOW
+
+---
+
+**MEASURING EXTERNAL FRAGMENTATION:**
+
+**Formula:**
+```
+External Fragmentation % = (Unusable Free Memory / Total Free Memory) × 100
+
+Example:
+Total Free: 574 KB
+Largest Hole: 224 KB
+Unusable: 574 - 224 = 350 KB
+
+Fragmentation = (350 / 574) × 100 = 61%
+```
+
+**Bad fragmentation:** > 30%
+**Critical fragmentation:** > 50%
+
+---
+
+**CAUSES OF EXTERNAL FRAGMENTATION:**
+
+**1. VARIABLE-SIZED ALLOCATION**
+- Processes of different sizes
+- Create different-sized holes when they terminate
+
+**2. LOAD/TERMINATE PATTERN**
+- Processes come and go at random
+- Holes appear in random places
+
+**3. DYNAMIC NATURE**
+- Memory state constantly changes
+- Fragmentation accumulates over time
+
+**4. FIRST-FIT / BEST-FIT ALLOCATION**
+- These strategies can worsen fragmentation
+- Leave small unusable holes
+
+---
+
+**SOLUTIONS:**
+
+**1. COMPACTION (Defragmentation)**
+```
+Move all processes to one end of memory
+Combine all holes into ONE big hole
+
+BEFORE:
+[FREE: 100] [P2: 200] [FREE: 150] [P4: 250] [FREE: 224]
+
+AFTER:
+[P2: 200] [P4: 250] [FREE: 574]
+
+Now can allocate 300KB process! ✓
+```
+
+**Downside:** EXPENSIVE! Must pause all processes, copy memory, update pointers
+
+**2. PAGING**
+```
+Divide memory into fixed-size pages
+Process doesn't need contiguous memory
+NO external fragmentation!
+
+Process can use: [Page 1] + [Page 5] + [Page 9] (non-contiguous OK!)
+```
+
+**3. SEGMENTATION WITH PAGING**
+```
+Combine benefits of both
+Segments divided into pages
+Best of both worlds
+```
+
+---
+
+**EXAMPLE WITH NUMBERS:**
+
+**SCENARIO:**
+
+Memory Partitions after some time:
+```
+[P1: 100KB] [FREE: 80KB] [P2: 200KB] [FREE: 120KB] [P3: 150KB] [FREE: 250KB] [P4: 50KB] [FREE: 50KB]
+```
+
+**FREE MEMORY:**
+- Hole 1: 80 KB
+- Hole 2: 120 KB
+- Hole 3: 250 KB
+- Hole 4: 50 KB
+- **Total: 500 KB**
+
+**NEW PROCESS REQUEST:**
+- Process P5 needs: 300 KB
+
+**RESULT:**
+```
+Largest hole: 250 KB < 300 KB
+CANNOT ALLOCATE!
+
+External Fragmentation: 500 KB available but unusable
+
+If we COMPACT:
+[P1: 100][P2: 200][P3: 150][P4: 50][FREE: 500]
+Now can allocate P5 (300KB)! ✓
+```
+
+---
+
+**EXTERNAL vs INTERNAL FRAGMENTATION:**
+
+| Feature | External | Internal |
+|---------|----------|----------|
+| **Location** | Between processes | Inside partition |
+| **Cause** | Variable-size allocation | Fixed-size partition |
+| **Problem** | Many small holes | Wasted space in partition |
+| **Example** | [50KB hole][100KB hole] | 80KB process in 100KB partition |
+| **Solution** | Compaction or Paging | Better partition sizing |
+| **Occurs In** | MVT, Segmentation | MFT, Paging |
+
+---
+
+**REAL-WORLD ANALOGY:**
+
+**PARKING LOT:**
+
+**BEFORE (with gaps):**
+```
+[CAR] [EMPTY] [CAR] [EMPTY] [CAR] [EMPTY] [EMPTY]
+```
+Total empty: 4 spaces, but scattered!
+Bus needs 3 consecutive spaces → CAN'T PARK!
+
+**AFTER COMPACTION:**
+```
+[CAR] [CAR] [CAR] [EMPTY] [EMPTY] [EMPTY] [EMPTY]
+```
+Now bus can park in 4 consecutive spaces! ✓
+
+---
+
+**EXAM TIP:**
+
+**If asked "Explain External Fragmentation":**
+
+1. **Define:** Free memory exists but unusable because fragmented
+2. **Show timeline** of process allocation/deallocation creating holes
+3. **Give example** with specific sizes showing request fails even though total free > needed
+4. **Compare** with internal fragmentation
+5. **Mention solutions** (compaction, paging)
+
+**Key formula:**
+```
+Total Free Memory ≥ Process Size
+BUT
+Largest Hole < Process Size
+= EXTERNAL FRAGMENTATION!
+```
+
+**Common mistake:** Don't confuse with internal fragmentation!
+- **Internal** = wasted space INSIDE allocated region
+- **External** = wasted space BETWEEN allocated regions
+
+External Fragmentation is why modern systems use **PAGING** - it completely eliminates this problem!
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question: 'How to solve the fragmentation problem using Paging?',
             type: 'theory',
+            answer: '''Paging is the ULTIMATE solution to fragmentation! It's like a jigsaw puzzle where pieces don't need to be next to each other - just map them correctly and boom, problem solved!
+
+---
+
+**THE FRAGMENTATION PROBLEM:**
+
+**EXTERNAL FRAGMENTATION (without paging):**
+```
+Memory: [100KB FREE] [Process A] [80KB FREE] [Process B] [200KB FREE]
+
+Total Free: 380 KB
+Process C needs: 250 KB
+NO SINGLE HOLE BIG ENOUGH! 
+Process blocked even though 380 > 250
+```
+
+**INTERNAL FRAGMENTATION (with MFT):**
+```
+Partition: 100 KB
+Process: 60 KB
+Wasted: 40 KB (stuck in partition, can't use elsewhere)
+```
+
+**PAGING SOLUTION:** Eliminates BOTH problems!
+
+---
+
+**HOW PAGING SOLVES IT:**
+
+**KEY INSIGHT:** Process doesn't need **CONTIGUOUS** memory!
+
+**STEP 1: DIVIDE EVERYTHING INTO PAGES**
+```
+Logical Memory (Process): Divided into PAGES (fixed size, e.g., 4 KB)
+Physical Memory (RAM): Divided into FRAMES (same size as pages)
+
+Page 0, Page 1, Page 2, ...
+Frame 0, Frame 1, Frame 2, ...
+```
+
+**STEP 2: MAP PAGES TO ANY FRAMES**
+```
+Process pages can go in ANY available frames!
+Don't need to be consecutive!
+
+Page 0 → Frame 5
+Page 1 → Frame 2
+Page 2 → Frame 9
+Page 3 → Frame 1
+
+Non-contiguous in physical memory but APPEARS contiguous to process!
+```
+
+---
+
+**DETAILED EXAMPLE:**
+
+**SCENARIO:**
+
+**Physical Memory:** 16 KB divided into **4 KB frames**
+```
+Frame 0: [4 KB]
+Frame 1: [4 KB]
+Frame 2: [4 KB]
+Frame 3: [4 KB]
+```
+
+**Current State:**
+```
+Frame 0: Process A, Page 0
+Frame 1: FREE
+Frame 2: Process B, Page 0
+Frame 3: FREE
+```
+
+**WITHOUT PAGING (fragmentation):**
+```
+[Process A: 4KB] [FREE: 4KB] [Process B: 4KB] [FREE: 4KB]
+
+Process C needs: 8 KB contiguous
+Largest hole: 4 KB
+CANNOT ALLOCATE! (External Fragmentation)
+```
+
+**WITH PAGING (no fragmentation):**
+```
+Process C (8 KB) = 2 pages (4 KB each)
+
+Page 0 of C → Frame 1 (free)
+Page 1 of C → Frame 3 (free)
+
+Final Memory:
+Frame 0: Process A, Page 0
+Frame 1: Process C, Page 0 ← Non-contiguous!
+Frame 2: Process B, Page 0
+Frame 3: Process C, Page 1 ← Non-contiguous!
+
+ALL FRAMES USED! No wasted space!
+```
+
+**PAGE TABLE FOR PROCESS C:**
+```
+Page Number | Frame Number
+------------|-------------
+     0      |      1
+     1      |      3
+```
+
+**ADDRESS TRANSLATION:**
+```
+Process C accesses address 5120 (in its logical space)
+
+Page Number = 5120 / 4096 = 1
+Offset = 5120 % 4096 = 1024
+
+Physical Address = Frame[1] * 4096 + 1024
+                 = 3 * 4096 + 1024
+                 = 13312
+
+CPU accesses physical address 13312 ✓
+Process C doesn't know it's non-contiguous!
+```
+
+---
+
+**ELIMINATING EXTERNAL FRAGMENTATION:**
+
+**THE PROBLEM (before paging):**
+```
+Memory State:
+[P1: 20KB] [FREE: 10KB] [P2: 30KB] [FREE: 15KB] [P3: 20KB] [FREE: 25KB]
+
+Total Free: 10 + 15 + 25 = 50 KB
+Process P4 needs: 40 KB
+
+Holes too small individually!
+EXTERNAL FRAGMENTATION: 50 KB wasted
+```
+
+**THE SOLUTION (with paging, 4KB pages):**
+```
+Process P4 (40 KB) = 10 pages
+
+Available frames scattered across memory:
+Frames: 5, 7, 11, 13, 14, 18, 20, 22, 25, 28
+
+Allocate P4:
+Page 0 → Frame 5
+Page 1 → Frame 7
+Page 2 → Frame 11
+...
+Page 9 → Frame 28
+
+SUCCESS! No contiguous space needed!
+External Fragmentation = 0!
+```
+
+**WHY IT WORKS:**
+- All free frames can be used
+- No "holes between processes"
+- Every free frame is usable
+- **ANY** free frames can accommodate process
+
+---
+
+**ELIMINATING INTERNAL FRAGMENTATION:**
+
+**THE PROBLEM (with MFT):**
+```
+Partition Size: 100 KB
+Process Size: 63 KB
+Wasted: 37 KB (stuck in partition)
+Internal Fragmentation: 37 KB
+```
+
+**WITH PAGING (4KB pages):**
+```
+Process Size: 63 KB
+Number of Pages: 63 / 4 = 15.75 → Need 16 pages
+
+Used: 15 full pages + 1 partial page
+- 15 pages × 4KB = 60 KB fully used
+- 1 page: 3 KB used, 1 KB wasted
+
+Internal Fragmentation: 1 KB (only!)
+```
+
+**COMPARISON:**
+- **Without Paging:** 37 KB wasted
+- **With Paging:** 1 KB wasted
+- **Reduction:** 97% less waste!
+
+**GENERAL FORMULA:**
+```
+Internal Fragmentation with Paging ≤ Page Size - 1
+
+With 4KB pages: Maximum waste = 3.999 KB per process
+With 1KB pages: Maximum waste = 0.999 KB per process
+
+Average waste = Page Size / 2
+```
+
+---
+
+**COMPLETE SCENARIO:**
+
+**SYSTEM SPECS:**
+- Physical Memory: 64 KB
+- Page/Frame Size: 4 KB
+- Total Frames: 64 / 4 = 16 frames
+
+**INITIAL STATE (without paging):**
+```
+[P1: 12KB] [FREE: 5KB] [P2: 18KB] [FREE: 8KB] [P3: 10KB] [FREE: 11KB]
+
+Total Free: 5 + 8 + 11 = 24 KB
+External Fragmentation: HIGH
+```
+
+**NEW PROCESS:** P4 needs 20 KB
+- Largest hole: 11 KB
+- **REJECTED!** (external fragmentation)
+
+**WITH PAGING (4KB pages):**
+
+**Memory divided into 16 frames:**
+```
+Frame 0: P1, Page 0
+Frame 1: P1, Page 1
+Frame 2: P1, Page 2
+Frame 3: FREE
+Frame 4: FREE
+Frame 5: P2, Page 0
+Frame 6: P2, Page 1
+Frame 7: P2, Page 2
+Frame 8: P2, Page 3
+Frame 9: FREE
+Frame 10: FREE
+Frame 11: P3, Page 0
+Frame 12: P3, Page 1
+Frame 13: P3, Page 2 (partial: 2KB used, 2KB wasted)
+Frame 14: FREE
+Frame 15: FREE
+```
+
+**Free Frames:** 3, 4, 9, 10, 14, 15 = **6 frames** = 24 KB
+
+**Allocate P4 (20 KB = 5 pages):**
+```
+P4 Page 0 → Frame 3
+P4 Page 1 → Frame 4
+P4 Page 2 → Frame 9
+P4 Page 3 → Frame 10
+P4 Page 4 → Frame 14
+
+SUCCESS! P4 allocated!
+```
+
+**AFTER P4:**
+```
+Used: 13 full frames + 1 partial
+Free: 1 frame (Frame 15)
+
+Total Internal Fragmentation:
+- P3: 2 KB (partial page)
+- P4: 0 KB (exact fit: 20/4 = 5)
+Total: 2 KB only!
+
+External Fragmentation: 0!
+```
+
+---
+
+**WHY PAGING IS THE SOLUTION:**
+
+**1. NO EXTERNAL FRAGMENTATION**
+```
+✓ All free frames are usable
+✓ No "holes between processes"
+✓ Can always use memory if frames available
+✓ Memory utilization near 100%
+```
+
+**2. MINIMAL INTERNAL FRAGMENTATION**
+```
+✓ Maximum waste = 1 page per process
+✓ With 4KB pages, average waste = 2KB per process
+✓ Total waste = (Number of processes × Page Size) / 2
+✓ Much better than MFT/MVT
+```
+
+**3. FLEXIBLE ALLOCATION**
+```
+✓ Process can use ANY available frames
+✓ Don't need contiguous memory
+✓ Easy to allocate/deallocate
+✓ Simple first-come-first-served
+```
+
+**4. EASY MEMORY MANAGEMENT**
+```
+✓ Just maintain free frame list
+✓ Allocation = pick any free frame
+✓ Deallocation = mark frame free
+✓ No compaction needed!
+```
+
+---
+
+**COMPARISON:**
+
+| Technique | External Frag | Internal Frag | Complexity |
+|-----------|---------------|---------------|------------|
+| **No Paging** | HIGH | None | Simple |
+| **MFT** | None | HIGH | Simple |
+| **MVT** | HIGH | Low | Medium |
+| **PAGING** | **NONE** | **MINIMAL** | Medium |
+
+**Winner:** PAGING! 🏆
+
+---
+
+**ADDITIONAL BENEFITS:**
+
+**1. SHARED MEMORY**
+```
+Multiple processes can share pages
+Frame 10 mapped by both P1 and P2
+→ Code sharing, library sharing
+```
+
+**2. PROTECTION**
+```
+Each process has own page table
+Can't access other process's frames
+Memory isolation guaranteed
+```
+
+**3. DEMAND PAGING**
+```
+Load pages only when needed
+Don't need entire process in memory
+Enables virtual memory!
+```
+
+---
+
+**EXAM TIP:**
+
+**Question:** "How does paging solve fragmentation?"
+
+**ANSWER STRUCTURE:**
+1. **State the problem:** External + Internal fragmentation
+2. **Explain paging concept:** Fixed-size pages/frames
+3. **Show example:** Before (fragmentation) vs After (paging)
+4. **External fragmentation:** ANY free frame usable → 0 external frag
+5. **Internal fragmentation:** At most 1 page wasted → minimal
+6. **Calculate:** Show specific numbers
+7. **Conclusion:** Paging eliminates external, minimizes internal
+
+**Key points:**
+- **Non-contiguous allocation** → no external fragmentation
+- **Fixed-size pages** → only last page can have internal frag
+- **Maximum waste** = Page Size - 1
+- **Average waste** = Page Size / 2
+
+Paging is why modern systems don't suffer from fragmentation problems!
+''',
+            hasDiagram: false,
           ),
-          PYQ(question: 'TLB.', type: 'theory'),
+          PYQ(
+            question: 'TLB.',
+            type: 'theory',
+            answer: '''TLB = Translation Lookaside Buffer. It's basically a speed hack for paging - a tiny super-fast cache that remembers recent page-to-frame translations so you don't keep looking up the same thing in the slow page table!
+
+---
+
+**WHAT IS TLB?**
+
+**TLB (Translation Lookaside Buffer)** = Small, fast **hardware cache** that stores **recent page-to-frame** translations.
+
+**THE PROBLEM IT SOLVES:**
+
+Without TLB:
+```
+1. CPU wants address 5000
+2. Look up page table (IN MEMORY - SLOW!)
+3. Get frame number
+4. Access actual data (IN MEMORY - SLOW!)
+
+Result: 2 MEMORY ACCESSES for every address!
+SLOW! 💀
+```
+
+With TLB:
+```
+1. CPU wants address 5000
+2. Check TLB (IN CPU - SUPER FAST!)
+3. TLB HIT! Get frame instantly
+4. Access actual data (IN MEMORY)
+
+Result: Only 1 extra TLB lookup (nanoseconds!)
+FAST! ⚡
+```
+
+---
+
+**HOW TLB WORKS:**
+
+**TLB STRUCTURE:**
+```
+TLB (inside CPU)
+┌──────────┬──────────┬────────┐
+│ Page #   │ Frame #  │ Valid  │
+├──────────┼──────────┼────────┤
+│    5     │    12    │   1    │ ← Recent translation
+│    2     │    7     │   1    │
+│    9     │    3     │   1    │
+│    1     │    15    │   1    │
+│   ...    │   ...    │  ...   │
+└──────────┴──────────┴────────┘
+
+Typical Size: 32-1024 entries (SMALL!)
+Access Time: 0.5-2 nanoseconds (FAST!)
+```
+
+**ADDRESS TRANSLATION WITH TLB:**
+
+```
+Step 1: CPU generates logical address
+        Example: 5120
+
+Step 2: Split into page number + offset
+        Page = 5120 / 4096 = 1
+        Offset = 5120 % 4096 = 1024
+
+Step 3: Check TLB for page 1
+        
+        TLB HIT (page 1 found!)
+        ├─→ Get frame directly: Frame 15
+        └─→ Skip page table lookup!
+        
+        OR
+        
+        TLB MISS (page 1 not in TLB)
+        ├─→ Look up page table (SLOW)
+        ├─→ Get frame: Frame 15
+        └─→ Add to TLB for next time
+
+Step 4: Calculate physical address
+        Physical = Frame × Page Size + Offset
+                 = 15 × 4096 + 1024
+                 = 62464
+
+Step 5: Access memory at 62464
+```
+
+---
+
+**COMPLETE EXAMPLE:**
+
+**SYSTEM SETUP:**
+- Page Size: 4 KB
+- TLB Size: 4 entries
+- Main Memory: 64 KB (16 frames)
+
+**PAGE TABLE (in memory):**
+```
+Page | Frame
+-----|------
+  0  |   5
+  1  |   2
+  2  |   9
+  3  |   1
+  4  |   7
+  5  |  12
+```
+
+**INITIAL TLB (empty):**
+```
+TLB: [empty] [empty] [empty] [empty]
+```
+
+**ACCESS SEQUENCE:**
+
+**Request 1:** Access address 4096 (Page 1)
+```
+Page = 4096 / 4096 = 1
+
+Check TLB: Page 1? ✗ TLB MISS
+Go to Page Table: Page 1 → Frame 2
+Update TLB: Add (Page 1, Frame 2)
+
+TLB: [(1,2)] [empty] [empty] [empty]
+
+Physical Address: 2 × 4096 + 0 = 8192
+Memory Accesses: 2 (page table + data)
+```
+
+**Request 2:** Access address 20480 (Page 5)
+```
+Page = 20480 / 4096 = 5
+
+Check TLB: Page 5? ✗ TLB MISS
+Go to Page Table: Page 5 → Frame 12
+Update TLB: Add (Page 5, Frame 12)
+
+TLB: [(1,2)] [(5,12)] [empty] [empty]
+
+Physical Address: 12 × 4096 + 0 = 49152
+Memory Accesses: 2 (page table + data)
+```
+
+**Request 3:** Access address 4100 (Page 1)
+```
+Page = 4100 / 4096 = 1
+
+Check TLB: Page 1? ✓ TLB HIT!
+Get Frame: 2 (directly from TLB)
+
+TLB: [(1,2)] [(5,12)] [empty] [empty]
+
+Physical Address: 2 × 4096 + 4 = 8196
+Memory Accesses: 1 (just data, no page table!)
+```
+
+**Request 4:** Access address 8192 (Page 2)
+```
+Page = 8192 / 4096 = 2
+
+Check TLB: Page 2? ✗ TLB MISS
+Go to Page Table: Page 2 → Frame 9
+Update TLB: Add (Page 2, Frame 9)
+
+TLB: [(1,2)] [(5,12)] [(2,9)] [empty]
+
+Physical Address: 9 × 4096 + 0 = 36864
+Memory Accesses: 2
+```
+
+**Request 5:** Access address 4200 (Page 1 again)
+```
+Page = 4200 / 4096 = 1
+
+Check TLB: Page 1? ✓ TLB HIT!
+Get Frame: 2
+
+TLB: [(1,2)] [(5,12)] [(2,9)] [empty]
+
+Physical Address: 2 × 4096 + 104 = 8296
+Memory Accesses: 1 (FAST!)
+```
+
+---
+
+**TLB PERFORMANCE:**
+
+**KEY METRICS:**
+
+**1. HIT RATIO**
+```
+Hit Ratio = TLB Hits / Total Accesses
+
+Example from above:
+Total Accesses: 5
+TLB Hits: 2 (requests 3 and 5)
+Hit Ratio = 2/5 = 40%
+```
+
+**2. EFFECTIVE ACCESS TIME (EAT)**
+```
+EAT = (Hit Ratio × Hit Time) + (Miss Ratio × Miss Time)
+
+Where:
+- Hit Time = TLB time + Memory time
+- Miss Time = TLB time + Page Table time + Memory time
+
+Example:
+TLB time: 2 ns
+Memory time: 100 ns
+Hit Ratio: 80%
+
+Hit Time = 2 + 100 = 102 ns
+Miss Time = 2 + 100 + 100 = 202 ns
+
+EAT = (0.8 × 102) + (0.2 × 202)
+    = 81.6 + 40.4
+    = 122 ns
+
+Without TLB: 200 ns (always 2 memory accesses)
+Speedup: 200/122 = 1.64× faster!
+```
+
+---
+
+**REALISTIC PERFORMANCE:**
+
+**TYPICAL VALUES:**
+```
+TLB Hit Ratio: 90-99% (locality of reference!)
+TLB Access Time: 1-2 ns
+Memory Access Time: 100 ns
+Page Table Access Time: 100 ns
+```
+
+**CALCULATION:**
+
+**With 98% Hit Ratio:**
+```
+Hit Time = 1 + 100 = 101 ns
+Miss Time = 1 + 100 + 100 = 201 ns
+
+EAT = (0.98 × 101) + (0.02 × 201)
+    = 98.98 + 4.02
+    = 103 ns
+
+Without TLB: 200 ns
+Improvement: (200-103)/200 = 48.5% faster!
+```
+
+---
+
+**WHY TLB HAS HIGH HIT RATIO:**
+
+**LOCALITY OF REFERENCE:**
+
+**1. TEMPORAL LOCALITY**
+```
+Recently accessed pages likely accessed again soon
+
+Example:
+for (int i = 0; i < 1000; i++) {
+    array[i] = i;  // Same page accessed repeatedly!
+}
+
+First access: TLB miss
+Next 255 accesses: TLB HIT (same 4KB page!)
+```
+
+**2. SPATIAL LOCALITY**
+```
+Nearby addresses accessed together
+
+Example:
+int arr[1024];  // 4KB = 1 page
+for (int i = 0; i < 1024; i++) {
+    sum += arr[i];  // All in one page!
+}
+
+1 TLB miss, 1023 TLB hits!
+Hit Ratio: 99.9%!
+```
+
+---
+
+**TLB REPLACEMENT POLICIES:**
+
+When TLB full and new entry needed:
+
+**1. LRU (Least Recently Used)**
+```
+Replace entry not used for longest time
+Most common in hardware
+```
+
+**2. FIFO (First In First Out)**
+```
+Replace oldest entry
+Simple but less effective
+```
+
+**3. RANDOM**
+```
+Replace random entry
+Simplest hardware implementation
+```
+
+**EXAMPLE (LRU, TLB size = 4):**
+```
+Current TLB: [(Page 1, Frame 5)] [(Page 3, Frame 7)] [(Page 2, Frame 9)] [(Page 5, Frame 12)]
+                  oldest                                                      newest
+
+New access: Page 8
+TLB Full → Replace Page 1 (LRU)
+
+New TLB: [(Page 8, Frame 4)] [(Page 3, Frame 7)] [(Page 2, Frame 9)] [(Page 5, Frame 12)]
+```
+
+---
+
+**TLB IN CONTEXT SWITCHING:**
+
+**PROBLEM:** Each process has different page table!
+
+**SOLUTION 1: FLUSH TLB**
+```
+On context switch:
+1. Save old process state
+2. FLUSH TLB (mark all invalid)
+3. Load new process state
+4. TLB refills gradually
+
+Downside: Many TLB misses after switch!
+```
+
+**SOLUTION 2: TAGGED TLB (ASID)**
+```
+Add Process ID to each TLB entry
+
+TLB Entry:
+┌─────┬──────┬───────┬───────┐
+│ PID │ Page │ Frame │ Valid │
+└─────┴──────┴───────┴───────┘
+
+Multiple processes can share TLB!
+Check: (PID + Page) both match
+
+Example:
+[(PID 1, Page 5, Frame 12)]
+[(PID 2, Page 5, Frame 8)]  ← Different processes, same page #
+
+No flush needed on context switch!
+Better performance!
+```
+
+---
+
+**ADVANTAGES OF TLB:**
+
+✅ **SPEED**
+- Nanoseconds vs microseconds
+- 100-1000× faster than page table
+
+✅ **REDUCED MEMORY ACCESS**
+- 1 access instead of 2
+- Saves memory bandwidth
+
+✅ **HIGH HIT RATIO**
+- Typically 90-99%
+- Locality of reference helps
+
+✅ **TRANSPARENT**
+- Hardware managed
+- OS/programmer doesn't need to worry
+
+---
+
+**DISADVANTAGES:**
+
+❌ **LIMITED SIZE**
+- Only 32-1024 entries
+- Can't cache all pages
+
+❌ **CONTEXT SWITCH OVERHEAD**
+- Must flush or tag TLB
+- Performance hit on switch
+
+❌ **HARDWARE COST**
+- Expensive fast memory
+- Located on CPU die
+
+---
+
+**EXAM TIP:**
+
+**Common question types:**
+
+**1. Calculate EAT:**
+```
+Given: Hit ratio, TLB time, Memory time
+Formula: EAT = (Hit% × HitTime) + (Miss% × MissTime)
+```
+
+**2. Explain TLB operation:**
+```
+- Purpose (speed up translation)
+- Structure (page-frame cache)
+- Process (check TLB → hit/miss → update)
+```
+
+**3. With/without TLB comparison:**
+```
+Without: Always 2 memory accesses
+With: 1-2 accesses depending on hit/miss
+Calculate speedup
+```
+
+**KEY POINTS:**
+- **Hardware cache** for page translations
+- **Small but fast** (32-1024 entries)
+- **High hit ratio** (90-99%) due to locality
+- **Reduces** effective memory access time
+- **Transparent** to software
+
+TLB is the secret sauce that makes paging FAST enough for real-world use!
+''',
+            hasDiagram: false,
+          ),
         ],
       ),
       Topic(
