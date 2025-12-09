@@ -91,10 +91,7 @@ class _HomeScreenState extends State<HomeScreen>
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          MangaTheme.mangaRed,
-                          MangaTheme.accentOrange,
-                        ],
+                        colors: [MangaTheme.mangaRed, MangaTheme.accentOrange],
                       ),
                     ),
                   ),
@@ -226,10 +223,7 @@ class _HomeScreenState extends State<HomeScreen>
                         children: [
                           Row(
                             children: [
-                              const Text(
-                                '💬',
-                                style: TextStyle(fontSize: 32),
-                              ),
+                              const Text('💬', style: TextStyle(fontSize: 32)),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
@@ -256,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen>
                         ],
                       ),
                     ),
-                    
+
                     // 📊 Big Progress Bar
                     MangaPanel(
                       child: Padding(
@@ -397,10 +391,7 @@ class _HomeScreenState extends State<HomeScreen>
       decoration: BoxDecoration(
         color: MangaTheme.paperWhite.withOpacity(0.2),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: MangaTheme.paperWhite,
-          width: 2,
-        ),
+        border: Border.all(color: MangaTheme.paperWhite, width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -38,17 +38,19 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 600),
     );
 
-    _burstAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _burstController, curve: Curves.easeOut),
-    );
+    _burstAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _burstController, curve: Curves.easeOut));
 
     _bounceAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _bounceController, curve: Curves.elasticOut),
     );
 
-    _textAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeIn),
-    );
+    _textAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _textController, curve: Curves.easeIn));
 
     _startAnimation();
   }
@@ -89,7 +91,11 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       backgroundColor: MangaTheme.paperWhite,
       body: AnimatedBuilder(
-        animation: Listenable.merge([_burstController, _bounceController, _textController]),
+        animation: Listenable.merge([
+          _burstController,
+          _bounceController,
+          _textController,
+        ]),
         builder: (context, child) {
           return Stack(
             children: [
@@ -97,11 +103,13 @@ class _SplashScreenState extends State<SplashScreen>
               Positioned.fill(
                 child: CustomPaint(
                   painter: ActionBurstPainter(
-                    color: MangaTheme.mangaRed.withOpacity(_burstAnimation.value * 0.2),
+                    color: MangaTheme.mangaRed.withOpacity(
+                      _burstAnimation.value * 0.2,
+                    ),
                   ),
                 ),
               ),
-              
+
               // ⚪ Halftone dots everywhere
               Positioned.fill(
                 child: CustomPaint(
@@ -182,9 +190,9 @@ class _SplashScreenState extends State<SplashScreen>
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 50),
-                    
+
                     // 📝 Epic title with fade
                     Opacity(
                       opacity: _textAnimation.value,
@@ -222,9 +230,9 @@ class _SplashScreenState extends State<SplashScreen>
                                 ),
                               ),
                             ),
-                            
+
                             const SizedBox(height: 16),
-                            
+
                             const Text(
                               'YOUR EXAM SURVIVAL GUIDE',
                               style: TextStyle(
@@ -234,9 +242,9 @@ class _SplashScreenState extends State<SplashScreen>
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
-                            
+
                             const SizedBox(height: 40),
-                            
+
                             // 🔥 Loading badge
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -261,10 +269,7 @@ class _SplashScreenState extends State<SplashScreen>
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    '⚡',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
+                                  Text('⚡', style: TextStyle(fontSize: 18)),
                                   SizedBox(width: 8),
                                   Text(
                                     'LOADING POWER MODE',
@@ -276,10 +281,7 @@ class _SplashScreenState extends State<SplashScreen>
                                     ),
                                   ),
                                   SizedBox(width: 8),
-                                  Text(
-                                    '⚡',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
+                                  Text('⚡', style: TextStyle(fontSize: 18)),
                                 ],
                               ),
                             ),
@@ -290,7 +292,7 @@ class _SplashScreenState extends State<SplashScreen>
                   ],
                 ),
               ),
-              
+
               // 💬 Funny roast at bottom
               Positioned(
                 bottom: 40,

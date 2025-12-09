@@ -2856,12 +2856,14 @@ For FULL detailed explanation with code and all 3 solutions, see Module 3.2, Que
         id: '4.1',
         title:
             '4.1 — Memory Management Requirements, Partitioning, Allocation, Paging, Segmentation, TLB',
-        content: '''Welcome to MEMORY MANAGEMENT - where we Tetris your programs into RAM!''',
+        content:
+            '''Welcome to MEMORY MANAGEMENT - where we Tetris your programs into RAM!''',
         pyqs: [
           PYQ(
             question: 'Write in detail about Memory Management Requirements.',
             type: 'theory',
-            answer: '''Memory management is literally the OS playing Tetris with your programs in RAM. But unlike Tetris, if the OS fails, your computer doesn't just give you a game over - it CRASHES. No pressure.
+            answer:
+                '''Memory management is literally the OS playing Tetris with your programs in RAM. But unlike Tetris, if the OS fails, your computer doesn't just give you a game over - it CRASHES. No pressure.
 
 ---
 
