@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/manga_theme.dart';
+import 'manga_effects.dart';
 
 class MangaPanel extends StatelessWidget {
   final Widget child;
@@ -19,12 +20,41 @@ class MangaPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        decoration: isCompleted
-            ? MangaTheme.completedPanelDecoration()
-            : MangaTheme.mangaPanelDecoration(hasAction: hasAction),
-        child: child,
+      child: Stack(
+        children: [
+          // Base container with decoration
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            decoration: isCompleted
+                ? MangaTheme.completedPanelDecoration()
+                : MangaTheme.mangaPanelDecoration(hasAction: hasAction),
+            child: child,
+          ),
+          // Halftone effect overlay for texture
+          if (isCompleted)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(
+                  painter: HalftonePainter(
+                    color: MangaTheme.highlightYellow.withOpacity(0.1),
+                    density: 12,
+                  ),
+                ),
+              ),
+            ),
+          // Speed lines for action panels
+          if (hasAction && !isCompleted)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(
+                  painter: SpeedEffectPainter(
+                    color: MangaTheme.mangaRed.withOpacity(0.08),
+                    isHorizontal: true,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -195,39 +225,89 @@ class MangaProgressBar extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.headlineSmall),
+        Text(
+          label.toUpperCase(),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                letterSpacing: 1.5,
+                shadows: [
+                  Shadow(
+                    color: MangaTheme.primaryBlack.withOpacity(0.3),
+                    offset: const Offset(2, 2),
+                    blurRadius: 0,
+                  ),
+                ],
+              ),
+        ),
         const SizedBox(height: 8),
         Stack(
           children: [
+            // Background with texture
             Container(
-              height: 30,
+              height: 36,
               decoration: BoxDecoration(
                 color: MangaTheme.panelGray,
-                border: Border.all(color: MangaTheme.primaryBlack, width: 3),
-                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: MangaTheme.primaryBlack, width: 4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: CustomPaint(
+                  painter: ScreentonePainter(
+                    color: MangaTheme.primaryBlack.withOpacity(0.05),
+                    angle: 45,
+                  ),
+                ),
               ),
             ),
+            // Progress fill
             AnimatedContainer(
               duration: const Duration(milliseconds: 500),
               curve: Curves.easeOut,
-              height: 30,
+              height: 36,
               width: MediaQuery.of(context).size.width * progress,
               decoration: BoxDecoration(
                 color: MangaTheme.mangaRed,
-                border: Border.all(color: MangaTheme.inkBlack, width: 3),
-                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: MangaTheme.inkBlack, width: 4),
+                borderRadius: BorderRadius.circular(2),
+                boxShadow: [
+                  BoxShadow(
+                    color: MangaTheme.mangaRed.withOpacity(0.5),
+                    offset: const Offset(0, 0),
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: CustomPaint(
+                  painter: SpeedEffectPainter(
+                    color: MangaTheme.paperWhite.withOpacity(0.2),
+                    isHorizontal: true,
+                  ),
+                ),
               ),
             ),
             Container(
-              height: 30,
+              height: 36,
               alignment: Alignment.center,
               child: Text(
                 '${(progress * 100).toStringAsFixed(0)}%',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 18,
+                  letterSpacing: 1,
                   color: progress > 0.3
                       ? MangaTheme.paperWhite
                       : MangaTheme.primaryBlack,
+                  shadows: [
+                    Shadow(
+                      color: progress > 0.3
+                          ? MangaTheme.inkBlack
+                          : MangaTheme.paperWhite,
+                      offset: const Offset(2, 2),
+                      blurRadius: 0,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -250,27 +330,51 @@ class MangaBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: color,
-        border: Border.all(color: MangaTheme.inkBlack, width: 2),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: MangaTheme.inkBlack.withOpacity(0.3),
-            offset: const Offset(2, 2),
-            blurRadius: 0,
+    return Stack(
+      children: [
+        // Shadow layer
+        Positioned(
+          left: 3,
+          top: 3,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: MangaTheme.inkBlack,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              text,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.transparent,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
           ),
-        ],
-      ),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: MangaTheme.paperWhite,
-          fontWeight: FontWeight.bold,
         ),
-      ),
+        // Main badge
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: color,
+            border: Border.all(color: MangaTheme.inkBlack, width: 3),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: MangaTheme.paperWhite,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(
+                      color: MangaTheme.inkBlack,
+                      offset: const Offset(1, 1),
+                      blurRadius: 0,
+                    ),
+                  ],
+                ),
+          ),
+        ),
+      ],
     );
   }
 }

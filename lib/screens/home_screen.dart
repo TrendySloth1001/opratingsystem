@@ -82,19 +82,16 @@ class _HomeScreenState extends State<HomeScreen>
             pinned: true,
             backgroundColor: MangaTheme.inkBlack,
             flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  color: MangaTheme.inkBlack,
-                  image: DecorationImage(
-                    image: const AssetImage('assets/speedlines.png'),
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      MangaTheme.inkBlack.withOpacity(0.7),
-                      BlendMode.darken,
-                    ),
+              background: Stack(
+                children: [
+                  Container(
+                    color: MangaTheme.inkBlack,
                   ),
-                ),
-                child: Center(
+                  CustomPaint(
+                    painter: _MangaSpeedlinesPainter(),
+                    child: Container(),
+                  ),
+                  Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -124,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ],
                   ),
                 ),
+                ],
               ),
             ),
           ),
@@ -265,21 +263,60 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               Row(
                 children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: MangaTheme.mangaRed,
-                      border: Border.all(color: MangaTheme.inkBlack, width: 3),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${module.id}',
-                        style: Theme.of(context).textTheme.displaySmall
-                            ?.copyWith(color: MangaTheme.paperWhite),
+                  Stack(
+                    children: [
+                      // Shadow
+                      Positioned(
+                        left: 4,
+                        top: 4,
+                        child: Container(
+                          width: 60,
+                          height: 60,
+                          decoration: const BoxDecoration(
+                            color: MangaTheme.inkBlack,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
                       ),
-                    ),
+                      // Main circle
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: MangaTheme.mangaRed,
+                          border: Border.all(
+                            color: MangaTheme.inkBlack,
+                            width: 4,
+                          ),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: MangaTheme.mangaRed.withOpacity(0.5),
+                              blurRadius: 12,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${module.id}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .displaySmall
+                                ?.copyWith(
+                                  color: MangaTheme.paperWhite,
+                                  shadows: [
+                                    const Shadow(
+                                      color: MangaTheme.inkBlack,
+                                      offset: Offset(2, 2),
+                                      blurRadius: 0,
+                                    ),
+                                  ],
+                                ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -338,4 +375,56 @@ class _HomeScreenState extends State<HomeScreen>
       ),
     );
   }
+}
+
+// Custom painter for manga-style speedlines
+class _MangaSpeedlinesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = MangaTheme.paperWhite.withOpacity(0.08)
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    final boldPaint = Paint()
+      ..color = MangaTheme.mangaRed.withOpacity(0.15)
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke;
+
+    // Diagonal speedlines from top corners
+    for (int i = 0; i < 20; i++) {
+      final offsetY = i * (size.height / 20);
+      
+      // Left side speedlines
+      canvas.drawLine(
+        Offset(0, offsetY),
+        Offset(size.width * 0.4, size.height * 0.7 + offsetY * 0.3),
+        i % 3 == 0 ? boldPaint : paint,
+      );
+      
+      // Right side speedlines
+      canvas.drawLine(
+        Offset(size.width, offsetY),
+        Offset(size.width * 0.6, size.height * 0.7 + offsetY * 0.3),
+        i % 3 == 0 ? boldPaint : paint,
+      );
+    }
+
+    // Action lines
+    final actionPaint = Paint()
+      ..color = MangaTheme.highlightYellow.withOpacity(0.1)
+      ..strokeWidth = 4
+      ..style = PaintingStyle.stroke;
+
+    for (int i = 0; i < 5; i++) {
+      canvas.drawLine(
+        Offset(size.width * 0.2 + i * 20, 0),
+        Offset(size.width * 0.8 + i * 20, size.height),
+        actionPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
