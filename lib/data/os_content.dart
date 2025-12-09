@@ -1613,13 +1613,15 @@ So yeah, hardware solutions are the OG, but we usually wrap them in nicer abstra
         id: '3.3',
         title:
             '3.3 — Deadlock: Conditions, RAG, Prevention, Avoidance, Detection, Recovery',
-        content: '''The BOSS LEVEL of synchronization problems. Let's destroy it.''',
+        content:
+            '''The BOSS LEVEL of synchronization problems. Let's destroy it.''',
         pyqs: [
           PYQ(
             question:
                 'What is a Deadlock? Explain the necessary conditions for a deadlock to take place.',
             type: 'theory',
-            answer: '''Deadlock is when everyone is stuck waiting for everyone else and NOBODY can move forward. It's the ultimate "you first" "no you first" situation but with computers and way less polite.
+            answer:
+                '''Deadlock is when everyone is stuck waiting for everyone else and NOBODY can move forward. It's the ultimate "you first" "no you first" situation but with computers and way less polite.
 
 **DEADLOCK DEFINITION:**
 A set of processes is in deadlock when EVERY process is waiting for a resource held by ANOTHER process in the set. Nobody can proceed. Everyone's frozen. System is STUCK.
@@ -1761,7 +1763,8 @@ Now you know what deadlock is and how to spot it. Next questions will cover how 
             question:
                 'Explain how Resource Allocation Graph (RAG) and Wait For Graph (WFG) are used to determine presence of a deadlock.',
             type: 'theory',
-            answer: '''These are the VISUAL tools for detecting deadlock. If you can draw these graphs, you can SEE deadlock with your own eyes. Let's learn how.
+            answer:
+                '''These are the VISUAL tools for detecting deadlock. If you can draw these graphs, you can SEE deadlock with your own eyes. Let's learn how.
 
 ---
 
@@ -1992,7 +1995,8 @@ Now you can VISUALIZE deadlock! Way better than just theorizing about it. Master
           PYQ(
             question: 'Explain Deadlock Avoidance algorithms with example.',
             type: 'theory',
-            answer: '''Deadlock AVOIDANCE is the "look before you leap" approach. Before giving resources, check if system will enter an UNSAFE state. The king of this strategy? BANKER'S ALGORITHM.
+            answer:
+                '''Deadlock AVOIDANCE is the "look before you leap" approach. Before giving resources, check if system will enter an UNSAFE state. The king of this strategy? BANKER'S ALGORITHM.
 
 ---
 
@@ -2266,7 +2270,8 @@ This is a GUARANTEED question type in exams. Master the algorithm and you're gol
           PYQ(
             question: 'Explain Deadlock Prevention techniques.',
             type: 'theory',
-            answer: '''Deadlock PREVENTION is the "make it impossible" approach. Remember the four Coffman conditions? Break even ONE of them and deadlock CAN'T happen. Let's see how.
+            answer:
+                '''Deadlock PREVENTION is the "make it impossible" approach. Remember the four Coffman conditions? Break even ONE of them and deadlock CAN'T happen. Let's see how.
 
 ---
 
@@ -2537,7 +2542,8 @@ Now you know ALL the ways to prevent deadlock before it happens!
             question:
                 'Given the following snapshot, determine Need Matrix and Safe Sequence. Check if system is in safe state.',
             type: 'numerical',
-            answer: '''This is the CLASSIC Banker's Algorithm numerical that shows up in EVERY exam. Let me show you the systematic approach to solve ANY variant of this question.
+            answer:
+                '''This is the CLASSIC Banker's Algorithm numerical that shows up in EVERY exam. Let me show you the systematic approach to solve ANY variant of this question.
 
 ---
 
@@ -2818,7 +2824,8 @@ This question is 100% coming in your exam. Practice 3-4 variations and you'll ac
           PYQ(
             question: 'Explain the Dining Philosophers Problem.',
             type: 'theory',
-            answer: '''Already covered in detail in Module 3.2! Check question 3 there for the COMPLETE solution with semaphores.
+            answer:
+                '''Already covered in detail in Module 3.2! Check question 3 there for the COMPLETE solution with semaphores.
 
 **QUICK RECAP:**
 
@@ -2849,81 +2856,285 @@ For FULL detailed explanation with code and all 3 solutions, see Module 3.2, Que
         id: '4.1',
         title:
             '4.1 — Memory Management Requirements, Partitioning, Allocation, Paging, Segmentation, TLB',
-        content: '''
-**Memory Management Requirements:**
-1. Relocation
-2. Protection
-3. Sharing
-4. Logical Organization
-5. Physical Organization
-
-**Memory Partitioning:**
-
-**Fixed Partitioning (MFT):**
-- Memory divided into fixed-size partitions
-- Internal fragmentation
-- Simple implementation
-- Limit on process size
-
-**Dynamic Partitioning (MVT):**
-- Variable-size partitions
-- External fragmentation
-- Compaction needed
-- Flexible
-
-**Memory Allocation Strategies:**
-
-**1. First Fit:**
-- Allocate first hole big enough
-- Fast
-- May leave small unusable holes at beginning
-
-**2. Best Fit:**
-- Allocate smallest hole big enough
-- Slowest
-- Produces smallest leftover holes
-- Worst fragmentation
-
-**3. Worst Fit:**
-- Allocate largest hole
-- Produces largest leftover holes
-- Better for large requests
-
-**Fragmentation:**
-- External: Free memory scattered
-- Internal: Allocated memory larger than needed
-
-**Paging:**
-- Physical memory: frames (fixed size)
-- Logical memory: pages (same size)
-- Page table maps pages to frames
-- No external fragmentation
-- Internal fragmentation (last page)
-
-**Page Table Entry contains:**
-- Frame number
-- Valid/invalid bit
-- Protection bits
-- Reference bit
-- Modified (dirty) bit
-
-**Segmentation:**
-- Logical view: segments (code, data, stack)
-- Variable size
-- Segment table (base, limit)
-- External fragmentation possible
-- Better protection and sharing
-
-**Translation Lookaside Buffer (TLB):**
-- Cache for page table entries
-- Fast address translation
-- Hit ratio critical for performance
-- Associative memory
-''',
+        content: '''Welcome to MEMORY MANAGEMENT - where we Tetris your programs into RAM!''',
         pyqs: [
           PYQ(
             question: 'Write in detail about Memory Management Requirements.',
             type: 'theory',
+            answer: '''Memory management is literally the OS playing Tetris with your programs in RAM. But unlike Tetris, if the OS fails, your computer doesn't just give you a game over - it CRASHES. No pressure.
+
+---
+
+**THE 5 COMMANDMENTS OF MEMORY MANAGEMENT:**
+
+---
+
+**1. RELOCATION**
+
+**THE PROBLEM:**
+You write code assuming it starts at address 0, but when it loads into RAM, surprise! It's at address 50000. Now all your addresses are WRONG.
+
+**WHAT IT MEANS:**
+Process should be able to load into ANY part of memory, not just one specific spot.
+
+**WHY IT'S NEEDED:**
+- Multiple processes running simultaneously
+- Can't guarantee where process will be loaded
+- Process might be moved (swapped out and back in to different location)
+
+**HOW OS HANDLES IT:**
+```
+YOUR CODE thinks:
+Load from address 100
+
+OS TRANSLATES:
+"100" is relative (logical address)
+Process starts at physical address 50000
+Actual address = 50000 + 100 = 50100
+```
+
+**REAL WORLD ANALOGY:**
+Like apartment buildings. You say "go to apartment 3B" without caring if building is on Main Street or Park Avenue. Building number (base address) + apartment number (offset) = actual location.
+
+**WITHOUT RELOCATION:**
+Every program would need to know EXACTLY where in RAM it will be. Imagine if every app on your phone needed a different version for different amounts of RAM. Chaos.
+
+---
+
+**2. PROTECTION**
+
+**THE PROBLEM:**
+Process A trying to read/write Process B's memory = BAD. Very bad. Catastrophically bad.
+
+**WHAT IT MEANS:**
+One process shouldn't be able to access another process's memory (accidentally OR intentionally).
+
+**WHY IT'S NEEDED:**
+- **SECURITY:** Malware can't steal passwords from browser
+- **STABILITY:** Bug in one app can't crash others
+- **PRIVACY:** Processes can't spy on each other
+
+**HOW OS HANDLES IT:**
+```
+ATTEMPT 1: Process A tries to access its own memory
+OS: "Yeah sure, go ahead" ✓
+
+ATTEMPT 2: Process A tries to access Process B's memory
+OS: "SEGMENTATION FAULT! *BONK*" ✗
+Program terminated.
+```
+
+**MECHANISMS:**
+- **Base and Limit registers:** Define valid range
+- **Page tables:** Each process has own mapping
+- **Protection bits:** Read/Write/Execute permissions
+
+**REAL WORLD EXAMPLE:**
+```
+// Process A
+int password[] = "secretPass123";
+
+// Process B trying to be sneaky
+int* stolen = (int*)0x8000;  // Where Process A's memory is
+printf("%s", stolen);  // SEGFAULT! OS says NO!
+```
+
+**WITHOUT PROTECTION:**
+Every program could crash every other program. Or worse, STEAL DATA. Your computer would be a lawless wasteland.
+
+---
+
+**3. SHARING**
+
+**WAIT, DIDN'T YOU JUST SAY NO SHARING?**
+
+Yeah, but CONTROLLED sharing is different. Sometimes processes NEED to share.
+
+**WHAT IT MEANS:**
+Multiple processes should be able to access the SAME memory when appropriate (with permission).
+
+**WHY IT'S NEEDED:**
+- **EFFICIENCY:** Don't load same library 50 times
+- **COMMUNICATION:** IPC (Inter-Process Communication)
+- **SAVE RAM:** One copy of code shared by all
+
+**REAL EXAMPLES:**
+
+**Example 1: Shared Libraries**
+```
+100 processes all use printf()
+
+WITHOUT SHARING:
+100 copies of printf code in RAM
+Waste: 100 * 10KB = 1MB wasted
+
+WITH SHARING:
+1 copy of printf code, all processes point to it
+Waste: 0 KB
+```
+
+**Example 2: Shared Memory IPC**
+```
+Producer Process:
+Write data to shared memory region
+
+Consumer Process:
+Read data from SAME shared memory region
+
+Both accessing same physical memory!
+```
+
+**HOW IT WORKS:**
+- **Read-only sharing:** Library code (safe)
+- **Read-write sharing:** Shared memory with synchronization
+- **Copy-on-write:** Share until someone writes, then make copy
+
+**WITHOUT SHARING:**
+Every browser tab would load its own copy of JavaScript engine. Your 8GB RAM would be gone after 3 tabs.
+
+---
+
+**4. LOGICAL ORGANIZATION**
+
+**THE PROBLEM:**
+Programmers think in terms of MODULES (code, data, stack), not "bytes 0-4000 is code, 4001-8000 is data."
+
+**WHAT IT MEANS:**
+Memory should be organized the way PROGRAMMERS think, not the way hardware is laid out.
+
+**WHY IT'S NEEDED:**
+- **MODULARITY:** Code organized into logical segments
+- **PROTECTION:** Different permissions for different segments
+- **SHARING:** Share code segment, keep data private
+
+**THE DISCONNECT:**
+
+**HOW YOU WRITE CODE:**
+```
+Function: calculateTotal()
+Variables: int sum, int count
+Stack: temporary values
+```
+
+**HOW MEMORY SEES IT:**
+```
+Just a bunch of bytes:
+0x1000: 55 48 89 E5 48 83 EC 10  // Machine code
+0x1008: C7 45 FC 00 00 00 00     // Who knows?
+```
+
+**SOLUTION: SEGMENTATION**
+```
+CODE SEGMENT:    0-2000     (Read + Execute only)
+DATA SEGMENT:    2001-4000  (Read + Write only)
+STACK SEGMENT:   4001-6000  (Read + Write only)
+```
+
+Now OS can:
+- Protect code from being modified
+- Share code between processes
+- Give each process its own data and stack
+
+**WITHOUT LOGICAL ORGANIZATION:**
+Everything is just bytes. No structure. No protection. No sharing. Programmer has to manually manage what goes where. Back to 1960s computing.
+
+---
+
+**5. PHYSICAL ORGANIZATION**
+
+**THE PROBLEM:**
+RAM is FAST but SMALL and EXPENSIVE. Disk is BIG and CHEAP but SLOW.
+
+**WHAT IT MEANS:**
+OS needs to move stuff between RAM and disk automatically without programmer knowing.
+
+**THE TWO-LEVEL HIERARCHY:**
+
+```
+MAIN MEMORY (RAM):
+- Fast (nanoseconds)
+- Small (8-32 GB typical)
+- Expensive
+- Volatile (data lost on power off)
+
+SECONDARY MEMORY (Disk/SSD):
+- Slow (milliseconds for HDD, microseconds for SSD)
+- Large (500GB - 2TB typical)
+- Cheap
+- Persistent
+
+PROGRAMMER: "I want 100GB of memory!"
+OS: "You have 16GB RAM"
+PROGRAMMER: "But my program needs 100GB!"
+OS: "Hold my beer..." *enables virtual memory*
+```
+
+**HOW IT WORKS:**
+
+**VIRTUAL MEMORY:**
+- Program thinks it has INFINITE memory
+- OS keeps frequently used parts in RAM
+- Less-used parts stay on disk
+- Transparently swaps as needed
+
+**SWAPPING:**
+```
+RAM Full? Move entire process to disk
+Need that process? Move it back to RAM
+Called: SWAPPING
+
+Too slow? Use PAGING instead:
+Move small chunks (pages) instead of whole process
+Much better!
+```
+
+**WHY PROGRAMMER DOESN'T CARE:**
+```python
+# Python programmer:
+huge_list = [i for i in range(10000000)]  # 40MB list
+
+# Programmer thinks: "Did I have enough RAM?"
+# Answer: Don't care! OS handles it!
+# If RAM full, OS swaps parts to disk
+# Program works (maybe slower, but works!)
+```
+
+**WITHOUT PHYSICAL ORGANIZATION:**
+You could only run programs that fit ENTIRELY in your RAM. Have 8GB RAM? Can't run that 10GB scientific simulation. Game over.
+
+---
+
+**SUMMARY TABLE:**
+
+| Requirement | What | Why | Without It |
+|-------------|------|-----|------------|
+| **Relocation** | Load anywhere | Multi-programming | Programs fight for same addresses |
+| **Protection** | Isolate processes | Security & stability | Malware steals everything |
+| **Sharing** | Controlled access | Efficiency | Waste RAM on duplicates |
+| **Logical Org** | Match programmer's view | Easy dev & protection | Everything is messy bytes |
+| **Physical Org** | RAM + Disk hierarchy | More "memory" than RAM | Can't run big programs |
+
+---
+
+**THE BIG PICTURE:**
+
+These aren't just academic requirements. They're the difference between:
+- ❌ 1960s mainframes (one program at a time, manual memory management, frequent crashes)
+- ✓ Modern systems (hundreds of processes, automatic management, stable)
+
+**EXAM TIP:**
+They LOVE asking "explain all 5 requirements" or "why is [X] requirement important?"
+
+Format your answer:
+1. Requirement name
+2. What it means
+3. Why needed
+4. Example
+5. Consequences without it
+
+Master these 5 and you've mastered memory management fundamentals!
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question: 'Explain concept of Paging with an example.',

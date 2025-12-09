@@ -79,54 +79,115 @@ class _HomeScreenState extends State<HomeScreen>
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 240,
             pinned: true,
-            backgroundColor: MangaTheme.inkBlack,
+            backgroundColor: MangaTheme.mangaRed,
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 children: [
-                  Container(color: MangaTheme.inkBlack),
+                  // 🔥 Gradient background
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          MangaTheme.mangaRed,
+                          MangaTheme.accentOrange,
+                        ],
+                      ),
+                    ),
+                  ),
+                  // ⚡ Action burst
                   CustomPaint(
                     painter: _MangaSpeedlinesPainter(),
                     child: Container(),
                   ),
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 40),
-                        Text(
-                          'OS MASTERY',
-                          style: Theme.of(context).textTheme.displayLarge
-                              ?.copyWith(
-                                color: MangaTheme.paperWhite,
-                                shadows: [
-                                  Shadow(
-                                    color: MangaTheme.mangaRed.withOpacity(0.8),
-                                    offset: const Offset(4, 4),
-                                    blurRadius: 0,
+                  // 📝 Content
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              // 🎯 Badge icon
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: MangaTheme.paperWhite,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: MangaTheme.inkBlack,
+                                    width: 3,
                                   ),
-                                ],
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: MangaTheme.inkBlack,
+                                      offset: Offset(4, 4),
+                                      blurRadius: 0,
+                                    ),
+                                  ],
+                                ),
+                                child: const Text(
+                                  '💪',
+                                  style: TextStyle(fontSize: 28),
+                                ),
                               ),
-                        ),
-                        Text(
-                          'STUDY TRACKER',
-                          style: Theme.of(context).textTheme.headlineMedium
-                              ?.copyWith(
-                                color: MangaTheme.highlightYellow,
-                                letterSpacing: 4,
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'TIME TO GRIND',
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w900,
+                                        color: MangaTheme.paperWhite,
+                                        height: 1,
+                                        shadows: [
+                                          Shadow(
+                                            color: MangaTheme.inkBlack,
+                                            offset: Offset(3, 3),
+                                            blurRadius: 0,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _getFunnyGreeting(),
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: MangaTheme.paperWhite,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Where procrastination goes to die',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: MangaTheme.paperWhite.withOpacity(0.7),
-                                fontStyle: FontStyle.italic,
+                            ],
+                          ),
+                          const Spacer(),
+                          // 📊 Quick stats
+                          Row(
+                            children: [
+                              _buildQuickStat(
+                                '${_getCompletedCount()}/${_getTotalTopics()}',
+                                'Topics Done',
                               ),
-                        ),
-                      ],
+                              const SizedBox(width: 16),
+                              _buildQuickStat(
+                                '${(_getOverallProgress() * 100).toInt()}%',
+                                'Completion',
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -141,58 +202,102 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Stats Panel
+                    // 💬 Motivational Roast Card
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        color: MangaTheme.highlightYellow.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: MangaTheme.inkBlack,
+                          width: 4,
+                        ),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: MangaTheme.inkBlack,
+                            offset: Offset(6, 6),
+                            blurRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Text(
+                                '💬',
+                                style: TextStyle(fontSize: 32),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  _getMotivationalRoast(),
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w900,
+                                    color: MangaTheme.inkBlack,
+                                    height: 1.2,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            _getProgressMessage(),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontStyle: FontStyle.italic,
+                              color: MangaTheme.shadowGray,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    // 📊 Big Progress Bar
                     MangaPanel(
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(20.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Icon(
-                                  Icons.auto_stories,
-                                  color: MangaTheme.mangaRed,
-                                  size: 32,
+                                const Text(
+                                  'OVERALL PROGRESS',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.5,
+                                  ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    _getMotivationalRoast(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium
-                                        ?.copyWith(color: MangaTheme.mangaRed),
+                                Text(
+                                  '${(_getOverallProgress() * 100).toInt()}%',
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w900,
+                                    color: MangaTheme.mangaRed,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 12),
-                            Text(
-                              _getProgressMessage(),
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 16),
                             MangaProgressBar(
                               progress: _getOverallProgress(),
-                              label: _getOverallProgress() == 0
-                                  ? 'Wow, starting from absolute zero'
-                                  : _getOverallProgress() < 0.3
-                                  ? 'Barely scratching the surface'
-                                  : _getOverallProgress() < 0.7
-                                  ? 'Getting somewhere... finally'
-                                  : _getOverallProgress() < 1.0
-                                  ? 'Almost there, champ'
-                                  : 'LEGEND STATUS ACHIEVED',
+                              label: _getProgressRoast(),
                             ),
                             const SizedBox(height: 20),
-                            Text(
-                              'THE DAMAGE REPORT',
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    letterSpacing: 2,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                            const Text(
+                              '📈 YOUR STATS (NO LYING)',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
                             ),
                             const SizedBox(height: 12),
                             Row(
@@ -239,11 +344,15 @@ class _HomeScreenState extends State<HomeScreen>
                     const SizedBox(height: 16),
                     ...osModules.map((module) {
                       final completedTopics = module.topics
-                          .where((t) => _progressMap[t.id]?.isCompleted ?? false)
+                          .where(
+                            (t) => _progressMap[t.id]?.isCompleted ?? false,
+                          )
                           .length;
                       final totalTopics = module.topics.length;
-                      final progress = totalTopics > 0 ? completedTopics / totalTopics : 0.0;
-                      
+                      final progress = totalTopics > 0
+                          ? completedTopics / totalTopics
+                          : 0.0;
+
                       return UltraMangaCard(
                         module: module,
                         progress: progress,
@@ -271,6 +380,60 @@ class _HomeScreenState extends State<HomeScreen>
         ],
       ),
     );
+  }
+
+  String _getFunnyGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 6) return "Up this late? Dedication or bad decisions?";
+    if (hour < 12) return "Morning grind szn \ud83d\udd25";
+    if (hour < 17) return "Afternoon study session activated!";
+    if (hour < 21) return "Evening warrior reporting for duty!";
+    return "Night owl mode engaged \ud83e\udd89";
+  }
+
+  Widget _buildQuickStat(String value, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: MangaTheme.paperWhite.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: MangaTheme.paperWhite,
+          width: 2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              color: MangaTheme.paperWhite,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: MangaTheme.paperWhite.withOpacity(0.8),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getProgressRoast() {
+    final progress = _getOverallProgress();
+    if (progress == 0) return "Not even started. Impressive avoidance skills.";
+    if (progress < 0.3) return "Baby steps... teeny tiny baby steps.";
+    if (progress < 0.6) return "Half-committed. Classic move.";
+    if (progress < 0.9) return "Getting serious! Keep that energy!";
+    if (progress < 1.0) return "ALMOST DONE! Finish strong!";
+    return "100% COMPLETE! Absolute legend!";
   }
 
   String _getMotivationalRoast() {

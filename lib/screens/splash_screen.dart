@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 import '../theme/manga_theme.dart';
+import '../widgets/manga_effects.dart';
 import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,56 +12,55 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late AnimationController _scaleController;
-  late AnimationController _rotateController;
-  late AnimationController _fadeController;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _rotateAnimation;
-  late Animation<double> _fadeAnimation;
+  late AnimationController _burstController;
+  late AnimationController _bounceController;
+  late AnimationController _textController;
+  late Animation<double> _burstAnimation;
+  late Animation<double> _bounceAnimation;
+  late Animation<double> _textAnimation;
 
   @override
   void initState() {
     super.initState();
 
-    _scaleController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
-
-    _rotateController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    );
-
-    _fadeController = AnimationController(
+    _burstController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _scaleController, curve: Curves.elasticOut),
+    _bounceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
     );
 
-    _rotateAnimation = Tween<double>(begin: 0.0, end: 2 * math.pi).animate(
-      CurvedAnimation(parent: _rotateController, curve: Curves.easeInOut),
+    _textController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
+    _burstAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _burstController, curve: Curves.easeOut),
+    );
+
+    _bounceAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _bounceController, curve: Curves.elasticOut),
+    );
+
+    _textAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _textController, curve: Curves.easeIn),
+    );
 
     _startAnimation();
   }
 
   Future<void> _startAnimation() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    _burstController.forward();
     await Future.delayed(const Duration(milliseconds: 300));
-    _scaleController.forward();
-    await Future.delayed(const Duration(milliseconds: 500));
-    _rotateController.forward();
-    await Future.delayed(const Duration(milliseconds: 500));
-    _fadeController.forward();
-    await Future.delayed(const Duration(milliseconds: 1500));
+    _bounceController.forward();
+    await Future.delayed(const Duration(milliseconds: 400));
+    _textController.forward();
+    await Future.delayed(const Duration(milliseconds: 1800));
 
     if (mounted) {
       Navigator.of(context).pushReplacement(
@@ -79,147 +78,243 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _scaleController.dispose();
-    _rotateController.dispose();
-    _fadeController.dispose();
+    _burstController.dispose();
+    _bounceController.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MangaTheme.inkBlack,
-      body: Stack(
-        children: [
-          // Background speedlines
-          CustomPaint(
-            size: Size.infinite,
-            painter: _BackgroundSpeedlinesPainter(),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Animated logo/icon
-                ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: RotationTransition(
-                    turns: _rotateAnimation,
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: MangaTheme.mangaRed,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: MangaTheme.paperWhite,
-                          width: 5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: MangaTheme.mangaRed.withOpacity(0.5),
-                            blurRadius: 30,
-                            spreadRadius: 10,
+      backgroundColor: MangaTheme.paperWhite,
+      body: AnimatedBuilder(
+        animation: Listenable.merge([_burstController, _bounceController, _textController]),
+        builder: (context, child) {
+          return Stack(
+            children: [
+              // 💥 Massive action burst background
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: ActionBurstPainter(
+                    color: MangaTheme.mangaRed.withOpacity(_burstAnimation.value * 0.2),
+                  ),
+                ),
+              ),
+              
+              // ⚪ Halftone dots everywhere
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: HalftonePainter(
+                    color: MangaTheme.inkBlack.withOpacity(0.06),
+                    density: 20,
+                  ),
+                ),
+              ),
+
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // 🎯 MEGA LOGO with bounce
+                    Transform.scale(
+                      scale: _bounceAnimation.value,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          // Shadow
+                          Positioned(
+                            left: 12,
+                            top: 12,
+                            child: Container(
+                              width: 180,
+                              height: 180,
+                              decoration: const BoxDecoration(
+                                color: MangaTheme.inkBlack,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                          // Main circle
+                          Container(
+                            width: 180,
+                            height: 180,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  MangaTheme.mangaRed,
+                                  MangaTheme.accentOrange,
+                                ],
+                              ),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: MangaTheme.inkBlack,
+                                width: 8,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: MangaTheme.mangaRed.withOpacity(0.6),
+                                  blurRadius: 40,
+                                  spreadRadius: 15,
+                                ),
+                              ],
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'OS',
+                                style: TextStyle(
+                                  fontSize: 72,
+                                  fontWeight: FontWeight.w900,
+                                  color: MangaTheme.paperWhite,
+                                  shadows: [
+                                    Shadow(
+                                      color: MangaTheme.inkBlack,
+                                      offset: Offset(3, 3),
+                                      blurRadius: 0,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      child: const Icon(
-                        Icons.auto_stories,
-                        size: 80,
-                        color: MangaTheme.paperWhite,
+                    ),
+                    
+                    const SizedBox(height: 50),
+                    
+                    // 📝 Epic title with fade
+                    Opacity(
+                      opacity: _textAnimation.value,
+                      child: Transform.translate(
+                        offset: Offset(0, 30 * (1 - _textAnimation.value)),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 30,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: MangaTheme.inkBlack,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: MangaTheme.inkBlack,
+                                  width: 4,
+                                ),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: MangaTheme.inkBlack,
+                                    offset: Offset(6, 6),
+                                    blurRadius: 0,
+                                  ),
+                                ],
+                              ),
+                              child: const Text(
+                                'OPERATING SYSTEMS',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w900,
+                                  color: MangaTheme.paperWhite,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                            ),
+                            
+                            const SizedBox(height: 16),
+                            
+                            const Text(
+                              'YOUR EXAM SURVIVAL GUIDE',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: MangaTheme.inkBlack,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                            
+                            const SizedBox(height: 40),
+                            
+                            // 🔥 Loading badge
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: MangaTheme.highlightYellow,
+                                borderRadius: BorderRadius.circular(25),
+                                border: Border.all(
+                                  color: MangaTheme.inkBlack,
+                                  width: 3,
+                                ),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: MangaTheme.inkBlack,
+                                    offset: Offset(4, 4),
+                                    blurRadius: 0,
+                                  ),
+                                ],
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '⚡',
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'LOADING POWER MODE',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w900,
+                                      color: MangaTheme.inkBlack,
+                                      letterSpacing: 1.5,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    '⚡',
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // 💬 Funny roast at bottom
+              Positioned(
+                bottom: 40,
+                left: 0,
+                right: 0,
+                child: Opacity(
+                  opacity: _textAnimation.value,
+                  child: const Center(
+                    child: Text(
+                      '"Procrastination ends HERE, champ" 💪',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontStyle: FontStyle.italic,
+                        color: MangaTheme.shadowGray,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
-                // Title animation
-                FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Column(
-                    children: [
-                      Text(
-                        'OS MASTERY',
-                        style: Theme.of(context).textTheme.displayLarge
-                            ?.copyWith(
-                              color: MangaTheme.paperWhite,
-                              shadows: [
-                                Shadow(
-                                  color: MangaTheme.mangaRed.withOpacity(0.8),
-                                  offset: const Offset(4, 4),
-                                  blurRadius: 0,
-                                ),
-                              ],
-                            ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'STUDY TRACKER',
-                        style: Theme.of(context).textTheme.headlineMedium
-                            ?.copyWith(
-                              color: MangaTheme.highlightYellow,
-                              letterSpacing: 6,
-                            ),
-                      ),
-                      const SizedBox(height: 30),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: MangaTheme.paperWhite,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'LOADING...',
-                          style: Theme.of(context).textTheme.bodyLarge
-                              ?.copyWith(
-                                color: MangaTheme.paperWhite,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 3,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
-}
-
-class _BackgroundSpeedlinesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = MangaTheme.paperWhite.withOpacity(0.05)
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
-
-    final centerX = size.width / 2;
-    final centerY = size.height / 2;
-
-    for (int i = 0; i < 30; i++) {
-      final angle = (i * 12) * math.pi / 180;
-      final startRadius = 100.0;
-      final endRadius = math.max(size.width, size.height);
-
-      final startX = centerX + startRadius * math.cos(angle);
-      final startY = centerY + startRadius * math.sin(angle);
-      final endX = centerX + endRadius * math.cos(angle);
-      final endY = centerY + endRadius * math.sin(angle);
-
-      canvas.drawLine(Offset(startX, startY), Offset(endX, endY), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
