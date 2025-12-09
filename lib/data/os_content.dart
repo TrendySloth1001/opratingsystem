@@ -1045,7 +1045,8 @@ Without concurrency, your computer would do ONE thing at a time. No multitasking
             question:
                 'Explain the term "Busy Waiting". Give solution to this problem using Semaphore.',
             type: 'theory',
-            answer: '''Alright so imagine you're waiting for the bathroom at a party, but instead of chilling on the couch, you're literally STANDING at the door, trying the handle every 0.5 seconds like a psychopath. THAT'S busy waiting. Total waste of energy, annoying af, and you're blocking the hallway.
+            answer:
+                '''Alright so imagine you're waiting for the bathroom at a party, but instead of chilling on the couch, you're literally STANDING at the door, trying the handle every 0.5 seconds like a psychopath. THAT'S busy waiting. Total waste of energy, annoying af, and you're blocking the hallway.
 
 **BUSY WAITING (aka SPINLOCK):**
 When a process continuously checks if it can enter the critical section in a tight loop, WASTING CPU CYCLES like crazy.
@@ -1129,7 +1130,8 @@ But for most cases? SEMAPHORES ALL THE WAY. Don't be that person spinning at the
           PYQ(
             question: 'Explain Producer consumer problem using Semaphores.',
             type: 'theory',
-            answer: '''This is THE CLASSIC problem. Like, if you understand this, you understand half of operating systems. No pressure.
+            answer:
+                '''This is THE CLASSIC problem. Like, if you understand this, you understand half of operating systems. No pressure.
 
 **THE SCENARIO:**
 - PRODUCER = Makes items and puts them in a buffer (like a factory making phones)
@@ -1259,7 +1261,8 @@ This is the blueprint for SO MANY synchronization problems. Master this, and you
             question:
                 'Explain Dining Philosophers Problem with solution using Semaphore.',
             type: 'theory',
-            answer: '''This problem is LEGENDARY. It's basically "what if we made a deadlock scenario but make it fancy with philosophers?" Let's go.
+            answer:
+                '''This problem is LEGENDARY. It's basically "what if we made a deadlock scenario but make it fancy with philosophers?" Let's go.
 
 **THE SETUP (sounds fancy, is actually chaotic):**
 
@@ -1416,7 +1419,8 @@ Master this, and you've unlocked advanced synchronization knowledge. Now go eat 
             question:
                 'Explain Hardware solution proposed to solve the critical section problem.',
             type: 'theory',
-            answer: '''Alright so we've been using semaphores (software solution), but what if we go DEEPER? What if the CPU itself had special instructions to help us? Welcome to HARDWARE SOLUTIONS.
+            answer:
+                '''Alright so we've been using semaphores (software solution), but what if we go DEEPER? What if the CPU itself had special instructions to help us? Welcome to HARDWARE SOLUTIONS.
 
 **THE PROBLEM:**
 Reading AND writing a variable needs to be ATOMIC (all-or-nothing, no interruptions). Normal instructions aren't atomic - CPU can interrupt between reading and writing.
@@ -1609,76 +1613,1227 @@ So yeah, hardware solutions are the OG, but we usually wrap them in nicer abstra
         id: '3.3',
         title:
             '3.3 — Deadlock: Conditions, RAG, Prevention, Avoidance, Detection, Recovery',
-        content: '''
-**Deadlock:**
-Set of processes blocked, each holding resources and waiting for resources held by others.
-
-**Necessary Conditions:**
-1. Mutual Exclusion
-2. Hold and Wait
-3. No Preemption
-4. Circular Wait
-
-All four must hold simultaneously.
-
-**Resource Allocation Graph (RAG):**
-- Vertices: Processes (circles) and Resources (rectangles)
-- Edges: Request (P→R) and Assignment (R→P)
-- Cycle in graph may indicate deadlock
-
-**Wait-For Graph (WFG):**
-Simplified RAG for single-instance resources.
-Cycle = Deadlock.
-
-**Deadlock Prevention:**
-Break one of four conditions:
-- Allow preemption
-- Request all resources at once
-- Order resources numerically
-
-**Deadlock Avoidance (Banker's Algorithm):**
-- Safe state vs Unsafe state
-- Check before allocation
-- Need = Max - Allocation
-- Available resources tracking
-
-**Deadlock Detection:**
-- Invoke detection algorithm
-- Check for cycles
-- Recovery if found
-
-**Recovery:**
-- Process termination (all or one by one)
-- Resource preemption
-- Rollback
-''',
+        content: '''The BOSS LEVEL of synchronization problems. Let's destroy it.''',
         pyqs: [
           PYQ(
             question:
                 'What is a Deadlock? Explain the necessary conditions for a deadlock to take place.',
             type: 'theory',
+            answer: '''Deadlock is when everyone is stuck waiting for everyone else and NOBODY can move forward. It's the ultimate "you first" "no you first" situation but with computers and way less polite.
+
+**DEADLOCK DEFINITION:**
+A set of processes is in deadlock when EVERY process is waiting for a resource held by ANOTHER process in the set. Nobody can proceed. Everyone's frozen. System is STUCK.
+
+**REAL WORLD EXAMPLE:**
+
+Imagine a narrow bridge where cars can only go one way:
+- Car A enters from left, gets halfway
+- Car B enters from right, gets halfway
+- Both cars now face each other in the middle
+- Neither can move forward (other car blocking)
+- Neither can reverse (stubborn drivers)
+- DEADLOCK - Both stuck forever
+
+**CODE EXAMPLE (CLASSIC DEADLOCK):**
+
+```c
+Process P1:                Process P2:
+lock(resource_A);         lock(resource_B);
+lock(resource_B);         lock(resource_A);
+// use both               // use both
+unlock(resource_B);       unlock(resource_A);
+unlock(resource_A);       unlock(resource_B);
+```
+
+**WHAT HAPPENS:**
+- P1 locks A, then gets interrupted
+- P2 locks B, then tries to lock A (WAITING)
+- P1 tries to lock B (WAITING)
+- Both waiting for each other
+- DEADLOCK
+
+---
+
+**THE FOUR NECESSARY CONDITIONS (COFFMAN CONDITIONS):**
+
+ALL FOUR must be present SIMULTANEOUSLY for deadlock to occur. Break even ONE and deadlock is impossible.
+
+**1. MUTUAL EXCLUSION:**
+- Resources cannot be shared
+- Only ONE process can use a resource at a time
+- Example: Only one process can write to a file at once
+
+**2. HOLD AND WAIT:**
+- Process holding resources can REQUEST more resources
+- Won't release what it already has while waiting
+- Example: I'm holding my phone while waiting to use the charger
+
+**3. NO PREEMPTION:**
+- Resources cannot be FORCEFULLY taken away
+- Process must voluntarily release resources
+- Example: OS can't just yank resources from a process
+
+**4. CIRCULAR WAIT:**
+- Chain of processes where each is waiting for resource held by next
+- P1 → P2 → P3 → ... → Pn → P1
+- Forms a CYCLE
+
+**VISUAL REPRESENTATION:**
+
+```
+DEADLOCK SCENARIO:
+
+Process P1          Process P2          Process P3
+Holds: A            Holds: B            Holds: C
+Waits: B            Waits: C            Waits: A
+
+P1 → needs → B (held by P2)
+P2 → needs → C (held by P3)
+P3 → needs → A (held by P1)
+
+CIRCULAR WAIT FORMED!
+```
+
+---
+
+**CHECKING IF DEADLOCK EXISTS:**
+
+Ask these questions:
+1. ✓ Can resources be shared? NO → Mutual Exclusion exists
+2. ✓ Are processes holding AND requesting? YES → Hold & Wait exists
+3. ✓ Can OS force-take resources? NO → No Preemption exists
+4. ✓ Is there a cycle of waiting? YES → Circular Wait exists
+
+ALL FOUR = DEADLOCK!
+
+---
+
+**REAL WORLD DEADLOCK EXAMPLES:**
+
+**Example 1: Database Deadlock**
+```
+Transaction T1:        Transaction T2:
+Lock Row A            Lock Row B
+Update Row A          Update Row B
+Lock Row B (WAIT)     Lock Row A (WAIT)
+Update Row B          Update Row A
+DEADLOCK!
+```
+
+**Example 2: Two Printers**
+```
+Process P1:           Process P2:
+Get Printer1          Get Printer2
+Get Printer2 (WAIT)   Get Printer1 (WAIT)
+Print both            Print both
+DEADLOCK!
+```
+
+**Example 3: Dining Philosophers** (we already covered this - classic deadlock example!)
+
+---
+
+**WHY DEADLOCK IS TERRIBLE:**
+
+1. **SYSTEM FREEZE** - Affected processes stuck forever
+2. **RESOURCE WASTE** - Resources locked but not used
+3. **CASCADE EFFECT** - Other processes might need those resources
+4. **REQUIRES INTERVENTION** - Won't resolve on its own
+5. **DATA LOSS** - Might need to kill processes and lose work
+
+**THE THREE STRATEGIES TO DEAL WITH DEADLOCK:**
+
+1. **PREVENTION** - Design system so deadlock is IMPOSSIBLE (break one condition)
+2. **AVOIDANCE** - Allow deadlock possibility but avoid it dynamically (Banker's Algorithm)
+3. **DETECTION & RECOVERY** - Let it happen, detect it, then fix it
+
+**IMPORTANT NOTE:**
+Just having these conditions doesn't GUARANTEE deadlock will happen - it just makes it POSSIBLE. It's like having all ingredients for a fire (fuel, oxygen, heat) - might not burn, but it CAN.
+
+**EXAM TIP:**
+They LOVE asking "explain all four conditions" or "why is this a deadlock?" Know these four conditions by HEART. They're called the Coffman Conditions (named after E.G. Coffman who defined them in 1971).
+
+Now you know what deadlock is and how to spot it. Next questions will cover how to PREVENT, AVOID, and RECOVER from it!
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question:
                 'Explain how Resource Allocation Graph (RAG) and Wait For Graph (WFG) are used to determine presence of a deadlock.',
             type: 'theory',
+            answer: '''These are the VISUAL tools for detecting deadlock. If you can draw these graphs, you can SEE deadlock with your own eyes. Let's learn how.
+
+---
+
+**RESOURCE ALLOCATION GRAPH (RAG):**
+
+A directed graph that shows WHO has WHAT and WHO wants WHAT.
+
+**COMPONENTS:**
+
+1. **PROCESS (Circle/Ellipse):** P1, P2, P3, etc.
+2. **RESOURCE TYPE (Rectangle):** R1, R2, R3, etc.
+3. **RESOURCE INSTANCES (Dots inside rectangle):** How many copies of resource exist
+4. **EDGES:**
+   - **REQUEST EDGE (P → R):** Process wants resource (arrow from process TO resource)
+   - **ASSIGNMENT EDGE (R → P):** Resource given to process (arrow from resource TO process)
+
+**HOW TO DRAW:**
+
+```
+NOTATION:
+• = Process
+□ = Resource Type
+→ = Edge (request or assignment)
+● = Resource instance (dot inside rectangle)
+
+EXAMPLE SYSTEM:
+- P1 holds R1, requests R2
+- P2 holds R2, requests R3
+- P3 holds R3, requests R1
+
+DRAW IT:
+        ┌───────┐
+    ┌──→│  R2   │──→ P2
+    │   └───────┘     │
+    │                 ↓
+   P1             ┌───────┐
+    ↑             │  R3   │
+    │             └───────┘
+    │                 │
+    │                 ↓
+┌───────┐            P3
+│  R1   │             │
+└───────┘←────────────┘
+```
+
+**DEADLOCK DETECTION IN RAG:**
+
+**RULE 1:** If graph has NO CYCLES → NO DEADLOCK (we're safe!)
+
+**RULE 2:** If graph has CYCLES:
+- **Single instance per resource type** → CYCLE = DEADLOCK (guaranteed)
+- **Multiple instances per resource type** → CYCLE = MAYBE DEADLOCK (need to check further)
+
+**EXAMPLE 1 - DEADLOCK (Single Instance):**
+
+```
+Resources: R1(1 instance), R2(1 instance)
+Processes: P1, P2
+
+P1 → R2 (requesting)
+R2 → P2 (assigned to P2)
+P2 → R1 (requesting)
+R1 → P1 (assigned to P1)
+
+CYCLE EXISTS: P1 → R2 → P2 → R1 → P1
+SINGLE INSTANCE RESOURCES
+= DEADLOCK!
+```
+
+**EXAMPLE 2 - NO DEADLOCK (Multiple Instances):**
+
+```
+Resources: R1(2 instances), R2(2 instances)
+Processes: P1, P2, P3
+
+P1 holds 1 R1, requests R2
+P2 holds 1 R2, requests R1
+P3 is free
+
+Cycle exists: P1 → R2 → P2 → R1 → P1
+BUT: Still 1 R1 and 1 R2 available!
+P3 can get resources, finish, and release
+Then P1 or P2 can proceed
+= NO DEADLOCK (cycle but resources available)
+```
+
+---
+
+**WAIT-FOR GRAPH (WFG):**
+
+A SIMPLIFIED version of RAG used when each resource has ONLY ONE INSTANCE.
+
+**THE IDEA:**
+Remove the resource nodes and draw direct edges between processes.
+
+**COMPONENTS:**
+1. **PROCESS (Node):** P1, P2, P3, etc.
+2. **WAIT-FOR EDGE (P1 → P2):** P1 is waiting for resource held by P2
+
+**HOW TO CONVERT RAG TO WFG:**
+
+```
+RAG:
+P1 → R1 → P2    (P1 requests R1, P2 holds R1)
+
+WFG:
+P1 → P2         (P1 waits for P2)
+```
+
+**DEADLOCK DETECTION IN WFG:**
+
+**SIMPLE RULE:** Cycle in WFG = DEADLOCK (guaranteed!)
+
+**EXAMPLE 1 - DEADLOCK:**
+
+```
+P1 → P2 → P3 → P1
+
+Cycle exists = DEADLOCK!
+```
+
+**EXAMPLE 2 - NO DEADLOCK:**
+
+```
+P1 → P2 → P3
+
+No cycle = NO DEADLOCK
+(P3 will finish, then P2, then P1)
+```
+
+---
+
+**STEP-BY-STEP DEADLOCK DETECTION:**
+
+**METHOD 1: Using RAG**
+
+1. Draw all processes (circles)
+2. Draw all resources (rectangles with instance dots)
+3. Draw request edges (P → R)
+4. Draw assignment edges (R → P)
+5. Look for cycles
+6. If cycle + single instance resources = DEADLOCK
+7. If cycle + multiple instances = Check if safe state exists
+
+**METHOD 2: Using WFG**
+
+1. List all processes
+2. For each process, draw edge to process it's waiting for
+3. Look for cycles
+4. Cycle = DEADLOCK
+
+---
+
+**REAL EXAMPLE - DETECT DEADLOCK:**
+
+**SCENARIO:**
+- R1 has 2 instances, R2 has 1 instance, R3 has 1 instance
+- P1 holds 1 R1, requests R2
+- P2 holds R2, requests R3
+- P3 holds R3, requests R1
+- P4 holds 1 R1
+
+**DRAW RAG:**
+
+```
+    R1 [●●]
+   ↙  ↑  ↘
+  P1  P4  P3
+  ↓       ↑
+  R2      R3
+  ↓       ↑
+  P2 ─────┘
+```
+
+**ANALYZE:**
+- Cycle: P1 → R2 → P2 → R3 → P3 → R1 → P1
+- But R1 has 2 instances, P4 holds one, P1 wants one
+- P4 is not in cycle, can finish, releases R1
+- Then P3 can get R1, finish, release R3
+- Then P2 gets R3, finish, release R2
+- Then P1 gets R2, done
+- NO DEADLOCK (safe state exists)
+
+---
+
+**COMPARISON:**
+
+| Feature | RAG | WFG |
+|---------|-----|-----|
+| **Nodes** | Processes + Resources | Only Processes |
+| **Complexity** | More complex | Simpler |
+| **Use Case** | Any scenario | Single instance only |
+| **Cycle Detection** | Harder | Easier |
+| **Cycle = Deadlock?** | Maybe (depends) | Always YES |
+
+---
+
+**ALGORITHM TO DETECT CYCLES:**
+
+```
+DFS (Depth-First Search):
+1. Mark all nodes as unvisited
+2. For each unvisited node:
+   a. Start DFS from that node
+   b. Mark node as "in current path"
+   c. Visit all neighbors
+   d. If neighbor already "in current path" → CYCLE!
+   e. Mark node as "visited"
+```
+
+---
+
+**EXAM TIPS:**
+
+1. **Draw RAG carefully** - Don't mix up request and assignment edges!
+2. **Count resource instances** - Multiple instances change everything
+3. **Trace the cycles** - Follow the arrows to find loops
+4. **For WFG** - Only works when each resource has one instance
+5. **Practice drawing** - These questions are super common!
+
+**COMMON EXAM QUESTION FORMAT:**
+"Draw RAG for the following scenario and determine if deadlock exists"
+
+Now you can VISUALIZE deadlock! Way better than just theorizing about it. Master these graphs and deadlock detection becomes EASY.
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question: 'Explain Deadlock Avoidance algorithms with example.',
             type: 'theory',
+            answer: '''Deadlock AVOIDANCE is the "look before you leap" approach. Before giving resources, check if system will enter an UNSAFE state. The king of this strategy? BANKER'S ALGORITHM.
+
+---
+
+**THE CONCEPT:**
+
+**SAFE STATE:** A state where system can allocate resources to each process in SOME order and avoid deadlock.
+
+**UNSAFE STATE:** Might lead to deadlock (but not guaranteed).
+
+**AVOIDANCE STRATEGY:** Only allow resource allocation if system remains in SAFE STATE.
+
+---
+
+**BANKER'S ALGORITHM:**
+
+Named after how banks lend money - don't lend more than you can cover if everyone wants to withdraw at once.
+
+**THE IDEA:**
+Before granting a resource request, simulate the allocation and check if system remains in safe state. If YES, grant it. If NO, make process WAIT.
+
+---
+
+**DATA STRUCTURES NEEDED:**
+
+For n processes and m resource types:
+
+1. **Available[m]:** Number of available instances of each resource
+2. **Max[n][m]:** Maximum demand of each process
+3. **Allocation[n][m]:** Currently allocated to each process
+4. **Need[n][m]:** Remaining need = Max - Allocation
+
+---
+
+**SAFETY ALGORITHM (Heart of Banker's):**
+
+```
+1. Initialize:
+   Work = Available  (temporary copy)
+   Finish[i] = false for all i
+
+2. Find process i where:
+   - Finish[i] == false
+   - Need[i] <= Work
+   
+   If no such process exists, go to step 4
+
+3. Simulate process i finishing:
+   Work = Work + Allocation[i]
+   Finish[i] = true
+   Go back to step 2
+
+4. Check result:
+   If Finish[i] == true for ALL i:
+      SAFE STATE (found safe sequence)
+   Else:
+      UNSAFE STATE
+```
+
+---
+
+**RESOURCE REQUEST ALGORITHM:**
+
+When process Pi requests Request[m]:
+
+```
+1. Check if Request <= Need
+   If not, ERROR (asking for more than declared max)
+
+2. Check if Request <= Available
+   If not, WAIT (not enough resources right now)
+
+3. PRETEND to allocate:
+   Available = Available - Request
+   Allocation[i] = Allocation[i] + Request
+   Need[i] = Need[i] - Request
+
+4. Run Safety Algorithm
+   If SAFE: Actually grant the request
+   If UNSAFE: Rollback pretend allocation, make process WAIT
+```
+
+---
+
+**DETAILED EXAMPLE:**
+
+**INITIAL STATE:**
+
+System has 3 resource types: A(10), B(5), C(7)
+5 processes: P0, P1, P2, P3, P4
+
+```
+       Allocation    Max        Need       Available
+       A  B  C      A  B  C    A  B  C     A  B  C
+P0     0  1  0      7  5  3    7  4  3     3  3  2
+P1     2  0  0      3  2  2    1  2  2
+P2     3  0  2      9  0  2    6  0  0
+P3     2  1  1      2  2  2    0  1  1
+P4     0  0  2      4  3  3    4  3  1
+```
+
+**QUESTION 1: Is current state safe?**
+
+**SOLUTION:**
+
+```
+Work = Available = [3, 3, 2]
+Finish = [F, F, F, F, F]
+
+STEP 1: Find process where Need <= Work
+- P0: [7,4,3] > [3,3,2] ✗
+- P1: [1,2,2] < [3,3,2] ✓ FOUND!
+- Execute P1:
+  Work = [3,3,2] + [2,0,0] = [5,3,2]
+  Finish[1] = true
+
+STEP 2: Find next process
+- P0: [7,4,3] > [5,3,2] ✗
+- P2: [6,0,0] > [5,3,2] ✗
+- P3: [0,1,1] < [5,3,2] ✓ FOUND!
+- Execute P3:
+  Work = [5,3,2] + [2,1,1] = [7,4,3]
+  Finish[3] = true
+
+STEP 3: Continue
+- P0: [7,4,3] <= [7,4,3] ✓ FOUND!
+- Execute P0:
+  Work = [7,4,3] + [0,1,0] = [7,5,3]
+  Finish[0] = true
+
+STEP 4:
+- P2: [6,0,0] < [7,5,3] ✓
+- Execute P2:
+  Work = [7,5,3] + [3,0,2] = [10,5,5]
+  Finish[2] = true
+
+STEP 5:
+- P4: [4,3,1] < [10,5,5] ✓
+- Execute P4:
+  Work = [10,5,5] + [0,0,2] = [10,5,7]
+  Finish[4] = true
+
+ALL PROCESSES FINISHED!
+SAFE SEQUENCE: P1 → P3 → P0 → P2 → P4
+STATE IS SAFE!
+```
+
+---
+
+**QUESTION 2: P1 requests (1, 0, 2). Should we grant it?**
+
+**SOLUTION:**
+
+```
+Request[1] = [1, 0, 2]
+
+CHECK 1: Request <= Need?
+[1,0,2] <= [1,2,2] ✓
+
+CHECK 2: Request <= Available?
+[1,0,2] <= [3,3,2] ✓
+
+PRETEND ALLOCATION:
+Available = [3,3,2] - [1,0,2] = [2,3,0]
+Allocation[1] = [2,0,0] + [1,0,2] = [3,0,2]
+Need[1] = [1,2,2] - [1,0,2] = [0,2,0]
+
+NEW STATE:
+       Allocation    Need         Available
+       A  B  C      A  B  C       A  B  C
+P0     0  1  0      7  4  3       2  3  0
+P1     3  0  2      0  2  0
+P2     3  0  2      6  0  0
+P3     2  1  1      0  1  1
+P4     0  0  2      4  3  1
+
+RUN SAFETY CHECK:
+Work = [2,3,0]
+
+Try P0: [7,4,3] > [2,3,0] ✗
+Try P1: [0,2,0] < [2,3,0] ✓
+  Work = [2,3,0] + [3,0,2] = [5,3,2]
+
+Try P3: [0,1,1] < [5,3,2] ✓
+  Work = [5,3,2] + [2,1,1] = [7,4,3]
+
+Try P0: [7,4,3] <= [7,4,3] ✓
+  Work = [7,4,3] + [0,1,0] = [7,5,3]
+
+Try P2: [6,0,0] < [7,5,3] ✓
+  Work = [7,5,3] + [3,0,2] = [10,5,5]
+
+Try P4: [4,3,1] < [10,5,5] ✓
+  Work = [10,5,5] + [0,0,2] = [10,5,7]
+
+SAFE SEQUENCE: P1 → P3 → P0 → P2 → P4
+STATE IS SAFE!
+
+GRANT THE REQUEST!
+```
+
+---
+
+**QUESTION 3: Now P4 requests (3, 3, 0). Should we grant it?**
+
+**SOLUTION:**
+
+```
+Request[4] = [3, 3, 0]
+Current Available = [2, 3, 0]
+
+CHECK: Request <= Available?
+[3,3,0] <= [2,3,0] ✗
+
+NOT ENOUGH RESOURCES AVAILABLE RIGHT NOW
+P4 MUST WAIT (no need to check safety)
+```
+
+---
+
+**QUESTION 4: If P0 requests (0, 2, 0)?**
+
+```
+Available = [2,3,0]
+Request[0] = [0,2,0]
+
+PRETEND:
+Available = [2,3,0] - [0,2,0] = [2,1,0]
+Allocation[0] = [0,1,0] + [0,2,0] = [0,3,0]
+Need[0] = [7,4,3] - [0,2,0] = [7,2,3]
+
+RUN SAFETY:
+Work = [2,1,0]
+
+Try all processes... 
+P3: [0,1,1] > [2,1,0] (need C=1, but Work C=0) ✗
+P1: [0,2,0] > [2,1,0] (need B=2, but Work B=1) ✗
+All others: Too high
+
+NO PROCESS CAN FINISH!
+UNSAFE STATE!
+
+DENY THE REQUEST, P0 WAITS
+```
+
+---
+
+**ADVANTAGES:**
+- Guaranteed no deadlock if followed correctly
+- More efficient than prevention (allows better resource utilization)
+
+**DISADVANTAGES:**
+- Requires processes to declare MAX need in advance (not always possible)
+- Number of processes must be fixed (can't add new ones)
+- Resources must be fixed (can't add/remove resources)
+- Overhead of running safety algorithm for every request
+
+---
+
+**EXAM STRATEGY:**
+
+1. **Understand Need = Max - Allocation** (they test this!)
+2. **Practice safety algorithm** (trace through step by step)
+3. **Show your work** (write out Work and Finish arrays)
+4. **Check EVERY process** at each step
+5. **Safe sequence is your ANSWER** (write it clearly!)
+
+This is a GUARANTEED question type in exams. Master the algorithm and you're golden!
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question: 'Explain Deadlock Prevention techniques.',
             type: 'theory',
+            answer: '''Deadlock PREVENTION is the "make it impossible" approach. Remember the four Coffman conditions? Break even ONE of them and deadlock CAN'T happen. Let's see how.
+
+---
+
+**THE STRATEGY:**
+
+Since ALL FOUR conditions must hold for deadlock, we just need to ensure AT LEAST ONE condition is NEVER true. Problem solved!
+
+---
+
+**METHOD 1: ELIMINATE MUTUAL EXCLUSION**
+
+**IDEA:** Make resources SHAREABLE so multiple processes can use simultaneously.
+
+**HOW:**
+- Make resources read-only (multiple readers = no problem)
+- Use spooling (print jobs go to queue, spooler manages printer)
+- Use virtual resources (copies of resources)
+
+**EXAMPLE:**
+```
+READ-ONLY FILES:
+✓ Multiple processes can read same file simultaneously
+✓ No mutual exclusion needed
+✓ No deadlock possible
+
+PRINT SPOOLING:
+Instead of: Process directly accessing printer (mutual exclusion)
+Use: All processes write to spool directory → Daemon prints jobs
+✓ No process directly "holds" printer
+```
+
+**PROBLEM:**
+- Many resources CAN'T be shared (can't have two processes writing to same file)
+- Not applicable to most resources
+- Limited practical use
+
+**VERDICT:** ⚠️ Works only for SOME resources, not general solution
+
+---
+
+**METHOD 2: ELIMINATE HOLD AND WAIT**
+
+**IDEA:** Don't let processes hold resources while waiting for others.
+
+**APPROACH A: Request ALL resources AT ONCE**
+
+```c
+// BAD (can deadlock):
+request(A);
+use_A();
+request(B);  // Holding A while waiting for B!
+use_B();
+release(A);
+release(B);
+
+// GOOD (prevents deadlock):
+request(A, B);  // Get BOTH or NEITHER
+if (got_both) {
+    use_A();
+    use_B();
+    release(A, B);
+}
+```
+
+**ADVANTAGES:**
+- Simple to implement
+- Guaranteed no hold-and-wait
+
+**DISADVANTAGES:**
+- **LOW RESOURCE UTILIZATION:** Process might not need all resources at start
+- **STARVATION:** Process needing many resources might wait forever
+- **IMPRACTICAL:** Processes often don't know ALL resources needed upfront
+
+**APPROACH B: Release ALL before requesting new ones**
+
+```c
+// Process holds A, needs B:
+release(A);        // Give up what you have
+request(A, B);     // Request everything you need
+if (got_both) {
+    // Continue
+}
+```
+
+**DISADVANTAGES:**
+- Work done with A might be lost
+- Overhead of releasing and re-acquiring
+- Progress loss
+
+**REAL WORLD ANALOGY:**
+Like having to give up your phone before you can pick up your laptop. Annoying and wasteful.
+
+**VERDICT:** 😕 Possible but inefficient, causes starvation
+
+---
+
+**METHOD 3: ELIMINATE NO PREEMPTION**
+
+**IDEA:** Allow resources to be FORCEFULLY TAKEN from processes.
+
+**HOW:**
+
+**APPROACH A: Voluntary Preemption**
+```
+If process P1 requests resource held by P2:
+1. Check if P2 is waiting for other resources
+2. If YES: Preempt P2's resources, give to P1
+3. P2 will only restart when it can get ALL resources
+```
+
+**APPROACH B: Priority-based Preemption**
+```
+If high-priority process needs resource held by low-priority:
+1. Preempt resource from low-priority process
+2. Give to high-priority process
+3. Low-priority waits
+```
+
+**EXAMPLE:**
+```c
+// P1 (high priority) needs resource held by P2 (low priority)
+
+NORMAL:
+P1 waits for P2 → possible deadlock
+
+WITH PREEMPTION:
+OS takes resource from P2
+Gives to P1
+P1 completes
+P2 resumes later
+```
+
+**PROBLEM:**
+- Only works for resources whose STATE CAN BE SAVED (like CPU registers, memory)
+- DOESN'T work for resources like printers, locks (can't save "half-printed page")
+- Can cause **LIVELOCK** - processes keep preempting each other
+- **STARVATION** - low priority processes might never run
+
+**APPLICABILITY:**
+- ✓ CPU (context switch)
+- ✓ Memory (swap to disk)
+- ✗ Printer (can't "un-print")
+- ✗ Mutex locks (can't "un-lock")
+
+**VERDICT:** 🤷 Works for SOME resources, not others
+
+---
+
+**METHOD 4: ELIMINATE CIRCULAR WAIT**
+
+**IDEA:** Impose ORDERING on resources. Always request in INCREASING order.
+
+**THE SOLUTION:**
+
+Number all resources: R1, R2, R3, ..., Rn
+
+**RULE:** Process can only request Ri if i > j for all Rj it currently holds
+
+**EXAMPLE:**
+
+```
+RESOURCES: R1 (printer), R2 (scanner), R3 (disk)
+
+DEADLOCK SCENARIO (without ordering):
+P1: holds R1, requests R3
+P2: holds R3, requests R2
+P3: holds R2, requests R1
+Circular wait: P1→P3→P2→P1
+
+WITH ORDERING:
+All processes MUST request in order: R1 → R2 → R3
+
+P1: request R1, then R2, then R3
+P2: request R1, then R2, then R3
+P3: request R1, then R2, then R3
+
+NO CIRCLE POSSIBLE!
+```
+
+**WHY IT WORKS:**
+
+```
+Suppose circular wait exists:
+P1 holds Ri, waits for Rj (held by P2)
+P2 holds Rj, waits for Rk (held by P3)
+...
+Pn holds Rx, waits for Ri (held by P1)
+
+For this to happen:
+j > i (by our rule, P1 requested Ri before Rj)
+k > j (P2 requested Rj before Rk)
+...
+i > x (Pn requested Rx before Ri)
+
+This gives: i < j < k < ... < i
+
+CONTRADICTION! (i can't be less than itself)
+Therefore, circular wait is IMPOSSIBLE!
+```
+
+**REAL WORLD EXAMPLE:**
+
+```
+DATABASE TRANSACTIONS:
+Instead of: Lock tables randomly
+Use: Always lock tables in alphabetical order
+
+Transaction 1: Lock Accounts → Lock Customers
+Transaction 2: Lock Accounts → Lock Customers
+
+Both try to lock Accounts first
+One gets it, other waits
+First finishes, second continues
+NO DEADLOCK!
+```
+
+**ADVANTAGES:**
+- ✓ Simple to implement
+- ✓ Works for ALL resource types
+- ✓ No starvation
+- ✓ Most practical prevention method
+
+**DISADVANTAGES:**
+- ✗ Might not be natural ordering for resources
+- ✗ Can't add new resources easily (need to fit in order)
+- ✗ Application may be designed around different order
+
+**VERDICT:** ⭐ BEST practical solution for prevention!
+
+---
+
+**COMPARISON TABLE:**
+
+| Method | Break Which Condition | Practical? | Common Issues |
+|--------|---------------------|-----------|--------------|
+| Eliminate Mutual Exclusion | Mutual Exclusion | ❌ Rarely | Can't share most resources |
+| Request All at Once | Hold and Wait | ⚠️ Sometimes | Low utilization, starvation |
+| Allow Preemption | No Preemption | ⚠️ Limited | Only for saveable resources |
+| Resource Ordering | Circular Wait | ✅ Yes | Most widely used! |
+
+---
+
+**PREVENTION vs AVOIDANCE vs DETECTION:**
+
+**PREVENTION:** Make deadlock IMPOSSIBLE (strict rules)
+**AVOIDANCE:** Allow possibility but dynamically avoid (Banker's Algorithm)
+**DETECTION:** Let it happen, detect it, recover (most flexible)
+
+---
+
+**EXAM TIP:**
+
+They LOVE asking "Explain how to prevent deadlock by eliminating each condition."
+
+Answer format:
+1. State the condition
+2. Explain how to break it
+3. Give example
+4. Mention advantages/disadvantages
+
+**REMEMBER:** Resource ordering (eliminate circular wait) is the MOST PRACTICAL method in real systems!
+
+Now you know ALL the ways to prevent deadlock before it happens!
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question:
                 'Given the following snapshot, determine Need Matrix and Safe Sequence. Check if system is in safe state.',
             type: 'numerical',
+            answer: '''This is the CLASSIC Banker's Algorithm numerical that shows up in EVERY exam. Let me show you the systematic approach to solve ANY variant of this question.
+
+---
+
+**STANDARD PROBLEM FORMAT:**
+
+System has: n processes, m resource types
+Given: Allocation matrix, Max matrix, Available vector
+Find: Need matrix, Safe sequence (if exists)
+
+---
+
+**STEP-BY-STEP SOLUTION METHOD:**
+
+**STEP 1: CALCULATE NEED MATRIX**
+
+Formula: **Need = Max - Allocation**
+
+For each process i and resource type j:
+Need[i][j] = Max[i][j] - Allocation[i][j]
+
+---
+
+**EXAMPLE PROBLEM:**
+
+**Given:**
+- 5 processes: P0, P1, P2, P3, P4
+- 3 resource types: A, B, C
+- Total resources: A=10, B=5, C=7
+
+```
+       Allocation       Max
+       A  B  C         A  B  C
+P0     0  1  0         7  5  3
+P1     2  0  0         3  2  2
+P2     3  0  2         9  0  2
+P3     2  1  1         2  2  2
+P4     0  0  2         4  3  3
+
+Available: A=3, B=3, C=2
+```
+
+**FIND: Need matrix and Safe Sequence**
+
+---
+
+**SOLUTION:**
+
+**STEP 1: Calculate Need**
+
+```
+Need = Max - Allocation
+
+P0: [7,5,3] - [0,1,0] = [7,4,3]
+P1: [3,2,2] - [2,0,0] = [1,2,2]
+P2: [9,0,2] - [3,0,2] = [6,0,0]
+P3: [2,2,2] - [2,1,1] = [0,1,1]
+P4: [4,3,3] - [0,0,2] = [4,3,1]
+
+       Need
+       A  B  C
+P0     7  4  3
+P1     1  2  2
+P2     6  0  0
+P3     0  1  1
+P4     4  3  1
+```
+
+---
+
+**STEP 2: Apply Safety Algorithm**
+
+Initialize:
+- Work = Available = [3, 3, 2]
+- Finish = [False, False, False, False, False]
+- Safe_Sequence = []
+
+---
+
+**ITERATION 1:** Find process where Need ≤ Work
+
+```
+Check P0: Need[0] = [7,4,3], Work = [3,3,2]
+          7>3 ✗ (can't satisfy)
+
+Check P1: Need[1] = [1,2,2], Work = [3,3,2]
+          1≤3 ✓, 2≤3 ✓, 2≤2 ✓
+          CAN EXECUTE P1!
+
+Execute P1:
+- Work = Work + Allocation[1]
+- Work = [3,3,2] + [2,0,0] = [5,3,2]
+- Finish[1] = True
+- Safe_Sequence = [P1]
+```
+
+---
+
+**ITERATION 2:** Find next process
+
+```
+Work = [5,3,2]
+
+Check P0: [7,4,3] > [5,3,2] ✗
+Check P2: [6,0,0] > [5,3,2] ✗ (6>5)
+Check P3: [0,1,1] ≤ [5,3,2] ✓
+          CAN EXECUTE P3!
+
+Execute P3:
+- Work = [5,3,2] + [2,1,1] = [7,4,3]
+- Finish[3] = True
+- Safe_Sequence = [P1, P3]
+```
+
+---
+
+**ITERATION 3:**
+
+```
+Work = [7,4,3]
+
+Check P0: [7,4,3] ≤ [7,4,3] ✓
+          CAN EXECUTE P0!
+
+Execute P0:
+- Work = [7,4,3] + [0,1,0] = [7,5,3]
+- Finish[0] = True
+- Safe_Sequence = [P1, P3, P0]
+```
+
+---
+
+**ITERATION 4:**
+
+```
+Work = [7,5,3]
+
+Check P2: [6,0,0] ≤ [7,5,3] ✓
+          CAN EXECUTE P2!
+
+Execute P2:
+- Work = [7,5,3] + [3,0,2] = [10,5,5]
+- Finish[2] = True
+- Safe_Sequence = [P1, P3, P0, P2]
+```
+
+---
+
+**ITERATION 5:**
+
+```
+Work = [10,5,5]
+
+Check P4: [4,3,1] ≤ [10,5,5] ✓
+          CAN EXECUTE P4!
+
+Execute P4:
+- Work = [10,5,5] + [0,0,2] = [10,5,7]
+- Finish[4] = True
+- Safe_Sequence = [P1, P3, P0, P2, P4]
+```
+
+---
+
+**FINAL RESULT:**
+
+```
+All Finish[i] = True
+
+✓ SYSTEM IS IN SAFE STATE
+
+SAFE SEQUENCE: P1 → P3 → P0 → P2 → P4
+
+This means:
+- P1 executes completely, releases resources
+- P3 executes completely, releases resources
+- P0 executes completely, releases resources
+- P2 executes completely, releases resources
+- P4 executes completely, releases resources
+
+NO DEADLOCK POSSIBLE!
+```
+
+---
+
+**VERIFICATION (Show your work for full marks):**
+
+```
+Initial Available: [3,3,2]
+
+After P1 finishes: [3,3,2] + [2,0,0] = [5,3,2] ✓
+After P3 finishes: [5,3,2] + [2,1,1] = [7,4,3] ✓
+After P0 finishes: [7,4,3] + [0,1,0] = [7,5,3] ✓
+After P2 finishes: [7,5,3] + [3,0,2] = [10,5,5] ✓
+After P4 finishes: [10,5,5] + [0,0,2] = [10,5,7] ✓
+
+All resources recovered = [10,5,7] = Total ✓
+```
+
+---
+
+**COMMON EXAM VARIATIONS:**
+
+**VARIATION 1: "Is this request safe?"**
+
+If P1 requests [1,0,2]:
+1. Check Request ≤ Need ✓
+2. Check Request ≤ Available ✓
+3. Pretend allocation
+4. Run safety algorithm
+5. If safe → Grant, else Deny
+
+**VARIATION 2: "What if Available was [2,1,0]?"**
+
+Re-run safety algorithm with new Available.
+Might not find safe sequence → UNSAFE STATE
+
+**VARIATION 3: "Find ALL safe sequences"**
+
+Try different orders of execution.
+Multiple safe sequences possible!
+
+---
+
+**EXAM WRITING TIPS:**
+
+1. **Show Need calculation** - Write formula and all calculations
+2. **Create table** - Makes it neat and easy to check
+3. **Show each iteration** - Write Work value at each step
+4. **Explain comparison** - Show why you picked each process
+5. **Write final sequence** - Clear answer
+6. **Verify if asked** - Show work adds up
+
+**TIME SAVING:**
+- Use table format (faster to check)
+- Check smallest Need values first (likely to execute early)
+- Cross out finished processes (avoid confusion)
+
+---
+
+**COMMON MISTAKES (Don't do this!):**
+
+❌ Forgetting to update Work after each process
+❌ Picking process whose Need > Work
+❌ Not checking ALL processes at each step
+❌ Wrong Need calculation (Max - Allocation)
+❌ Declaring unsafe when you just haven't found sequence yet
+
+---
+
+**ANSWER TEMPLATE FOR EXAM:**
+
+```
+Given: [write down given data]
+
+Step 1: Calculate Need Matrix
+Need = Max - Allocation
+[show calculations in table]
+
+Step 2: Apply Safety Algorithm
+Initial: Work = [x,y,z], Finish = all False
+
+Iteration 1: [show which process, why, new Work]
+Iteration 2: [repeat]
+...
+
+Result: Finish = all True
+Safe Sequence: [write sequence]
+
+Conclusion: System is in SAFE STATE / UNSAFE STATE
+
+[If time, verify the sequence]
+```
+
+This question is 100% coming in your exam. Practice 3-4 variations and you'll ace it!
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question: 'Explain the Dining Philosophers Problem.',
             type: 'theory',
+            answer: '''Already covered in detail in Module 3.2! Check question 3 there for the COMPLETE solution with semaphores.
+
+**QUICK RECAP:**
+
+**Problem:** 5 philosophers, 5 chopsticks, need 2 to eat → potential DEADLOCK
+
+**Solutions:**
+1. **Max 4 philosophers** at table
+2. **Asymmetric pickup** (odd/even pick different order)
+3. **Critical section** around chopstick pickup
+
+**Key Learning:** Classic example of circular wait leading to deadlock.
+
+For FULL detailed explanation with code and all 3 solutions, see Module 3.2, Question 3!
+''',
+            hasDiagram: false,
           ),
         ],
       ),

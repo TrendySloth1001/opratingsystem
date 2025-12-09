@@ -4,6 +4,7 @@ import '../models/study_content.dart';
 import '../services/storage_service.dart';
 import '../theme/manga_theme.dart';
 import '../widgets/manga_widgets.dart';
+import '../widgets/manga_module_card.dart';
 import 'module_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -236,7 +237,32 @@ class _HomeScreenState extends State<HomeScreen>
                       style: Theme.of(context).textTheme.displayMedium,
                     ),
                     const SizedBox(height: 16),
-                    ...osModules.map((module) => _buildModuleCard(module)),
+                    ...osModules.map((module) {
+                      final completedTopics = module.topics
+                          .where((t) => _progressMap[t.id]?.isCompleted ?? false)
+                          .length;
+                      final totalTopics = module.topics.length;
+                      final progress = totalTopics > 0 ? completedTopics / totalTopics : 0.0;
+                      
+                      return UltraMangaCard(
+                        module: module,
+                        progress: progress,
+                        completedTopics: completedTopics,
+                        totalTopics: totalTopics,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ModuleScreen(
+                                module: module,
+                                progressMap: _progressMap,
+                                onProgressUpdate: _loadProgress,
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -285,20 +311,6 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  String _getModuleRoast(int completed, int total) {
-    if (completed == 0) {
-      return "Untouched. Like your gym membership.";
-    } else if (completed == total) {
-      return "CONQUERED! You're basically a professor now.";
-    } else if (completed == 1) {
-      return "One down. Rome wasn't built in a day... but you're testing that theory.";
-    } else if (completed < total / 2) {
-      return "Started strong... then what happened?";
-    } else {
-      return "Almost there! Don't choke now!";
-    }
-  }
-
   Widget _buildStatItem(
     BuildContext context,
     String value,
@@ -322,188 +334,6 @@ class _HomeScreenState extends State<HomeScreen>
           ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
-    );
-  }
-
-  Widget _buildModuleCard(Module module) {
-    final completedTopics = module.topics
-        .where((t) => _progressMap[t.id]?.isCompleted ?? false)
-        .length;
-    final totalTopics = module.topics.length;
-    final progress = totalTopics > 0 ? completedTopics / totalTopics : 0.0;
-    final isComplete = progress == 1.0;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ModuleScreen(
-                module: module,
-                progressMap: _progressMap,
-                onProgressUpdate: _loadProgress,
-              ),
-            ),
-          );
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: isComplete
-                ? MangaTheme.highlightYellow.withOpacity(0.1)
-                : MangaTheme.paperWhite,
-            border: Border.all(color: MangaTheme.inkBlack, width: 4),
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: MangaTheme.inkBlack,
-                offset: const Offset(8, 8),
-                blurRadius: 0,
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    // Module number badge
-                    Stack(
-                      children: [
-                        // Shadow layer
-                        Positioned(
-                          left: 5,
-                          top: 5,
-                          child: Container(
-                            width: 70,
-                            height: 70,
-                            decoration: const BoxDecoration(
-                              color: MangaTheme.inkBlack,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
-                        // Main circle
-                        Container(
-                          width: 70,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            color: isComplete
-                                ? MangaTheme.highlightYellow
-                                : MangaTheme.mangaRed,
-                            border: Border.all(
-                              color: MangaTheme.inkBlack,
-                              width: 4,
-                            ),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color:
-                                    (isComplete
-                                            ? MangaTheme.highlightYellow
-                                            : MangaTheme.mangaRed)
-                                        .withOpacity(0.4),
-                                blurRadius: 16,
-                                spreadRadius: 3,
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${module.id}',
-                              style: Theme.of(context).textTheme.displayLarge
-                                  ?.copyWith(
-                                    color: MangaTheme.inkBlack,
-                                    fontWeight: FontWeight.w900,
-                                    shadows: [
-                                      Shadow(
-                                        color: MangaTheme.paperWhite
-                                            .withOpacity(0.5),
-                                        offset: const Offset(2, 2),
-                                        blurRadius: 0,
-                                      ),
-                                    ],
-                                  ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            module.title,
-                            style: Theme.of(context).textTheme.headlineMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                  height: 1.2,
-                                ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            _getModuleRoast(completedTopics, totalTopics),
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: MangaTheme.shadowGray,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              MangaBadge(
-                                text: '$completedTopics/$totalTopics Topics',
-                                color: isComplete
-                                    ? MangaTheme.highlightYellow
-                                    : MangaTheme.speedlineBlue,
-                              ),
-                              if (isComplete) ...[
-                                const SizedBox(width: 8),
-                                const MangaBadge(
-                                  text: 'COMPLETE!',
-                                  color: MangaTheme.highlightYellow,
-                                ),
-                              ],
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                // Enhanced progress bar
-                Container(
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: MangaTheme.panelGray,
-                    border: Border.all(color: MangaTheme.inkBlack, width: 3),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(3),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                      backgroundColor: Colors.transparent,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        isComplete
-                            ? MangaTheme.highlightYellow
-                            : MangaTheme.mangaRed,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
