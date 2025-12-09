@@ -9,11 +9,7 @@ class TopicDetailScreen extends StatefulWidget {
   final Topic topic;
   final StudyProgress? progress;
 
-  const TopicDetailScreen({
-    super.key,
-    required this.topic,
-    this.progress,
-  });
+  const TopicDetailScreen({super.key, required this.topic, this.progress});
 
   @override
   State<TopicDetailScreen> createState() => _TopicDetailScreenState();
@@ -82,10 +78,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
-              side: const BorderSide(
-                color: MangaTheme.inkBlack,
-                width: 3,
-              ),
+              side: const BorderSide(color: MangaTheme.inkBlack, width: 3),
             ),
           ),
         );
@@ -112,10 +105,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
                 ),
                 decoration: BoxDecoration(
                   color: MangaTheme.mangaRed,
-                  border: Border.all(
-                    color: MangaTheme.paperWhite,
-                    width: 2,
-                  ),
+                  border: Border.all(color: MangaTheme.paperWhite, width: 2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -129,9 +119,9 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
                     Text(
                       '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: MangaTheme.paperWhite,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        color: MangaTheme.paperWhite,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -160,7 +150,9 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
                             children: [
                               Text(
                                 widget.topic.title,
-                                style: Theme.of(context).textTheme.headlineLarge,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineLarge,
                               ),
                               const SizedBox(height: 12),
                               Row(
@@ -228,8 +220,9 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
                                   const SizedBox(height: 12),
                                   Text(
                                     pyq.question,
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyLarge,
                                   ),
                                 ],
                               ),
@@ -258,10 +251,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
                   color: _isCompleted
                       ? MangaTheme.highlightYellow
                       : MangaTheme.mangaRed,
-                  border: Border.all(
-                    color: MangaTheme.inkBlack,
-                    width: 3,
-                  ),
+                  border: Border.all(color: MangaTheme.inkBlack, width: 3),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(

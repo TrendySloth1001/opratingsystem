@@ -56,10 +56,7 @@ class MangaActionBubble extends StatelessWidget {
               Icon(icon, color: MangaTheme.paperWhite, size: 20),
               const SizedBox(width: 8),
             ],
-            Text(
-              text,
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
+            Text(text, style: Theme.of(context).textTheme.labelLarge),
           ],
         ),
       ),
@@ -83,10 +80,7 @@ class MangaSpeechBubble extends StatelessWidget {
       painter: _SpeechBubblePainter(isThought: isThought),
       child: Container(
         padding: const EdgeInsets.all(16),
-        child: Text(
-          text,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
       ),
     );
   }
@@ -111,10 +105,12 @@ class _SpeechBubblePainter extends CustomPainter {
     final path = Path();
     if (isThought) {
       // Cloud-like thought bubble
-      path.addRRect(RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-        const Radius.circular(20),
-      ));
+      path.addRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(0, 0, size.width, size.height),
+          const Radius.circular(20),
+        ),
+      );
     } else {
       // Speech bubble with tail
       path.moveTo(20, 0);
@@ -122,7 +118,11 @@ class _SpeechBubblePainter extends CustomPainter {
       path.quadraticBezierTo(size.width, 0, size.width, 20);
       path.lineTo(size.width, size.height - 20);
       path.quadraticBezierTo(
-          size.width, size.height, size.width - 20, size.height);
+        size.width,
+        size.height,
+        size.width - 20,
+        size.height,
+      );
       path.lineTo(40, size.height);
       path.lineTo(20, size.height + 10);
       path.lineTo(30, size.height);
@@ -144,22 +144,14 @@ class SpeedLine extends StatelessWidget {
   final Widget child;
   final bool isAnimating;
 
-  const SpeedLine({
-    super.key,
-    required this.child,
-    this.isAnimating = false,
-  });
+  const SpeedLine({super.key, required this.child, this.isAnimating = false});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         if (isAnimating)
-          Positioned.fill(
-            child: CustomPaint(
-              painter: _SpeedLinePainter(),
-            ),
-          ),
+          Positioned.fill(child: CustomPaint(painter: _SpeedLinePainter())),
         child,
       ],
     );
@@ -203,10 +195,7 @@ class MangaProgressBar extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+        Text(label, style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 8),
         Stack(
           children: [
@@ -214,10 +203,7 @@ class MangaProgressBar extends StatelessWidget {
               height: 30,
               decoration: BoxDecoration(
                 color: MangaTheme.panelGray,
-                border: Border.all(
-                  color: MangaTheme.primaryBlack,
-                  width: 3,
-                ),
+                border: Border.all(color: MangaTheme.primaryBlack, width: 3),
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -228,10 +214,7 @@ class MangaProgressBar extends StatelessWidget {
               width: MediaQuery.of(context).size.width * progress,
               decoration: BoxDecoration(
                 color: MangaTheme.mangaRed,
-                border: Border.all(
-                  color: MangaTheme.inkBlack,
-                  width: 3,
-                ),
+                border: Border.all(color: MangaTheme.inkBlack, width: 3),
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -241,11 +224,11 @@ class MangaProgressBar extends StatelessWidget {
               child: Text(
                 '${(progress * 100).toStringAsFixed(0)}%',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: progress > 0.3
-                          ? MangaTheme.paperWhite
-                          : MangaTheme.primaryBlack,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: progress > 0.3
+                      ? MangaTheme.paperWhite
+                      : MangaTheme.primaryBlack,
+                ),
               ),
             ),
           ],
@@ -271,10 +254,7 @@ class MangaBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: color,
-        border: Border.all(
-          color: MangaTheme.inkBlack,
-          width: 2,
-        ),
+        border: Border.all(color: MangaTheme.inkBlack, width: 2),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -287,9 +267,9 @@ class MangaBadge extends StatelessWidget {
       child: Text(
         text,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: MangaTheme.paperWhite,
-              fontWeight: FontWeight.bold,
-            ),
+          color: MangaTheme.paperWhite,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

@@ -8,7 +8,8 @@ final List<Module> osModules = [
     topics: [
       Topic(
         id: '2.1',
-        title: '2.1 — Concept of a Process, Process States, Process Description, PCB',
+        title:
+            '2.1 — Concept of a Process, Process States, Process Description, PCB',
         content: '''
 **Process Basics:**
 A process is a program in execution. It includes program code, current activity (program counter), stack, data section, and heap.
@@ -37,11 +38,13 @@ Data structure containing:
 ''',
         pyqs: [
           PYQ(
-            question: 'What is a process? Draw and Explain Process State Transition Diagram with six states.',
+            question:
+                'What is a process? Draw and Explain Process State Transition Diagram with six states.',
             type: 'theory',
           ),
           PYQ(
-            question: 'What is an Operating System? Explain its basic functions.',
+            question:
+                'What is an Operating System? Explain its basic functions.',
             type: 'theory',
           ),
           PYQ(
@@ -49,7 +52,8 @@ Data structure containing:
             type: 'theory',
           ),
           PYQ(
-            question: 'What is the role of PCB? Explain the structure of PCB with its disadvantages.',
+            question:
+                'What is the role of PCB? Explain the structure of PCB with its disadvantages.',
             type: 'theory',
           ),
           PYQ(
@@ -101,19 +105,18 @@ Data structure containing:
 ''',
         pyqs: [
           PYQ(
-            question: 'Explain in brief the types of CPU schedulers with a diagram.',
+            question:
+                'Explain in brief the types of CPU schedulers with a diagram.',
             type: 'theory',
           ),
           PYQ(
             question: 'Discuss various CPU scheduling criteria.',
             type: 'theory',
           ),
+          PYQ(question: 'Explain CPU Scheduling Criteria.', type: 'theory'),
           PYQ(
-            question: 'Explain CPU Scheduling Criteria.',
-            type: 'theory',
-          ),
-          PYQ(
-            question: 'Differentiate between Preemptive and Non-preemptive scheduling algorithms.',
+            question:
+                'Differentiate between Preemptive and Non-preemptive scheduling algorithms.',
             type: 'theory',
           ),
           PYQ(
@@ -121,11 +124,13 @@ Data structure containing:
             type: 'theory',
           ),
           PYQ(
-            question: 'Draw Gantt chart for FCFS, SJF (Preemptive) and Round Robin (Quantum=2). Also calculate average waiting time and turnaround time.',
+            question:
+                'Draw Gantt chart for FCFS, SJF (Preemptive) and Round Robin (Quantum=2). Also calculate average waiting time and turnaround time.',
             type: 'numerical',
           ),
           PYQ(
-            question: 'Draw Gantt chart for FCFS and SJF scheduling for given processes.',
+            question:
+                'Draw Gantt chart for FCFS and SJF scheduling for given processes.',
             type: 'numerical',
           ),
         ],
@@ -172,13 +177,11 @@ A thread is a lightweight process, the basic unit of CPU utilization. It shares 
             type: 'theory',
           ),
           PYQ(
-            question: 'Differentiate between User Level Thread and Kernel Level Thread.',
+            question:
+                'Differentiate between User Level Thread and Kernel Level Thread.',
             type: 'theory',
           ),
-          PYQ(
-            question: 'Concept of Multithreading.',
-            type: 'theory',
-          ),
+          PYQ(question: 'Concept of Multithreading.', type: 'theory'),
         ],
       ),
     ],
@@ -234,17 +237,15 @@ Consumer:
 ''',
         pyqs: [
           PYQ(
-            question: 'Discuss Producer and Consumer problem with solution using Semaphore.',
+            question:
+                'Discuss Producer and Consumer problem with solution using Semaphore.',
             type: 'theory',
           ),
           PYQ(
             question: 'Explain the Critical Section Problem.',
             type: 'theory',
           ),
-          PYQ(
-            question: 'Explain Principles of Concurrency.',
-            type: 'theory',
-          ),
+          PYQ(question: 'Explain Principles of Concurrency.', type: 'theory'),
         ],
       ),
       Topic(
@@ -289,7 +290,8 @@ Solution using semaphores prevents deadlock.
 ''',
         pyqs: [
           PYQ(
-            question: 'Explain the term "Busy Waiting". Give solution to this problem using Semaphore.',
+            question:
+                'Explain the term "Busy Waiting". Give solution to this problem using Semaphore.',
             type: 'theory',
           ),
           PYQ(
@@ -297,18 +299,21 @@ Solution using semaphores prevents deadlock.
             type: 'theory',
           ),
           PYQ(
-            question: 'Explain Dining Philosophers Problem with solution using Semaphore.',
+            question:
+                'Explain Dining Philosophers Problem with solution using Semaphore.',
             type: 'theory',
           ),
           PYQ(
-            question: 'Explain Hardware solution proposed to solve the critical section problem.',
+            question:
+                'Explain Hardware solution proposed to solve the critical section problem.',
             type: 'theory',
           ),
         ],
       ),
       Topic(
         id: '3.3',
-        title: '3.3 — Deadlock: Conditions, RAG, Prevention, Avoidance, Detection, Recovery',
+        title:
+            '3.3 — Deadlock: Conditions, RAG, Prevention, Avoidance, Detection, Recovery',
         content: '''
 **Deadlock:**
 Set of processes blocked, each holding resources and waiting for resources held by others.
@@ -354,11 +359,13 @@ Break one of four conditions:
 ''',
         pyqs: [
           PYQ(
-            question: 'What is a Deadlock? Explain the necessary conditions for a deadlock to take place.',
+            question:
+                'What is a Deadlock? Explain the necessary conditions for a deadlock to take place.',
             type: 'theory',
           ),
           PYQ(
-            question: 'Explain how Resource Allocation Graph (RAG) and Wait For Graph (WFG) are used to determine presence of a deadlock.',
+            question:
+                'Explain how Resource Allocation Graph (RAG) and Wait For Graph (WFG) are used to determine presence of a deadlock.',
             type: 'theory',
           ),
           PYQ(
@@ -370,7 +377,8 @@ Break one of four conditions:
             type: 'theory',
           ),
           PYQ(
-            question: 'Given the following snapshot, determine Need Matrix and Safe Sequence. Check if system is in safe state.',
+            question:
+                'Given the following snapshot, determine Need Matrix and Safe Sequence. Check if system is in safe state.',
             type: 'numerical',
           ),
           PYQ(
@@ -389,7 +397,8 @@ Break one of four conditions:
     topics: [
       Topic(
         id: '4.1',
-        title: '4.1 — Memory Management Requirements, Partitioning, Allocation, Paging, Segmentation, TLB',
+        title:
+            '4.1 — Memory Management Requirements, Partitioning, Allocation, Paging, Segmentation, TLB',
         content: '''
 **Memory Management Requirements:**
 1. Relocation
@@ -475,17 +484,16 @@ Break one of four conditions:
             type: 'theory',
           ),
           PYQ(
-            question: 'Explain Memory Allocation Strategies with suitable examples.',
+            question:
+                'Explain Memory Allocation Strategies with suitable examples.',
             type: 'theory',
           ),
           PYQ(
-            question: 'Given five memory partitions, allocate using first-fit, best-fit and worst-fit.',
+            question:
+                'Given five memory partitions, allocate using first-fit, best-fit and worst-fit.',
             type: 'numerical',
           ),
-          PYQ(
-            question: 'Explain MFT with an example.',
-            type: 'theory',
-          ),
+          PYQ(question: 'Explain MFT with an example.', type: 'theory'),
           PYQ(
             question: 'What is External Fragmentation? Explain with example.',
             type: 'theory',
@@ -494,15 +502,13 @@ Break one of four conditions:
             question: 'How to solve the fragmentation problem using Paging?',
             type: 'theory',
           ),
-          PYQ(
-            question: 'TLB.',
-            type: 'theory',
-          ),
+          PYQ(question: 'TLB.', type: 'theory'),
         ],
       ),
       Topic(
         id: '4.2',
-        title: '4.2 — Virtual Memory, Demand Paging, Page Replacement, Thrashing',
+        title:
+            '4.2 — Virtual Memory, Demand Paging, Page Replacement, Thrashing',
         content: '''
 **Virtual Memory:**
 Separation of logical and physical memory.
@@ -564,17 +570,16 @@ Process spending more time paging than executing.
 ''',
         pyqs: [
           PYQ(
-            question: 'Explain Page Replacement Strategies with suitable examples.',
+            question:
+                'Explain Page Replacement Strategies with suitable examples.',
             type: 'theory',
           ),
           PYQ(
-            question: 'Calculate page faults for FIFO, Optimal and LRU for the following reference string.',
+            question:
+                'Calculate page faults for FIFO, Optimal and LRU for the following reference string.',
             type: 'numerical',
           ),
-          PYQ(
-            question: 'Thrashing.',
-            type: 'theory',
-          ),
+          PYQ(question: 'Thrashing.', type: 'theory'),
         ],
       ),
     ],

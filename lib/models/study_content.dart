@@ -3,11 +3,7 @@ class Module {
   final String title;
   final List<Topic> topics;
 
-  Module({
-    required this.id,
-    required this.title,
-    required this.topics,
-  });
+  Module({required this.id, required this.title, required this.topics});
 }
 
 class Topic {
@@ -28,10 +24,7 @@ class PYQ {
   final String question;
   final String type; // 'theory' or 'numerical'
 
-  PYQ({
-    required this.question,
-    required this.type,
-  });
+  PYQ({required this.question, required this.type});
 }
 
 class StudyProgress {
@@ -48,18 +41,18 @@ class StudyProgress {
   });
 
   Map<String, dynamic> toJson() => {
-        'topicId': topicId,
-        'isCompleted': isCompleted,
-        'completedDate': completedDate?.toIso8601String(),
-        'timeSpent': timeSpent,
-      };
+    'topicId': topicId,
+    'isCompleted': isCompleted,
+    'completedDate': completedDate?.toIso8601String(),
+    'timeSpent': timeSpent,
+  };
 
   factory StudyProgress.fromJson(Map<String, dynamic> json) => StudyProgress(
-        topicId: json['topicId'],
-        isCompleted: json['isCompleted'],
-        completedDate: json['completedDate'] != null
-            ? DateTime.parse(json['completedDate'])
-            : null,
-        timeSpent: json['timeSpent'] ?? 0,
-      );
+    topicId: json['topicId'],
+    isCompleted: json['isCompleted'],
+    completedDate: json['completedDate'] != null
+        ? DateTime.parse(json['completedDate'])
+        : null,
+    timeSpent: json['timeSpent'] ?? 0,
+  );
 }

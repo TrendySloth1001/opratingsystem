@@ -70,11 +70,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -105,7 +101,8 @@ class _HomeScreenState extends State<HomeScreen>
                       const SizedBox(height: 40),
                       Text(
                         'OS MASTERY',
-                        style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        style: Theme.of(context).textTheme.displayLarge
+                            ?.copyWith(
                               color: MangaTheme.paperWhite,
                               shadows: [
                                 Shadow(
@@ -118,7 +115,8 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                       Text(
                         'STUDY TRACKER',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
                               color: MangaTheme.highlightYellow,
                               letterSpacing: 4,
                             ),
@@ -154,7 +152,9 @@ class _HomeScreenState extends State<HomeScreen>
                                 const SizedBox(width: 12),
                                 Text(
                                   'YOUR PROGRESS',
-                                  style: Theme.of(context).textTheme.displaySmall,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.displaySmall,
                                 ),
                               ],
                             ),
@@ -209,22 +209,26 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildStatItem(
-      BuildContext context, String value, String label, IconData icon) {
+    BuildContext context,
+    String value,
+    String label,
+    IconData icon,
+  ) {
     return Column(
       children: [
         Icon(icon, size: 32, color: MangaTheme.mangaRed),
         const SizedBox(height: 8),
         Text(
           value,
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                color: MangaTheme.mangaRed,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineLarge?.copyWith(color: MangaTheme.mangaRed),
         ),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -266,19 +270,14 @@ class _HomeScreenState extends State<HomeScreen>
                     height: 60,
                     decoration: BoxDecoration(
                       color: MangaTheme.mangaRed,
-                      border: Border.all(
-                        color: MangaTheme.inkBlack,
-                        width: 3,
-                      ),
+                      border: Border.all(color: MangaTheme.inkBlack, width: 3),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
                       child: Text(
                         '${module.id}',
-                        style:
-                            Theme.of(context).textTheme.displaySmall?.copyWith(
-                                  color: MangaTheme.paperWhite,
-                                ),
+                        style: Theme.of(context).textTheme.displaySmall
+                            ?.copyWith(color: MangaTheme.paperWhite),
                       ),
                     ),
                   ),

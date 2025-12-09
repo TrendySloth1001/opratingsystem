@@ -39,25 +39,17 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _scaleController,
-        curve: Curves.elasticOut,
-      ),
+      CurvedAnimation(parent: _scaleController, curve: Curves.elasticOut),
     );
 
     _rotateAnimation = Tween<double>(begin: 0.0, end: 2 * math.pi).animate(
-      CurvedAnimation(
-        parent: _rotateController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _rotateController, curve: Curves.easeInOut),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _fadeController,
-        curve: Curves.easeIn,
-      ),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
 
     _startAnimation();
   }
@@ -77,10 +69,7 @@ class _SplashScreenState extends State<SplashScreen>
           pageBuilder: (context, animation, secondaryAnimation) =>
               const HomeScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
+            return FadeTransition(opacity: animation, child: child);
           },
           transitionDuration: const Duration(milliseconds: 500),
         ),
@@ -150,7 +139,8 @@ class _SplashScreenState extends State<SplashScreen>
                     children: [
                       Text(
                         'OS MASTERY',
-                        style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        style: Theme.of(context).textTheme.displayLarge
+                            ?.copyWith(
                               color: MangaTheme.paperWhite,
                               shadows: [
                                 Shadow(
@@ -164,11 +154,11 @@ class _SplashScreenState extends State<SplashScreen>
                       const SizedBox(height: 8),
                       Text(
                         'STUDY TRACKER',
-                        style:
-                            Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  color: MangaTheme.highlightYellow,
-                                  letterSpacing: 6,
-                                ),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
+                              color: MangaTheme.highlightYellow,
+                              letterSpacing: 6,
+                            ),
                       ),
                       const SizedBox(height: 30),
                       Container(
@@ -185,12 +175,12 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         child: Text(
                           'LOADING...',
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: MangaTheme.paperWhite,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 3,
-                                  ),
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                color: MangaTheme.paperWhite,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 3,
+                              ),
                         ),
                       ),
                     ],
@@ -226,11 +216,7 @@ class _BackgroundSpeedlinesPainter extends CustomPainter {
       final endX = centerX + endRadius * math.cos(angle);
       final endY = centerY + endRadius * math.sin(angle);
 
-      canvas.drawLine(
-        Offset(startX, startY),
-        Offset(endX, endY),
-        paint,
-      );
+      canvas.drawLine(Offset(startX, startY), Offset(endX, endY), paint);
     }
   }
 

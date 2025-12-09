@@ -59,9 +59,7 @@ class ModuleScreen extends StatelessWidget {
                         child: Center(
                           child: Text(
                             '${module.id}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .displaySmall
+                            style: Theme.of(context).textTheme.displaySmall
                                 ?.copyWith(
                                   color: MangaTheme.paperWhite,
                                   fontSize: 24,
@@ -90,94 +88,91 @@ class ModuleScreen extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final topic = module.topics[index];
-                  final progress = progressMap[topic.id];
-                  final isCompleted = progress?.isCompleted ?? false;
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final topic = module.topics[index];
+                final progress = progressMap[topic.id];
+                final isCompleted = progress?.isCompleted ?? false;
 
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: MangaPanel(
-                      isCompleted: isCompleted,
-                      hasAction: !isCompleted,
-                      onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TopicDetailScreen(
-                              topic: topic,
-                              progress: progress,
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: MangaPanel(
+                    isCompleted: isCompleted,
+                    hasAction: !isCompleted,
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TopicDetailScreen(
+                            topic: topic,
+                            progress: progress,
+                          ),
+                        ),
+                      );
+                      onProgressUpdate();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: isCompleted
+                                  ? MangaTheme.highlightYellow
+                                  : MangaTheme.speedlineBlue,
+                              border: Border.all(
+                                color: MangaTheme.inkBlack,
+                                width: 2,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              isCompleted ? Icons.check : Icons.book,
+                              color: MangaTheme.paperWhite,
                             ),
                           ),
-                        );
-                        onProgressUpdate();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: isCompleted
-                                    ? MangaTheme.highlightYellow
-                                    : MangaTheme.speedlineBlue,
-                                border: Border.all(
-                                  color: MangaTheme.inkBlack,
-                                  width: 2,
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  topic.title,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.headlineSmall,
                                 ),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                isCompleted ? Icons.check : Icons.book,
-                                color: MangaTheme.paperWhite,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    topic.title,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    MangaBadge(
+                                      text: '${topic.pyqs.length} PYQs',
+                                      color: MangaTheme.accentOrange,
+                                    ),
+                                    if (progress != null &&
+                                        progress.timeSpent > 0) ...[
+                                      const SizedBox(width: 8),
                                       MangaBadge(
-                                        text: '${topic.pyqs.length} PYQs',
-                                        color: MangaTheme.accentOrange,
+                                        text: '${progress.timeSpent} min',
+                                        color: MangaTheme.shadowGray,
                                       ),
-                                      if (progress != null &&
-                                          progress.timeSpent > 0) ...[
-                                        const SizedBox(width: 8),
-                                        MangaBadge(
-                                          text: '${progress.timeSpent} min',
-                                          color: MangaTheme.shadowGray,
-                                        ),
-                                      ],
                                     ],
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: MangaTheme.primaryBlack,
-                            ),
-                          ],
-                        ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            color: MangaTheme.primaryBlack,
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-                childCount: module.topics.length,
-              ),
+                  ),
+                );
+              }, childCount: module.topics.length),
             ),
           ),
         ],

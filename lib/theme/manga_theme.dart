@@ -121,10 +121,7 @@ class MangaTheme {
   }) {
     return BoxDecoration(
       color: backgroundColor ?? paperWhite,
-      border: Border.all(
-        color: hasAction ? mangaRed : primaryBlack,
-        width: 3,
-      ),
+      border: Border.all(color: hasAction ? mangaRed : primaryBlack, width: 3),
       borderRadius: BorderRadius.circular(8),
       boxShadow: [
         BoxShadow(
@@ -139,10 +136,7 @@ class MangaTheme {
   static BoxDecoration completedPanelDecoration() {
     return BoxDecoration(
       color: highlightYellow.withOpacity(0.2),
-      border: Border.all(
-        color: highlightYellow,
-        width: 3,
-      ),
+      border: Border.all(color: highlightYellow, width: 3),
       borderRadius: BorderRadius.circular(8),
       boxShadow: [
         BoxShadow(
@@ -157,10 +151,7 @@ class MangaTheme {
   static BoxDecoration actionPanelDecoration() {
     return BoxDecoration(
       color: mangaRed,
-      border: Border.all(
-        color: inkBlack,
-        width: 3,
-      ),
+      border: Border.all(color: inkBlack, width: 3),
       borderRadius: BorderRadius.circular(8),
       boxShadow: [
         BoxShadow(

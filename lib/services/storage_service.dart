@@ -37,12 +37,14 @@ class StorageService {
         timeSpent: existing.timeSpent + (additionalTime ?? 0),
       );
     } else {
-      progressList.add(StudyProgress(
-        topicId: topicId,
-        isCompleted: isCompleted,
-        completedDate: isCompleted ? DateTime.now() : null,
-        timeSpent: additionalTime ?? 0,
-      ));
+      progressList.add(
+        StudyProgress(
+          topicId: topicId,
+          isCompleted: isCompleted,
+          completedDate: isCompleted ? DateTime.now() : null,
+          timeSpent: additionalTime ?? 0,
+        ),
+      );
     }
 
     await saveProgress(progressList);
