@@ -331,12 +331,11 @@ class _HomeScreenState extends State<HomeScreen>
         .length;
     final totalTopics = module.topics.length;
     final progress = totalTopics > 0 ? completedTopics / totalTopics : 0.0;
+    final isComplete = progress == 1.0;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: MangaPanel(
-        isCompleted: progress == 1.0,
-        hasAction: true,
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: GestureDetector(
         onTap: () {
           Navigator.push(
             context,
@@ -349,128 +348,162 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           );
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Stack(
-                    children: [
-                      // Shadow
-                      Positioned(
-                        left: 4,
-                        top: 4,
-                        child: Container(
-                          width: 60,
-                          height: 60,
-                          decoration: const BoxDecoration(
-                            color: MangaTheme.inkBlack,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                      // Main circle
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: MangaTheme.mangaRed,
-                          border: Border.all(
-                            color: MangaTheme.inkBlack,
-                            width: 4,
-                          ),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: MangaTheme.mangaRed.withOpacity(0.5),
-                              blurRadius: 12,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${module.id}',
-                            style: Theme.of(context).textTheme.displaySmall
-                                ?.copyWith(
-                                  color: MangaTheme.paperWhite,
-                                  shadows: [
-                                    const Shadow(
-                                      color: MangaTheme.inkBlack,
-                                      offset: Offset(2, 2),
-                                      blurRadius: 0,
-                                    ),
-                                  ],
-                                ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        child: Container(
+          decoration: BoxDecoration(
+            color: isComplete
+                ? MangaTheme.highlightYellow.withOpacity(0.1)
+                : MangaTheme.paperWhite,
+            border: Border.all(
+              color: MangaTheme.inkBlack,
+              width: 4,
+            ),
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: MangaTheme.inkBlack,
+                offset: const Offset(8, 8),
+                blurRadius: 0,
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    // Module number badge
+                    Stack(
                       children: [
-                        Text(
-                          module.title,
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _getModuleRoast(completedTopics, totalTopics),
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: MangaTheme.shadowGray,
-                                fontStyle: FontStyle.italic,
-                              ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            MangaBadge(
-                              text: '$completedTopics/$totalTopics Topics',
-                              color: progress == 1.0
-                                  ? MangaTheme.highlightYellow
-                                  : MangaTheme.speedlineBlue,
+                        // Shadow layer
+                        Positioned(
+                          left: 5,
+                          top: 5,
+                          child: Container(
+                            width: 70,
+                            height: 70,
+                            decoration: const BoxDecoration(
+                              color: MangaTheme.inkBlack,
+                              shape: BoxShape.circle,
                             ),
-                            if (progress == 1.0) ...[
-                              const SizedBox(width: 8),
-                              const MangaBadge(
-                                text: 'COMPLETE',
-                                color: MangaTheme.highlightYellow,
+                          ),
+                        ),
+                        // Main circle
+                        Container(
+                          width: 70,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            color: isComplete
+                                ? MangaTheme.highlightYellow
+                                : MangaTheme.mangaRed,
+                            border: Border.all(
+                              color: MangaTheme.inkBlack,
+                              width: 4,
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: (isComplete
+                                        ? MangaTheme.highlightYellow
+                                        : MangaTheme.mangaRed)
+                                    .withOpacity(0.4),
+                                blurRadius: 16,
+                                spreadRadius: 3,
                               ),
                             ],
-                          ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${module.id}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .displayLarge
+                                  ?.copyWith(
+                                    color: MangaTheme.inkBlack,
+                                    fontWeight: FontWeight.w900,
+                                    shadows: [
+                                      Shadow(
+                                        color: MangaTheme.paperWhite
+                                            .withOpacity(0.5),
+                                        offset: const Offset(2, 2),
+                                        blurRadius: 0,
+                                      ),
+                                    ],
+                                  ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              // Enhanced progress bar
-              Container(
-                height: 10,
-                decoration: BoxDecoration(
-                  color: MangaTheme.panelGray,
-                  border: Border.all(color: MangaTheme.inkBlack, width: 2),
-                  borderRadius: BorderRadius.circular(5),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            module.title,
+                            style:
+                                Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                      fontWeight: FontWeight.w900,
+                                      height: 1.2,
+                                    ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            _getModuleRoast(completedTopics, totalTopics),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: MangaTheme.shadowGray,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              MangaBadge(
+                                text: '$completedTopics/$totalTopics Topics',
+                                color: isComplete
+                                    ? MangaTheme.highlightYellow
+                                    : MangaTheme.speedlineBlue,
+                              ),
+                              if (isComplete) ...[
+                                const SizedBox(width: 8),
+                                const MangaBadge(
+                                  text: 'COMPLETE!',
+                                  color: MangaTheme.highlightYellow,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(3),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.transparent,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      progress == 1.0 ? MangaTheme.highlightYellow : MangaTheme.mangaRed,
+                const SizedBox(height: 20),
+                // Enhanced progress bar
+                Container(
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: MangaTheme.panelGray,
+                    border: Border.all(color: MangaTheme.inkBlack, width: 3),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: Colors.transparent,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        isComplete
+                            ? MangaTheme.highlightYellow
+                            : MangaTheme.mangaRed,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

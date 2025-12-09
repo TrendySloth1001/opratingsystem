@@ -249,7 +249,8 @@ Click each question for detailed roasts... I mean explanations!
             question:
                 'Explain in brief the types of CPU schedulers with a diagram.',
             type: 'theory',
-            answer: '''CPU Scheduling decides which process runs next when the CPU is free. It's literally the OS playing favorites with your programs.
+            answer:
+                '''CPU Scheduling decides which process runs next when the CPU is free. It's literally the OS playing favorites with your programs.
 
 THREE TYPES OF SCHEDULERS:
 
@@ -287,7 +288,8 @@ Fun fact: Most modern systems don't use long-term schedulers anymore. They YOLO 
           PYQ(
             question: 'Discuss various CPU scheduling criteria.',
             type: 'theory',
-            answer: '''CPU Scheduling Criteria are the metrics we use to judge if a scheduling algorithm sucks or not. Spoiler: They all suck in different ways!
+            answer:
+                '''CPU Scheduling Criteria are the metrics we use to judge if a scheduling algorithm sucks or not. Spoiler: They all suck in different ways!
 
 CRITERIA (aka What We're Trying to Optimize):
 
@@ -336,8 +338,11 @@ Example: FCFS has good throughput but terrible response time. SJF has minimum wa
 The OS is basically trying to balance being fair (everyone gets a turn) with being efficient (fast processes first). It's harder than it sounds!''',
             hasDiagram: false,
           ),
-          PYQ(question: 'Explain CPU Scheduling Criteria.', type: 'theory',
-            answer: '''(Same as previous question - this is a duplicate PYQ asking the same thing)
+          PYQ(
+            question: 'Explain CPU Scheduling Criteria.',
+            type: 'theory',
+            answer:
+                '''(Same as previous question - this is a duplicate PYQ asking the same thing)
 
 CPU Scheduling Criteria = The report card for scheduling algorithms.
 
@@ -374,7 +379,8 @@ Remember: You CANNOT optimize all five simultaneously. Every algorithm makes tra
             question:
                 'Differentiate between Preemptive and Non-preemptive scheduling algorithms.',
             type: 'theory',
-            answer: '''Preemptive vs Non-Preemptive is basically asking: Can you interrupt a running process or nah?
+            answer:
+                '''Preemptive vs Non-Preemptive is basically asking: Can you interrupt a running process or nah?
 
 NON-PREEMPTIVE SCHEDULING:
 • Process keeps CPU until it finishes or blocks
@@ -424,7 +430,8 @@ The Verdict: Preemptive is usually better for modern systems unless you're runni
           PYQ(
             question: 'Explain Round Robin Algorithm with a suitable example.',
             type: 'theory',
-            answer: '''Round Robin (RR) is the "everyone gets a turn" algorithm. It's preemptive FCFS with a time limit per turn.
+            answer:
+                '''Round Robin (RR) is the "everyone gets a turn" algorithm. It's preemptive FCFS with a time limit per turn.
 
 HOW IT WORKS:
 
@@ -480,7 +487,8 @@ Real World: Used in time-sharing systems where responsiveness matters more than 
             question:
                 'Draw Gantt chart for FCFS, SJF (Preemptive) and Round Robin (Quantum=2). Also calculate average waiting time and turnaround time.',
             type: 'numerical',
-            answer: '''This is a numerical problem where you'd be given process arrival times and burst times. Here's the approach:
+            answer:
+                '''This is a numerical problem where you'd be given process arrival times and burst times. Here's the approach:
 
 GIVEN DATA (Example):
 Process | Arrival | Burst
@@ -530,7 +538,8 @@ In exams, you'll get specific numbers. Just follow the algorithm rules, draw the
             question:
                 'Draw Gantt chart for FCFS and SJF scheduling for given processes.',
             type: 'numerical',
-            answer: '''Another Gantt chart question! The approach is the same as above.
+            answer:
+                '''Another Gantt chart question! The approach is the same as above.
 
 FCFS ALGORITHM:
 1. Sort processes by arrival time
@@ -589,49 +598,243 @@ In exams, they'll give you the numbers. Just execute the algorithm step by step 
         id: '2.3',
         title: '2.3 — Threads: Definition, Types, Concept of Multithreading',
         content: '''
-**Thread:**
-A thread is a lightweight process, the basic unit of CPU utilization. It shares code, data, and OS resources with other threads of the same process.
+THREADS — Lightweight Processes That Share Everything
 
-**Benefits of Multithreading:**
-- Responsiveness
-- Resource sharing
-- Economy
-- Scalability
+Threads are like roommates in the same apartment (process). They share space but have their own stuff.
 
-**Types of Threads:**
+Topics covered:
+• What threads are and why we need them
+• User-level vs Kernel-level threads
+• Multithreading models and benefits
+• Thread implementation
 
-**1. User-Level Threads (ULT):**
-- Managed by thread library
-- Fast context switch
-- OS treats it as single-threaded
-- Blocking system call blocks entire process
-
-**2. Kernel-Level Threads (KLT):**
-- Managed by OS kernel
-- True parallelism on multiprocessor
-- Slower context switch
-- Each thread can be scheduled independently
-
-**Multithreading Models:**
-- Many-to-One
-- One-to-One
-- Many-to-Many
+Click questions for roasts and explanations!
 ''',
         pyqs: [
           PYQ(
             question: 'Define Thread. Mention benefits of Multithreading.',
             type: 'theory',
+            answer: '''A thread is a lightweight process—basically a mini-process that lives inside a real process. Think of it as a sub-task.
+
+DEFINITION:
+Thread = Basic unit of CPU utilization
+• Has its own: Thread ID, Program Counter, Register set, Stack
+• Shares with siblings: Code section, Data section, Heap, OS resources (files, signals)
+
+Analogy: If a process is a house, threads are roommates sharing that house. Each has their own bed and closet, but they share the kitchen, living room, and WiFi.
+
+BENEFITS OF MULTITHREADING:
+
+1. RESPONSIVENESS
+   • App stays responsive while doing work
+   • Example: Browser loads images while you scroll
+   • Single-threaded = frozen screen (nightmare!)
+   
+2. RESOURCE SHARING
+   • Threads automatically share memory and resources
+   • No need for complex IPC mechanisms
+   • Cheaper than creating separate processes
+   
+3. ECONOMY
+   • Creating thread = FAST (cheaper than process)
+   • Context switching thread = FAST (less overhead)
+   • Example: Creating process = 30x slower than thread
+   
+4. SCALABILITY (Parallelism)
+   • Utilize multiple CPU cores
+   • True parallel execution
+   • One thread per core = maximum performance
+
+REAL-WORLD EXAMPLES:
+
+• Web Server: One thread per client request (handles 1000s simultaneously)
+• Video Game: Separate threads for graphics, physics, AI, audio
+• Word Processor: One thread for typing, one for spell-check, one for auto-save
+• Video Player: One thread decodes video, one decodes audio, one renders
+
+WHY IT MATTERS:
+Without multithreading, your phone would freeze every time you do ANYTHING. Want to scroll while loading? Nope. Type while saving? Nope. Play music while browsing? DEFINITELY nope.
+
+Multithreading = The reason your devices don't suck!''',
+            hasDiagram: false,
           ),
           PYQ(
             question: 'Explain different types of thread in Operating System.',
             type: 'theory',
+            answer: '''There are TWO types of threads based on who manages them. It's like asking: Who's your boss?
+
+1. USER-LEVEL THREADS (ULT)
+
+Managed by: Thread library (user space)
+OS Knowledge: NONE (OS is clueless about these threads)
+
+How it works:
+• Thread library does all thread management
+• OS sees the whole process as ONE single-threaded process
+• Thread operations happen in user space (no kernel involvement)
+
+PROS:
+✓ FAST thread creation and switching (no kernel overhead)
+✓ Can run on any OS (portable)
+✓ Application-specific scheduling possible
+✓ More threads than OS-supported kernel threads
+
+CONS:
+✗ If one thread blocks on I/O, ENTIRE process blocks
+✗ Cannot utilize multiple CPUs (OS thinks it's single-threaded)
+✗ OS cannot make smart scheduling decisions
+✗ One thread hogs CPU = all threads starve
+
+Example: Java Green Threads (old), GNU Portable Threads
+
+Think: Group project where you manage tasks yourself. Teacher (OS) doesn't know who's doing what, just grades the final submission.
+
+2. KERNEL-LEVEL THREADS (KLT)
+
+Managed by: Operating System Kernel
+OS Knowledge: FULL (OS knows about every thread)
+
+How it works:
+• OS maintains thread table
+• All thread operations go through system calls
+• Kernel does all thread management
+
+PROS:
+✓ True parallelism on multiprocessor systems
+✓ If one thread blocks, others can continue
+✓ Better CPU utilization
+✓ OS can make informed scheduling decisions
+
+CONS:
+✗ SLOW thread creation and switching (kernel overhead)
+✗ System calls for every operation (expensive)
+✗ Limited number of threads (kernel resources)
+
+Example: Windows threads, Linux pthreads, macOS threads
+
+Think: Company where manager (OS) tracks every employee's task. More overhead but better coordination.
+
+COMPARISON:
+
+| Aspect | User-Level | Kernel-Level |
+|--------|-----------|--------------|
+| Speed | FAST | Slower |
+| Blocking | Blocks all | Blocks one |
+| Parallelism | NO | YES |
+| Management | Library | OS Kernel |
+| Portability | High | Low |
+| Scalability | Limited | Better |
+
+MODERN REALITY:
+Most modern systems use HYBRID approaches (Many-to-Many model) combining benefits of both. Best of both worlds!''',
+            hasDiagram: false,
           ),
           PYQ(
             question:
                 'Differentiate between User Level Thread and Kernel Level Thread.',
             type: 'theory',
+            answer: '''User-Level vs Kernel-Level Threads: The ultimate showdown!
+
+KEY DIFFERENCES:
+
+1. MANAGEMENT
+   ULT: Managed by thread library (user space)
+   KLT: Managed by OS kernel (kernel space)
+   
+2. OS AWARENESS
+   ULT: OS has NO CLUE threads exist
+   KLT: OS knows and tracks every thread
+   
+3. PERFORMANCE
+   ULT: Fast operations (no kernel involvement)
+   KLT: Slow operations (system calls required)
+   
+4. BLOCKING
+   ULT: One thread blocks = ALL threads block
+   KLT: One thread blocks = Others continue
+   
+5. MULTIPROCESSOR SUPPORT
+   ULT: NOPE (OS thinks single-threaded)
+   KLT: YES (true parallelism possible)
+   
+6. SCHEDULING
+   ULT: Application decides (custom scheduling)
+   KLT: OS decides (system-wide scheduling)
+
+WHICH IS BETTER?
+
+Depends on use case:
+
+Use ULT when:
+• Need MANY threads (thousands)
+• Fast creation/switching critical
+• Single CPU system
+• Custom scheduling needed
+
+Use KLT when:
+• Need true parallelism
+• I/O operations common
+• Multiprocessor system
+• Robustness matters
+
+MODERN SOLUTION:
+Hybrid models (Many-to-Many) map multiple ULTs to multiple KLTs. Get benefits of both!''',
+            hasDiagram: false,
           ),
-          PYQ(question: 'Concept of Multithreading.', type: 'theory'),
+          PYQ(
+            question: 'Concept of Multithreading.',
+            type: 'theory',
+            answer: '''Multithreading is running multiple threads within a single process simultaneously. It's parallel task execution on steroids!
+
+MULTITHREADING MODELS:
+
+1. MANY-TO-ONE
+   • Many ULTs → One KLT
+   • Fast but no parallelism
+   • One blocks = all block
+   
+2. ONE-TO-ONE
+   • One ULT → One KLT
+   • True parallelism
+   • Overhead for each thread
+   
+3. MANY-TO-MANY
+   • Many ULTs → Many KLTs (flexible mapping)
+   • Best of both worlds
+   • Most efficient
+
+WHY MULTITHREADING ROCKS:
+
+1. BETTER RESOURCE UTILIZATION - CPU busy while waiting for I/O
+2. IMPROVED THROUGHPUT - More work done in same time
+3. ENHANCED RESPONSIVENESS - App never freezes
+4. SIMPLIFIED STRUCTURE - Each thread handles one task
+
+REAL-WORLD EXAMPLES:
+
+**Web Browser:**
+• Thread 1: Render HTML
+• Thread 2: Load images
+• Thread 3: Execute JavaScript
+• Thread 4: Handle user input
+
+**Video Game:**
+• Thread 1: Game logic
+• Thread 2: Graphics rendering
+• Thread 3: Physics calculations
+• Thread 4: AI computations
+• Thread 5: Network communication
+• Thread 6: Audio processing
+
+CHALLENGES:
+• Race conditions
+• Deadlocks
+• Debugging difficulty
+• Synchronization overhead
+
+But honestly? The benefits WAY outweigh the challenges!''',
+            hasDiagram: false,
+          ),
         ],
       ),
     ],
@@ -646,56 +849,184 @@ A thread is a lightweight process, the basic unit of CPU utilization. It shares 
         id: '3.1',
         title: '3.1 — Concurrency, IPC, Process Synchronization',
         content: '''
-**Concurrency:**
-Multiple processes executing simultaneously, sharing resources and communicating.
+PROCESS SYNCHRONIZATION — Stop Fighting Over Resources!
 
-**Principles of Concurrency:**
-- Process synchronization needed
-- Race condition must be avoided
-- Mutual exclusion required
-- Deadlock and starvation prevention
+When multiple processes share resources, chaos ensues. We need rules!
 
-**Critical Section Problem:**
-Section of code where shared resources are accessed. Requirements:
-1. Mutual Exclusion
-2. Progress
-3. Bounded Waiting
+Topics covered:
+• Critical section problem
+• Race conditions and how to avoid them
+• Producer-Consumer problem
+• Semaphores and synchronization
 
-**Producer-Consumer Problem:**
-Classic synchronization problem with bounded buffer.
-
-**Solution using Semaphores:**
-```
-Semaphore mutex = 1;
-Semaphore empty = n;
-Semaphore full = 0;
-
-Producer:
-  wait(empty);
-  wait(mutex);
-  // produce item
-  signal(mutex);
-  signal(full);
-
-Consumer:
-  wait(full);
-  wait(mutex);
-  // consume item
-  signal(mutex);
-  signal(empty);
-```
+Get ready for some classic OS problems!
 ''',
         pyqs: [
           PYQ(
             question:
                 'Discuss Producer and Consumer problem with solution using Semaphore.',
             type: 'theory',
+            answer: '''The Producer-Consumer problem is THE classic synchronization problem. It's like a restaurant with chefs and waiters.
+
+THE PROBLEM:
+
+Producer (Chef):
+• Creates items (cooks food)
+• Puts items in buffer (serving counter)
+• Problem: Buffer is full → Wait!
+
+Consumer (Waiter):
+• Takes items from buffer (picks up orders)
+• Consumes items (serves customers)
+• Problem: Buffer is empty → Wait!
+
+SOLUTION USING SEMAPHORES:
+
+We need THREE semaphores:
+
+Semaphore mutex = 1;  // Mutual exclusion for buffer access
+Semaphore empty = N;  // Count of empty slots
+Semaphore full = 0;   // Count of full slots
+
+PRODUCER CODE:
+wait(empty);     // Wait for empty slot
+wait(mutex);     // Lock buffer access
+// Add item to buffer
+signal(mutex);   // Unlock buffer
+signal(full);    // Signal full slot available
+
+CONSUMER CODE:
+wait(full);      // Wait for full slot
+wait(mutex);     // Lock buffer access
+// Remove item from buffer
+signal(mutex);   // Unlock buffer
+signal(empty);   // Signal empty slot available
+
+WHY THIS WORKS:
+✓ Producer can't add when buffer full
+✓ Consumer can't remove when buffer empty
+✓ No race condition (mutex protects buffer)
+✓ No deadlock
+✓ Maximum concurrency
+
+REAL-WORLD EXAMPLES:
+• Print Spooler: Programs send jobs, Printer prints
+• Network: Sender sends packets, Receiver processes
+• Download Manager: Downloader fetches, Writer saves
+
+The key: ALWAYS acquire resource semaphore BEFORE mutex!''',
+            hasDiagram: false,
           ),
           PYQ(
             question: 'Explain the Critical Section Problem.',
             type: 'theory',
+            answer: '''The Critical Section Problem is about preventing chaos when multiple processes access shared resources.
+
+WHAT IS CRITICAL SECTION?
+Critical Section = Code segment where shared resources are accessed
+
+THE PROBLEM:
+Two processes execute: count = count + 1
+
+Process 1: Read count (0) → Add 1 → Write (1)
+Process 2: Read count (0) → Add 1 → Write (1)
+
+Expected: count = 2
+Actual: count = 1 (WRONG!)
+
+This is a RACE CONDITION!
+
+REQUIREMENTS FOR SOLUTION:
+
+1. MUTUAL EXCLUSION
+   • Only ONE process in critical section at a time
+   • NON-NEGOTIABLE!
+   
+2. PROGRESS
+   • If no process in CS, selection cannot postpone indefinitely
+   • Must make progress!
+   
+3. BOUNDED WAITING
+   • Limit on how many times others enter before you
+   • Everyone gets a turn eventually
+
+SOFTWARE SOLUTION: Peterson's Algorithm
+HARDWARE SOLUTION: Test-and-Set Lock
+MODERN SOLUTION: Semaphores
+
+WHY IT MATTERS:
+Without solving this:
+✗ Bank accounts would have wrong balances
+✗ Databases would be corrupted
+✗ Your likes would disappear
+✗ Everything would break!''',
+            hasDiagram: false,
           ),
-          PYQ(question: 'Explain Principles of Concurrency.', type: 'theory'),
+          PYQ(
+            question: 'Explain Principles of Concurrency.',
+            type: 'theory',
+            answer: '''Concurrency is multiple processes executing "simultaneously". It's like juggling!
+
+CONCURRENCY vs PARALLELISM:
+Concurrency: Multiple processes making progress (may not be simultaneous)
+Parallelism: Multiple processes executing simultaneously (needs multiple cores)
+
+PRINCIPLES:
+
+1. INTERLEAVING
+   • Processes share CPU time
+   • Context switches between processes
+   • Order non-deterministic
+   
+2. RESOURCE SHARING
+   • Processes share memory, files, devices
+   • Need coordination!
+   
+3. SYNCHRONIZATION
+   • Processes must coordinate actions
+   • Ensure correct order
+   
+4. COMMUNICATION
+   • Processes exchange information
+   • Methods: Shared memory, Message passing
+
+KEY ISSUES:
+
+1. RACE CONDITION
+   • Multiple processes access shared data
+   • Outcome depends on timing
+   • Result: UNPREDICTABLE!
+   
+2. MUTUAL EXCLUSION
+   • Only one in critical section
+   • Prevents race conditions
+   
+3. DEADLOCK
+   • Processes waiting for each other
+   • Nobody makes progress
+   • STUCK FOREVER!
+   
+4. STARVATION
+   • Process never gets resources
+   • Always skipped
+   • Waits indefinitely
+
+BENEFITS:
+✓ Better resource utilization
+✓ Faster execution
+✓ Better responsiveness
+✓ Modular structure
+
+CHALLENGES:
+✗ Complexity
+✗ Race conditions
+✗ Deadlocks
+✗ Synchronization overhead
+✗ Hard to test
+
+Without concurrency, your computer would do ONE thing at a time. No multitasking!''',
+            hasDiagram: false,
+          ),
         ],
       ),
       Topic(

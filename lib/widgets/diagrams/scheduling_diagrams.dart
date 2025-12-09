@@ -117,7 +117,7 @@ class _GanttChartPainter extends CustomPainter {
 
       // Draw process box
       final rect = Rect.fromLTWH(x, y, width, processHeight);
-      
+
       final fillPaint = Paint()
         ..color = p.color
         ..style = PaintingStyle.fill;
@@ -258,10 +258,7 @@ class PreemptiveComparisonDiagram extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
-                      point,
-                      style: const TextStyle(fontSize: 12),
-                    ),
+                    child: Text(point, style: const TextStyle(fontSize: 12)),
                   ),
                 ],
               ),
@@ -356,12 +353,7 @@ class _RoundRobinPainter extends CustomPainter {
 
     // Draw CPU box
     final cpuY = queueY + 100;
-    final cpuRect = Rect.fromLTWH(
-      size.width / 2 - 60,
-      cpuY,
-      120,
-      60,
-    );
+    final cpuRect = Rect.fromLTWH(size.width / 2 - 60, cpuY, 120, 60);
 
     final cpuPaint = Paint()
       ..color = MangaTheme.mangaRed
@@ -386,10 +378,7 @@ class _RoundRobinPainter extends CustomPainter {
     textPainter.layout(maxWidth: 100);
     textPainter.paint(
       canvas,
-      Offset(
-        size.width / 2 - textPainter.width / 2,
-        cpuY + 15,
-      ),
+      Offset(size.width / 2 - textPainter.width / 2, cpuY + 15),
     );
 
     // Draw arrow from queue to CPU
