@@ -84,43 +84,41 @@ class _HomeScreenState extends State<HomeScreen>
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 children: [
-                  Container(
-                    color: MangaTheme.inkBlack,
-                  ),
+                  Container(color: MangaTheme.inkBlack),
                   CustomPaint(
                     painter: _MangaSpeedlinesPainter(),
                     child: Container(),
                   ),
                   Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 40),
-                      Text(
-                        'OS MASTERY',
-                        style: Theme.of(context).textTheme.displayLarge
-                            ?.copyWith(
-                              color: MangaTheme.paperWhite,
-                              shadows: [
-                                Shadow(
-                                  color: MangaTheme.mangaRed.withOpacity(0.8),
-                                  offset: const Offset(4, 4),
-                                  blurRadius: 0,
-                                ),
-                              ],
-                            ),
-                      ),
-                      Text(
-                        'STUDY TRACKER',
-                        style: Theme.of(context).textTheme.headlineMedium
-                            ?.copyWith(
-                              color: MangaTheme.highlightYellow,
-                              letterSpacing: 4,
-                            ),
-                      ),
-                    ],
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 40),
+                        Text(
+                          'OS MASTERY',
+                          style: Theme.of(context).textTheme.displayLarge
+                              ?.copyWith(
+                                color: MangaTheme.paperWhite,
+                                shadows: [
+                                  Shadow(
+                                    color: MangaTheme.mangaRed.withOpacity(0.8),
+                                    offset: const Offset(4, 4),
+                                    blurRadius: 0,
+                                  ),
+                                ],
+                              ),
+                        ),
+                        Text(
+                          'STUDY TRACKER',
+                          style: Theme.of(context).textTheme.headlineMedium
+                              ?.copyWith(
+                                color: MangaTheme.highlightYellow,
+                                letterSpacing: 4,
+                              ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 ],
               ),
             ),
@@ -300,9 +298,7 @@ class _HomeScreenState extends State<HomeScreen>
                         child: Center(
                           child: Text(
                             '${module.id}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .displaySmall
+                            style: Theme.of(context).textTheme.displaySmall
                                 ?.copyWith(
                                   color: MangaTheme.paperWhite,
                                   shadows: [
@@ -394,14 +390,14 @@ class _MangaSpeedlinesPainter extends CustomPainter {
     // Diagonal speedlines from top corners
     for (int i = 0; i < 20; i++) {
       final offsetY = i * (size.height / 20);
-      
+
       // Left side speedlines
       canvas.drawLine(
         Offset(0, offsetY),
         Offset(size.width * 0.4, size.height * 0.7 + offsetY * 0.3),
         i % 3 == 0 ? boldPaint : paint,
       );
-      
+
       // Right side speedlines
       canvas.drawLine(
         Offset(size.width, offsetY),

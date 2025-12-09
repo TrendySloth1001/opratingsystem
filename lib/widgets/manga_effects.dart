@@ -7,10 +7,7 @@ class HalftonePainter extends CustomPainter {
   final Color color;
   final double density;
 
-  HalftonePainter({
-    required this.color,
-    this.density = 8.0,
-  });
+  HalftonePainter({required this.color, this.density = 8.0});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -21,11 +18,7 @@ class HalftonePainter extends CustomPainter {
     for (double x = 0; x < size.width; x += density) {
       for (double y = 0; y < size.height; y += density) {
         final dotSize = 1.5 + (x + y) % 3;
-        canvas.drawCircle(
-          Offset(x, y),
-          dotSize,
-          paint,
-        );
+        canvas.drawCircle(Offset(x, y), dotSize, paint);
       }
     }
   }
@@ -39,10 +32,7 @@ class SketchBorderPainter extends CustomPainter {
   final Color color;
   final double thickness;
 
-  SketchBorderPainter({
-    required this.color,
-    this.thickness = 4.0,
-  });
+  SketchBorderPainter({required this.color, this.thickness = 4.0});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -53,7 +43,7 @@ class SketchBorderPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final path = Path();
-    
+
     // Top line with slight wobble
     path.moveTo(0, 0);
     for (double x = 0; x < size.width; x += 10) {
@@ -61,21 +51,21 @@ class SketchBorderPainter extends CustomPainter {
       path.lineTo(x, wobble);
     }
     path.lineTo(size.width, 0);
-    
+
     // Right line
     for (double y = 0; y < size.height; y += 10) {
       final wobble = math.cos(y / 20) * 0.5;
       path.lineTo(size.width + wobble, y);
     }
     path.lineTo(size.width, size.height);
-    
+
     // Bottom line
     for (double x = size.width; x > 0; x -= 10) {
       final wobble = math.sin(x / 20) * 0.5;
       path.lineTo(x, size.height + wobble);
     }
     path.lineTo(0, size.height);
-    
+
     // Left line
     for (double y = size.height; y > 0; y -= 10) {
       final wobble = math.cos(y / 20) * 0.5;
@@ -95,10 +85,7 @@ class ActionBurstPainter extends CustomPainter {
   final Color color;
   final double intensity;
 
-  ActionBurstPainter({
-    required this.color,
-    this.intensity = 1.0,
-  });
+  ActionBurstPainter({required this.color, this.intensity = 1.0});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -188,10 +175,7 @@ class SpeedEffectPainter extends CustomPainter {
   final Color color;
   final bool isHorizontal;
 
-  SpeedEffectPainter({
-    required this.color,
-    this.isHorizontal = true,
-  });
+  SpeedEffectPainter({required this.color, this.isHorizontal = true});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -205,7 +189,7 @@ class SpeedEffectPainter extends CustomPainter {
         final y = (i + 1) * (size.height / 9);
         final startX = size.width * 0.1;
         final endX = size.width * 0.9;
-        
+
         canvas.drawLine(
           Offset(startX, y),
           Offset(endX, y + (i % 2 == 0 ? 2 : -2)),
@@ -217,7 +201,7 @@ class SpeedEffectPainter extends CustomPainter {
         final x = (i + 1) * (size.width / 9);
         final startY = size.height * 0.1;
         final endY = size.height * 0.9;
-        
+
         canvas.drawLine(
           Offset(x, startY),
           Offset(x + (i % 2 == 0 ? 2 : -2), endY),
@@ -236,10 +220,7 @@ class ScreentonePainter extends CustomPainter {
   final Color color;
   final double angle;
 
-  ScreentonePainter({
-    required this.color,
-    this.angle = 45.0,
-  });
+  ScreentonePainter({required this.color, this.angle = 45.0});
 
   @override
   void paint(Canvas canvas, Size size) {

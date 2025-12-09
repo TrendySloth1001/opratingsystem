@@ -128,51 +128,45 @@ class ActionText extends StatelessWidget {
   final String text;
   final TextStyle? style;
 
-  const ActionText({
-    super.key,
-    required this.text,
-    this.style,
-  });
+  const ActionText({super.key, required this.text, this.style});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         // Action lines background
-        Positioned.fill(
-          child: CustomPaint(
-            painter: _ActionLinesPainter(),
-          ),
-        ),
+        Positioned.fill(child: CustomPaint(painter: _ActionLinesPainter())),
         // Text with outline
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           child: Text(
             text.toUpperCase(),
-            style: (style ?? Theme.of(context).textTheme.displayMedium)?.copyWith(
-              foreground: Paint()
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = 3
-                ..color = MangaTheme.inkBlack,
-              letterSpacing: 2,
-            ),
+            style: (style ?? Theme.of(context).textTheme.displayMedium)
+                ?.copyWith(
+                  foreground: Paint()
+                    ..style = PaintingStyle.stroke
+                    ..strokeWidth = 3
+                    ..color = MangaTheme.inkBlack,
+                  letterSpacing: 2,
+                ),
           ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           child: Text(
             text.toUpperCase(),
-            style: (style ?? Theme.of(context).textTheme.displayMedium)?.copyWith(
-              color: MangaTheme.paperWhite,
-              letterSpacing: 2,
-              shadows: [
-                const Shadow(
-                  color: MangaTheme.highlightYellow,
-                  offset: Offset(0, 0),
-                  blurRadius: 8,
+            style: (style ?? Theme.of(context).textTheme.displayMedium)
+                ?.copyWith(
+                  color: MangaTheme.paperWhite,
+                  letterSpacing: 2,
+                  shadows: [
+                    const Shadow(
+                      color: MangaTheme.highlightYellow,
+                      offset: Offset(0, 0),
+                      blurRadius: 8,
+                    ),
+                  ],
                 ),
-              ],
-            ),
           ),
         ),
       ],
@@ -191,11 +185,7 @@ class _ActionLinesPainter extends CustomPainter {
     for (int i = 0; i < 8; i++) {
       final startX = size.width * 0.1 + i * 5;
       final endX = size.width * 0.9 + i * 5;
-      canvas.drawLine(
-        Offset(startX, 0),
-        Offset(endX, size.height),
-        paint,
-      );
+      canvas.drawLine(Offset(startX, 0), Offset(endX, size.height), paint);
     }
   }
 

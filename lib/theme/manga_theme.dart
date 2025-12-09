@@ -121,10 +121,7 @@ class MangaTheme {
   }) {
     return BoxDecoration(
       color: backgroundColor ?? paperWhite,
-      border: Border.all(
-        color: hasAction ? mangaRed : primaryBlack,
-        width: 4,
-      ),
+      border: Border.all(color: hasAction ? mangaRed : primaryBlack, width: 4),
       borderRadius: BorderRadius.circular(4),
       boxShadow: [
         // Hard bold shadow
@@ -135,7 +132,9 @@ class MangaTheme {
         ),
         // Accent shadow for depth
         BoxShadow(
-          color: hasAction ? mangaRed.withOpacity(0.3) : primaryBlack.withOpacity(0.1),
+          color: hasAction
+              ? mangaRed.withOpacity(0.3)
+              : primaryBlack.withOpacity(0.1),
           offset: const Offset(3, 3),
           blurRadius: 0,
         ),
@@ -146,10 +145,7 @@ class MangaTheme {
   static BoxDecoration completedPanelDecoration() {
     return BoxDecoration(
       color: highlightYellow.withOpacity(0.25),
-      border: Border.all(
-        color: highlightYellow,
-        width: 5,
-      ),
+      border: Border.all(color: highlightYellow, width: 5),
       borderRadius: BorderRadius.circular(4),
       boxShadow: [
         // Glowing effect
@@ -172,18 +168,11 @@ class MangaTheme {
   static BoxDecoration actionPanelDecoration() {
     return BoxDecoration(
       color: mangaRed,
-      border: Border.all(
-        color: inkBlack,
-        width: 4,
-      ),
+      border: Border.all(color: inkBlack, width: 4),
       borderRadius: BorderRadius.circular(4),
       boxShadow: [
         // Bold black shadow
-        BoxShadow(
-          color: inkBlack,
-          offset: const Offset(6, 6),
-          blurRadius: 0,
-        ),
+        BoxShadow(color: inkBlack, offset: const Offset(6, 6), blurRadius: 0),
         // Red glow
         BoxShadow(
           color: mangaRed.withOpacity(0.4),

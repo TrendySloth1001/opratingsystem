@@ -228,15 +228,15 @@ class MangaProgressBar extends StatelessWidget {
         Text(
           label.toUpperCase(),
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                letterSpacing: 1.5,
-                shadows: [
-                  Shadow(
-                    color: MangaTheme.primaryBlack.withOpacity(0.3),
-                    offset: const Offset(2, 2),
-                    blurRadius: 0,
-                  ),
-                ],
+            letterSpacing: 1.5,
+            shadows: [
+              Shadow(
+                color: MangaTheme.primaryBlack.withOpacity(0.3),
+                offset: const Offset(2, 2),
+                blurRadius: 0,
               ),
+            ],
+          ),
         ),
         const SizedBox(height: 8),
         Stack(
@@ -345,9 +345,9 @@ class MangaBadge extends StatelessWidget {
             child: Text(
               text,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.transparent,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: Colors.transparent,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
@@ -362,16 +362,16 @@ class MangaBadge extends StatelessWidget {
           child: Text(
             text,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: MangaTheme.paperWhite,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      color: MangaTheme.inkBlack,
-                      offset: const Offset(1, 1),
-                      blurRadius: 0,
-                    ),
-                  ],
+              color: MangaTheme.paperWhite,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  color: MangaTheme.inkBlack,
+                  offset: const Offset(1, 1),
+                  blurRadius: 0,
                 ),
+              ],
+            ),
           ),
         ),
       ],
