@@ -75,4 +75,29 @@ class StorageService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_progressKey);
   }
+
+  // Concept tracking methods for syllabus tracker
+  static const String _conceptsKey = 'completed_concepts';
+
+  Future<Map<String, bool>> getCompletedConcepts() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_conceptsKey);
+    if (jsonString == null) return {};
+
+    final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+    return jsonMap.map((key, value) => MapEntry(key, value as bool));
+  }
+
+  Future<void> saveCompletedConcept(String conceptId, bool isCompleted) async {
+    final concepts = await getCompletedConcepts();
+    concepts[conceptId] = isCompleted;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_conceptsKey, jsonEncode(concepts));
+  }
+
+  Future<void> clearAllConcepts() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_conceptsKey);
+  }
 }

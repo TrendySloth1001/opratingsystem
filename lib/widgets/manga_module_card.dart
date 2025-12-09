@@ -228,7 +228,7 @@ class UltraMangaCard extends StatelessWidget {
           spacing: 10,
           runSpacing: 8,
           children: [
-            _buildChip("${completedTopics}/${totalTopics} TOPICS"),
+            _buildChip("$completedTopics/$totalTopics TOPICS"),
             if (progress == 1) _buildChip("ABSOLUTE UNIT"),
           ],
         )
