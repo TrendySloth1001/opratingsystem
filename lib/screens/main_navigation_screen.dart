@@ -24,18 +24,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: MangaTheme.paperWhite,
           border: const Border(
-            top: BorderSide(
-              color: MangaTheme.inkBlack,
-              width: 5,
-            ),
+            top: BorderSide(color: MangaTheme.inkBlack, width: 5),
           ),
           boxShadow: const [
             BoxShadow(
@@ -64,7 +58,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   Widget _buildMangaNavButton(int index, IconData icon, String label) {
     final isSelected = _currentIndex == index;
-    
+
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -78,9 +72,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
           decoration: BoxDecoration(
-            color: isSelected
-                ? MangaTheme.mangaRed
-                : MangaTheme.paperWhite,
+            color: isSelected ? MangaTheme.mangaRed : MangaTheme.paperWhite,
             border: Border.all(
               color: MangaTheme.inkBlack,
               width: isSelected ? 4 : 3,
@@ -161,10 +153,10 @@ class _ActionBurstPainter extends CustomPainter {
     for (int i = 0; i < 8; i++) {
       final angle = (i * 45) * (3.14159265359 / 180);
       final path = Path();
-      
+
       // Create star burst effect with varying lengths
       final burstLength = radius * (0.7 + 0.2 * (i % 2));
-      
+
       path.moveTo(center.dx, center.dy);
       path.lineTo(
         center.dx + burstLength * _cos(angle - 0.15),

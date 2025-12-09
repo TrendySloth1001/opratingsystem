@@ -46,10 +46,7 @@ class UltraMangaCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: MangaTheme.paperWhite,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(
-                color: MangaTheme.inkBlack,
-                width: 5,
-              ),
+              border: Border.all(color: MangaTheme.inkBlack, width: 5),
               boxShadow: [
                 const BoxShadow(
                   color: MangaTheme.inkBlack,
@@ -114,14 +111,13 @@ class UltraMangaCard extends StatelessWidget {
                 angle: -0.2,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 10),
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: MangaTheme.mangaRed,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      width: 4,
-                      color: MangaTheme.inkBlack,
-                    ),
+                    border: Border.all(width: 4, color: MangaTheme.inkBlack),
                   ),
                   child: const Text(
                     "BAM! DONE!!",
@@ -161,14 +157,16 @@ class UltraMangaCard extends StatelessWidget {
           height: 78,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: progress == 1 ? MangaTheme.highlightYellow : MangaTheme.mangaRed,
+            color: progress == 1
+                ? MangaTheme.highlightYellow
+                : MangaTheme.mangaRed,
             border: Border.all(color: MangaTheme.inkBlack, width: 5),
             boxShadow: [
               BoxShadow(
                 color: MangaTheme.inkBlack.withOpacity(0.25),
                 blurRadius: 0,
                 offset: const Offset(4, 4),
-              )
+              ),
             ],
           ),
           child: Center(
@@ -207,10 +205,7 @@ class UltraMangaCard extends StatelessWidget {
                 ? MangaTheme.highlightYellow.withOpacity(0.35)
                 : MangaTheme.speedlineBlue.withOpacity(0.25),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: MangaTheme.inkBlack,
-              width: 2,
-            ),
+            border: Border.all(color: MangaTheme.inkBlack, width: 2),
           ),
           child: Text(
             _getRoastLine(),
@@ -231,7 +226,7 @@ class UltraMangaCard extends StatelessWidget {
             _buildChip("$completedTopics/$totalTopics TOPICS"),
             if (progress == 1) _buildChip("ABSOLUTE UNIT"),
           ],
-        )
+        ),
       ],
     );
   }
@@ -276,10 +271,7 @@ class UltraMangaCard extends StatelessWidget {
               height: 18,
               decoration: BoxDecoration(
                 color: MangaTheme.panelGray,
-                border: Border.all(
-                  width: 3,
-                  color: MangaTheme.inkBlack,
-                ),
+                border: Border.all(width: 3, color: MangaTheme.inkBlack),
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -298,10 +290,7 @@ class UltraMangaCard extends StatelessWidget {
                               MangaTheme.accentOrange,
                               MangaTheme.mangaRed,
                             ]
-                          : [
-                              MangaTheme.mangaRed,
-                              MangaTheme.accentOrange,
-                            ],
+                          : [MangaTheme.mangaRed, MangaTheme.accentOrange],
                     ),
                   ),
                   child: CustomPaint(
@@ -314,7 +303,7 @@ class UltraMangaCard extends StatelessWidget {
               ),
             ),
           ],
-        )
+        ),
       ],
     );
   }

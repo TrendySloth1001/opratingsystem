@@ -31,27 +31,30 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
     setState(() {
       _completedConcepts[conceptId] = !(_completedConcepts[conceptId] ?? false);
     });
-    await _storage.saveCompletedConcept(conceptId, _completedConcepts[conceptId]!);
+    await _storage.saveCompletedConcept(
+      conceptId,
+      _completedConcepts[conceptId]!,
+    );
   }
 
   List<SubTopic> _parseSubTopics(ConceptItem concept) {
     // Split by comma and colon to extract individual topics
     String content = concept.title;
-    
+
     // First, check if there's a colon (like "Threads: Definition, Types")
     if (content.contains(':')) {
       final parts = content.split(':');
       final prefix = parts[0].trim();
       final topics = parts[1].split(',').map((t) => t.trim()).toList();
-      
+
       return List.generate(topics.length, (index) {
         return SubTopic(concept.id, index, '$prefix: ${topics[index]}');
       });
     }
-    
+
     // Otherwise, just split by comma
     final topics = content.split(',').map((t) => t.trim()).toList();
-    
+
     return List.generate(topics.length, (index) {
       return SubTopic(concept.id, index, topics[index]);
     });
@@ -106,8 +109,14 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
             icon: Icons.computer_rounded,
             iconColor: Colors.blue,
             concepts: [
-              ConceptItem('1.1', 'Introduction, Objectives, Functions and Evolution of OS'),
-              ConceptItem('1.2', 'OS Structures: Layered, Monolithic and Microkernel'),
+              ConceptItem(
+                '1.1',
+                'Introduction, Objectives, Functions and Evolution of OS',
+              ),
+              ConceptItem(
+                '1.2',
+                'OS Structures: Layered, Monolithic and Microkernel',
+              ),
               ConceptItem('1.3', 'Linux Kernel, Shell and System Calls'),
             ],
           ),
@@ -120,7 +129,10 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
             iconColor: Colors.orange,
             concepts: [
               ConceptItem('2.1', 'Process Concept, States, Description, PCB'),
-              ConceptItem('2.2', 'Uniprocessor Scheduling (FCFS, SJF, SRTN, Priority, RR)'),
+              ConceptItem(
+                '2.2',
+                'Uniprocessor Scheduling (FCFS, SJF, SRTN, Priority, RR)',
+              ),
               ConceptItem('2.3', 'Threads: Definition, Types, Multithreading'),
             ],
           ),
@@ -133,8 +145,14 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
             iconColor: Colors.purple,
             concepts: [
               ConceptItem('3.1', 'Concurrency, IPC, Process Synchronization'),
-              ConceptItem('3.2', 'Mutual Exclusion, Semaphores, Producer-Consumer'),
-              ConceptItem('3.3', 'Deadlock: Prevention, Avoidance, Detection, Recovery'),
+              ConceptItem(
+                '3.2',
+                'Mutual Exclusion, Semaphores, Producer-Consumer',
+              ),
+              ConceptItem(
+                '3.3',
+                'Deadlock: Prevention, Avoidance, Detection, Recovery',
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -145,8 +163,14 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
             icon: Icons.memory_rounded,
             iconColor: Colors.red,
             concepts: [
-              ConceptItem('4.1', 'Memory Partitioning, Allocation, Paging, Segmentation, TLB'),
-              ConceptItem('4.2', 'Virtual Memory, Page Replacement (FIFO, Optimal, LRU), Thrashing'),
+              ConceptItem(
+                '4.1',
+                'Memory Partitioning, Allocation, Paging, Segmentation, TLB',
+              ),
+              ConceptItem(
+                '4.2',
+                'Virtual Memory, Page Replacement (FIFO, Optimal, LRU), Thrashing',
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -157,7 +181,10 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
             icon: Icons.folder_rounded,
             iconColor: Colors.green,
             concepts: [
-              ConceptItem('5.1', 'File Organization, Access, Directories, Sharing'),
+              ConceptItem(
+                '5.1',
+                'File Organization, Access, Directories, Sharing',
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -168,7 +195,10 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
             icon: Icons.storage_rounded,
             iconColor: Colors.teal,
             concepts: [
-              ConceptItem('6.1', 'I/O Devices, Disk Organization, Scheduling (FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK)'),
+              ConceptItem(
+                '6.1',
+                'I/O Devices, Disk Organization, Scheduling (FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK)',
+              ),
             ],
           ),
           const SizedBox(height: 40),
@@ -191,12 +221,16 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
     for (var concept in concepts) {
       allSubTopics.addAll(_parseSubTopics(concept));
     }
-    
-    final completedCount = allSubTopics.where((st) => 
-      _completedConcepts['${st.conceptId}_${st.index}'] ?? false
-    ).length;
+
+    final completedCount = allSubTopics
+        .where(
+          (st) => _completedConcepts['${st.conceptId}_${st.index}'] ?? false,
+        )
+        .length;
     final totalCount = allSubTopics.length;
-    final percentage = totalCount > 0 ? (completedCount / totalCount * 100).toInt() : 0;
+    final percentage = totalCount > 0
+        ? (completedCount / totalCount * 100).toInt()
+        : 0;
 
     return Container(
       decoration: BoxDecoration(
@@ -235,7 +269,10 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: iconColor,
-                        border: Border.all(color: MangaTheme.inkBlack, width: 3),
+                        border: Border.all(
+                          color: MangaTheme.inkBlack,
+                          width: 3,
+                        ),
                         borderRadius: BorderRadius.circular(8),
                         boxShadow: const [
                           BoxShadow(
@@ -245,18 +282,20 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
                           ),
                         ],
                       ),
-                      child: Icon(
-                        icon,
-                        color: MangaTheme.paperWhite,
-                        size: 28,
-                      ),
+                      child: Icon(icon, color: MangaTheme.paperWhite, size: 28),
                     ),
                     const SizedBox(width: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: MangaTheme.mangaRed,
-                        border: Border.all(color: MangaTheme.inkBlack, width: 2),
+                        border: Border.all(
+                          color: MangaTheme.inkBlack,
+                          width: 2,
+                        ),
                       ),
                       child: Text(
                         'MODULE $moduleNumber',
@@ -270,10 +309,16 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: MangaTheme.inkBlack,
-                        border: Border.all(color: MangaTheme.inkBlack, width: 2),
+                        border: Border.all(
+                          color: MangaTheme.inkBlack,
+                          width: 2,
+                        ),
                       ),
                       child: Text(
                         '$hours HRS',
@@ -291,7 +336,10 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.green,
-                          border: Border.all(color: MangaTheme.inkBlack, width: 3),
+                          border: Border.all(
+                            color: MangaTheme.inkBlack,
+                            width: 3,
+                          ),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -345,7 +393,10 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
                       height: 16,
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
-                        border: Border.all(color: MangaTheme.inkBlack, width: 2),
+                        border: Border.all(
+                          color: MangaTheme.inkBlack,
+                          width: 2,
+                        ),
                       ),
                       child: Stack(
                         children: [
@@ -383,7 +434,7 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
 
   Widget _buildConceptWithSubTopics(ConceptItem concept, Color accentColor) {
     final subTopics = _parseSubTopics(concept);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -413,7 +464,10 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: accentColor,
                     border: Border.all(color: MangaTheme.inkBlack, width: 2),
@@ -450,7 +504,11 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
               children: subTopics.map((subTopic) {
                 final subTopicId = '${subTopic.conceptId}_${subTopic.index}';
                 final isCompleted = _completedConcepts[subTopicId] ?? false;
-                return _buildSubTopicCheckbox(subTopic, subTopicId, isCompleted);
+                return _buildSubTopicCheckbox(
+                  subTopic,
+                  subTopicId,
+                  isCompleted,
+                );
               }).toList(),
             ),
           ),
@@ -459,7 +517,11 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
     );
   }
 
-  Widget _buildSubTopicCheckbox(SubTopic subTopic, String subTopicId, bool isCompleted) {
+  Widget _buildSubTopicCheckbox(
+    SubTopic subTopic,
+    String subTopicId,
+    bool isCompleted,
+  ) {
     return GestureDetector(
       onTap: () => _toggleConcept(subTopicId),
       child: Container(
@@ -505,9 +567,7 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
                   color: isCompleted
                       ? MangaTheme.inkBlack.withOpacity(0.7)
                       : MangaTheme.inkBlack,
-                  decoration: isCompleted
-                      ? TextDecoration.lineThrough
-                      : null,
+                  decoration: isCompleted ? TextDecoration.lineThrough : null,
                 ),
               ),
             ),
@@ -521,33 +581,54 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
     // Calculate total sub-topics across all modules
     int totalSubTopics = 0;
     final allConcepts = [
-      ConceptItem('1.1', 'Introduction, Objectives, Functions and Evolution of OS'),
+      ConceptItem(
+        '1.1',
+        'Introduction, Objectives, Functions and Evolution of OS',
+      ),
       ConceptItem('1.2', 'OS Structures: Layered, Monolithic and Microkernel'),
       ConceptItem('1.3', 'Linux Kernel, Shell and System Calls'),
       ConceptItem('2.1', 'Process Concept, States, Description, PCB'),
-      ConceptItem('2.2', 'Uniprocessor Scheduling (FCFS, SJF, SRTN, Priority, RR)'),
+      ConceptItem(
+        '2.2',
+        'Uniprocessor Scheduling (FCFS, SJF, SRTN, Priority, RR)',
+      ),
       ConceptItem('2.3', 'Threads: Definition, Types, Multithreading'),
       ConceptItem('3.1', 'Concurrency, IPC, Process Synchronization'),
       ConceptItem('3.2', 'Mutual Exclusion, Semaphores, Producer-Consumer'),
-      ConceptItem('3.3', 'Deadlock: Prevention, Avoidance, Detection, Recovery'),
-      ConceptItem('4.1', 'Memory Partitioning, Allocation, Paging, Segmentation, TLB'),
-      ConceptItem('4.2', 'Virtual Memory, Page Replacement (FIFO, Optimal, LRU), Thrashing'),
+      ConceptItem(
+        '3.3',
+        'Deadlock: Prevention, Avoidance, Detection, Recovery',
+      ),
+      ConceptItem(
+        '4.1',
+        'Memory Partitioning, Allocation, Paging, Segmentation, TLB',
+      ),
+      ConceptItem(
+        '4.2',
+        'Virtual Memory, Page Replacement (FIFO, Optimal, LRU), Thrashing',
+      ),
       ConceptItem('5.1', 'File Organization, Access, Directories, Sharing'),
-      ConceptItem('6.1', 'I/O Devices, Disk Organization, Scheduling (FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK)'),
+      ConceptItem(
+        '6.1',
+        'I/O Devices, Disk Organization, Scheduling (FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK)',
+      ),
     ];
-    
+
     for (var concept in allConcepts) {
       totalSubTopics += _parseSubTopics(concept).length;
     }
-    
+
     final completedConcepts = _completedConcepts.values.where((v) => v).length;
-    final percentage = totalSubTopics > 0 ? (completedConcepts / totalSubTopics * 100).toInt() : 0;
+    final percentage = totalSubTopics > 0
+        ? (completedConcepts / totalSubTopics * 100).toInt()
+        : 0;
 
     // Generate roast based on completion percentage
     String getRoastMessage() {
       if (percentage == 100) return "WAIT... YOU ACTUALLY FINISHED? 🤯";
       if (percentage >= 90) return "Almost there! Don't choke now 😤";
-      if (percentage >= 75) return "Not bad, but exams won't wait for u bestie 📚";
+      if (percentage >= 75)
+        return "Not bad, but exams won't wait for u bestie 📚";
       if (percentage >= 50) return "Mid progress = Mid grades, step it up! ⚡";
       if (percentage >= 25) return "Bro really said \"I'll start tomorrow\" 💀";
       return "Touch grass? Nah, TOUCH YOUR BOOKS FR FR 📖";
@@ -563,10 +644,7 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
                 end: Alignment.bottomRight,
               )
             : LinearGradient(
-                colors: [
-                  MangaTheme.paperWhite,
-                  Colors.grey.shade100,
-                ],
+                colors: [MangaTheme.paperWhite, Colors.grey.shade100],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -594,9 +672,11 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  percentage == 100 
-                    ? Icons.celebration_rounded 
-                    : (percentage >= 75 ? Icons.directions_run_rounded : Icons.warning_amber_rounded),
+                  percentage == 100
+                      ? Icons.celebration_rounded
+                      : (percentage >= 75
+                            ? Icons.directions_run_rounded
+                            : Icons.warning_amber_rounded),
                   color: MangaTheme.paperWhite,
                   size: 20,
                 ),
@@ -628,7 +708,9 @@ class _SyllabusTrackerScreenState extends State<SyllabusTrackerScreen> {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  percentage == 100 ? Icons.emoji_events_rounded : Icons.track_changes_rounded,
+                  percentage == 100
+                      ? Icons.emoji_events_rounded
+                      : Icons.track_changes_rounded,
                   color: MangaTheme.highlightYellow,
                   size: 24,
                 ),
