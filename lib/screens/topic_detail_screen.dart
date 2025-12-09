@@ -6,6 +6,7 @@ import '../theme/manga_theme.dart';
 import '../widgets/manga_widgets.dart';
 import '../widgets/expandable_question.dart';
 import '../widgets/diagrams/process_diagrams.dart';
+import '../widgets/diagrams/scheduling_diagrams.dart';
 
 class TopicDetailScreen extends StatefulWidget {
   final Topic topic;
@@ -75,6 +76,39 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
       return const ContextSwitchDiagram();
     }
 
+    // Module 2.2 diagrams
+    if (pyq.question.contains('Preemptive and Non-preemptive')) {
+      return const PreemptiveComparisonDiagram();
+    }
+    if (pyq.question.contains('Round Robin Algorithm')) {
+      return const RoundRobinDiagram();
+    }
+    if (pyq.question.contains('Gantt chart')) {
+      return GanttChartDiagram(
+        title: 'Example Gantt Chart',
+        processes: [
+          GanttProcess(
+            name: 'P1',
+            startTime: 0,
+            endTime: 4,
+            color: MangaTheme.mangaRed.withOpacity(0.6),
+          ),
+          GanttProcess(
+            name: 'P2',
+            startTime: 4,
+            endTime: 7,
+            color: MangaTheme.speedlineBlue.withOpacity(0.6),
+          ),
+          GanttProcess(
+            name: 'P3',
+            startTime: 7,
+            endTime: 8,
+            color: MangaTheme.accentOrange.withOpacity(0.6),
+          ),
+        ],
+      );
+    }
+
     return null;
   }
 
@@ -102,7 +136,7 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
           'ANNIHILATED! Who\'s next?',
         ];
         final randomMsg = messages[minutes % messages.length];
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -125,9 +159,9 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
           SnackBar(
             content: Text(
               'Unmarked. Need a refresher?',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: MangaTheme.inkBlack,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.labelLarge?.copyWith(color: MangaTheme.inkBlack),
             ),
             backgroundColor: MangaTheme.panelGray,
             behavior: SnackBarBehavior.floating,

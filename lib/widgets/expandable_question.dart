@@ -6,11 +6,7 @@ class ExpandableQuestion extends StatefulWidget {
   final PYQ question;
   final Widget? diagram;
 
-  const ExpandableQuestion({
-    super.key,
-    required this.question,
-    this.diagram,
-  });
+  const ExpandableQuestion({super.key, required this.question, this.diagram});
 
   @override
   State<ExpandableQuestion> createState() => _ExpandableQuestionState();
@@ -29,9 +25,10 @@ class _ExpandableQuestionState extends State<ExpandableQuestion>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    _rotationAnimation = Tween<double>(begin: 0, end: 0.5).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _rotationAnimation = Tween<double>(
+      begin: 0,
+      end: 0.5,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -98,14 +95,13 @@ class _ExpandableQuestionState extends State<ExpandableQuestion>
                   ),
                   // Type badge
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: MangaTheme.highlightYellow,
-                      border: Border.all(
-                        color: MangaTheme.inkBlack,
-                        width: 2,
-                      ),
+                      border: Border.all(color: MangaTheme.inkBlack, width: 2),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -131,10 +127,7 @@ class _ExpandableQuestionState extends State<ExpandableQuestion>
               decoration: const BoxDecoration(
                 color: MangaTheme.paperWhite,
                 border: Border(
-                  top: BorderSide(
-                    color: MangaTheme.inkBlack,
-                    width: 2,
-                  ),
+                  top: BorderSide(color: MangaTheme.inkBlack, width: 2),
                 ),
               ),
               child: Column(

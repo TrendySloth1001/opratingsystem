@@ -23,12 +23,12 @@ class _ProcessStatePainter extends CustomPainter {
 
     final borderPaint = Paint()
       ..color = MangaTheme.inkBlack
-      ..strokeWidth = 4
+      ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
 
     final arrowPaint = Paint()
       ..color = MangaTheme.mangaRed
-      ..strokeWidth = 3
+      ..strokeWidth = 2.5
       ..style = PaintingStyle.stroke;
 
     final textPainter = TextPainter(
@@ -36,36 +36,45 @@ class _ProcessStatePainter extends CustomPainter {
       textAlign: TextAlign.center,
     );
 
-    // State positions
-    final newState = Offset(size.width * 0.1, size.height * 0.2);
-    final readyState = Offset(size.width * 0.5, size.height * 0.2);
+    // Better mobile-responsive state positions
+    final radius = size.width > 400 ? 45.0 : 35.0;
+    final newState = Offset(size.width * 0.15, size.height * 0.15);
+    final readyState = Offset(size.width * 0.5, size.height * 0.15);
     final runningState = Offset(size.width * 0.5, size.height * 0.5);
-    final waitingState = Offset(size.width * 0.1, size.height * 0.7);
-    final terminatedState = Offset(size.width * 0.9, size.height * 0.5);
+    final waitingState = Offset(size.width * 0.15, size.height * 0.75);
+    final terminatedState = Offset(size.width * 0.85, size.height * 0.5);
 
     // Draw states (circles)
     void drawState(Offset center, String label) {
-      canvas.drawCircle(center, 50, statePaint);
-      canvas.drawCircle(center, 50, borderPaint);
+      canvas.drawCircle(center, radius, statePaint);
+      canvas.drawCircle(center, radius, borderPaint);
 
+      final fontSize = size.width > 400 ? 12.0 : 10.0;
       textPainter.text = TextSpan(
         text: label,
-        style: const TextStyle(
+        style: TextStyle(
           color: MangaTheme.inkBlack,
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
+          fontSize: fontSize,
+          fontWeight: FontWeight.w900,
         ),
       );
-      textPainter.layout();
+      textPainter.layout(maxWidth: radius * 1.6);
       textPainter.paint(
         canvas,
-        Offset(center.dx - textPainter.width / 2,
-            center.dy - textPainter.height / 2),
+        Offset(
+          center.dx - textPainter.width / 2,
+          center.dy - textPainter.height / 2,
+        ),
       );
     }
 
     // Draw arrow with label
-    void drawArrow(Offset start, Offset end, String label, {bool curved = false}) {
+    void drawArrow(
+      Offset start,
+      Offset end,
+      String label, {
+      bool curved = false,
+    }) {
       final path = Path();
       path.moveTo(start.dx, start.dy);
 
@@ -74,7 +83,12 @@ class _ProcessStatePainter extends CustomPainter {
           (start.dx + end.dx) / 2,
           (start.dy + end.dy) / 2 - 30,
         );
-        path.quadraticBezierTo(controlPoint.dx, controlPoint.dy, end.dx, end.dy);
+        path.quadraticBezierTo(
+          controlPoint.dx,
+          controlPoint.dy,
+          end.dx,
+          end.dy,
+        );
       } else {
         path.lineTo(end.dx, end.dy);
       }
@@ -86,29 +100,25 @@ class _ProcessStatePainter extends CustomPainter {
 
       final arrowPath = Path();
       arrowPath.moveTo(end.dx, end.dy);
-      arrowPath.lineTo(
-        end.dx - arrowSize,
-        end.dy - arrowSize,
-      );
+      arrowPath.lineTo(end.dx - arrowSize, end.dy - arrowSize);
       arrowPath.moveTo(end.dx, end.dy);
-      arrowPath.lineTo(
-        end.dx - arrowSize,
-        end.dy + arrowSize,
-      );
+      arrowPath.lineTo(end.dx - arrowSize, end.dy + arrowSize);
       canvas.drawPath(arrowPath, arrowPaint);
 
       // Draw label
+      final labelOffset = curved ? -40.0 : -15.0;
       final labelPos = Offset(
         (start.dx + end.dx) / 2,
-        curved ? (start.dy + end.dy) / 2 - 50 : (start.dy + end.dy) / 2 - 20,
+        (start.dy + end.dy) / 2 + labelOffset,
       );
 
+      final labelSize = size.width > 400 ? 9.0 : 8.0;
       textPainter.text = TextSpan(
         text: label,
-        style: const TextStyle(
+        style: TextStyle(
           color: MangaTheme.mangaRed,
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
+          fontSize: labelSize,
+          fontWeight: FontWeight.w900,
         ),
       );
       textPainter.layout();
@@ -125,42 +135,43 @@ class _ProcessStatePainter extends CustomPainter {
     drawState(waitingState, 'WAITING');
     drawState(terminatedState, 'TERMINATED');
 
-    // Draw transitions
+    // Draw transitions with responsive offsets
+    final arrowOffset = radius + 5;
     drawArrow(
-      Offset(newState.dx + 50, newState.dy),
-      Offset(readyState.dx - 50, readyState.dy),
+      Offset(newState.dx + arrowOffset, newState.dy),
+      Offset(readyState.dx - arrowOffset, readyState.dy),
       'ADMIT',
     );
 
     drawArrow(
-      Offset(readyState.dx, readyState.dy + 50),
-      Offset(runningState.dx, runningState.dy - 50),
+      Offset(readyState.dx, readyState.dy + arrowOffset),
+      Offset(runningState.dx, runningState.dy - arrowOffset),
       'DISPATCH',
     );
 
     drawArrow(
-      Offset(runningState.dx - 20, runningState.dy - 30),
-      Offset(readyState.dx - 20, readyState.dy + 30),
+      Offset(runningState.dx - 15, runningState.dy - 25),
+      Offset(readyState.dx - 15, readyState.dy + 25),
       'INTERRUPT',
       curved: true,
     );
 
     drawArrow(
-      Offset(runningState.dx - 50, runningState.dy + 30),
-      Offset(waitingState.dx + 50, waitingState.dy - 30),
+      Offset(runningState.dx - arrowOffset - 5, runningState.dy + 20),
+      Offset(waitingState.dx + arrowOffset + 5, waitingState.dy - 20),
       'I/O WAIT',
     );
 
     drawArrow(
-      Offset(waitingState.dx + 30, waitingState.dy - 50),
-      Offset(readyState.dx - 30, readyState.dy + 50),
+      Offset(waitingState.dx + 20, waitingState.dy - arrowOffset - 5),
+      Offset(readyState.dx - 20, readyState.dy + arrowOffset + 5),
       'I/O DONE',
       curved: true,
     );
 
     drawArrow(
-      Offset(runningState.dx + 50, runningState.dy),
-      Offset(terminatedState.dx - 50, terminatedState.dy),
+      Offset(runningState.dx + arrowOffset, runningState.dy),
+      Offset(terminatedState.dx - arrowOffset, terminatedState.dy),
       'EXIT',
     );
   }
@@ -237,10 +248,7 @@ class PCBDiagram extends StatelessWidget {
             flex: 2,
             child: Text(
               label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
           Expanded(
@@ -268,18 +276,14 @@ class ProcessVsProgramDiagram extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _buildCard(
-            'PROGRAM',
-            [
-              'Passive entity',
-              'Stored on disk',
-              'Static',
-              'Recipe book',
-              'One program →',
-              'Many processes',
-            ],
-            MangaTheme.speedlineBlue,
-          ),
+          child: _buildCard('PROGRAM', [
+            'Passive entity',
+            'Stored on disk',
+            'Static',
+            'Recipe book',
+            'One program →',
+            'Many processes',
+          ], MangaTheme.speedlineBlue),
         ),
         Container(
           width: 40,
@@ -294,18 +298,14 @@ class ProcessVsProgramDiagram extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: _buildCard(
-            'PROCESS',
-            [
-              'Active entity',
-              'In memory',
-              'Dynamic',
-              'Cooking meal',
-              'Program +',
-              'Execution state',
-            ],
-            MangaTheme.accentOrange,
-          ),
+          child: _buildCard('PROCESS', [
+            'Active entity',
+            'In memory',
+            'Dynamic',
+            'Cooking meal',
+            'Program +',
+            'Execution state',
+          ], MangaTheme.accentOrange),
         ),
       ],
     );
@@ -346,10 +346,7 @@ class ProcessVsProgramDiagram extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
-                      point,
-                      style: const TextStyle(fontSize: 13),
-                    ),
+                    child: Text(point, style: const TextStyle(fontSize: 13)),
                   ),
                 ],
               ),
@@ -397,11 +394,7 @@ class _ContextSwitchPainter extends CustomPainter {
 
     // Draw process boxes
     void drawProcessBox(double x, String label, Color color) {
-      final rect = Rect.fromCenter(
-        center: Offset(x, y),
-        width: 80,
-        height: 60,
-      );
+      final rect = Rect.fromCenter(center: Offset(x, y), width: 80, height: 60);
 
       canvas.drawRect(rect, fillPaint);
       canvas.drawRect(
@@ -434,11 +427,7 @@ class _ContextSwitchPainter extends CustomPainter {
         ..strokeWidth = 2
         ..style = PaintingStyle.stroke;
 
-      canvas.drawLine(
-        Offset(x, y - 40),
-        Offset(x, y + 40),
-        switchPaint,
-      );
+      canvas.drawLine(Offset(x, y - 40), Offset(x, y + 40), switchPaint);
 
       textPainter.text = const TextSpan(
         text: 'SWITCH',

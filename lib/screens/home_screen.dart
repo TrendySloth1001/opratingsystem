@@ -158,11 +158,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 Expanded(
                                   child: Text(
                                     _getMotivationalRoast(),
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.headlineMedium?.copyWith(
-                                          color: MangaTheme.mangaRed,
-                                        ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium
+                                        ?.copyWith(color: MangaTheme.mangaRed),
                                   ),
                                 ),
                               ],
@@ -178,19 +177,17 @@ class _HomeScreenState extends State<HomeScreen>
                               label: _getOverallProgress() == 0
                                   ? 'Wow, starting from absolute zero'
                                   : _getOverallProgress() < 0.3
-                                      ? 'Barely scratching the surface'
-                                      : _getOverallProgress() < 0.7
-                                          ? 'Getting somewhere... finally'
-                                          : _getOverallProgress() < 1.0
-                                              ? 'Almost there, champ'
-                                              : 'LEGEND STATUS ACHIEVED',
+                                  ? 'Barely scratching the surface'
+                                  : _getOverallProgress() < 0.7
+                                  ? 'Getting somewhere... finally'
+                                  : _getOverallProgress() < 1.0
+                                  ? 'Almost there, champ'
+                                  : 'LEGEND STATUS ACHIEVED',
                             ),
                             const SizedBox(height: 20),
                             Text(
                               'THE DAMAGE REPORT',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
+                              style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
                                     letterSpacing: 2,
                                     fontWeight: FontWeight.bold,
@@ -205,9 +202,10 @@ class _HomeScreenState extends State<HomeScreen>
                                   '${_getCompletedCount()}/${_getTotalTopics()}',
                                   _getCompletedCount() == 0
                                       ? 'Slacker'
-                                      : _getCompletedCount() == _getTotalTopics()
-                                          ? 'BEAST'
-                                          : 'Topics',
+                                      : _getCompletedCount() ==
+                                            _getTotalTopics()
+                                      ? 'BEAST'
+                                      : 'Topics',
                                   Icons.book,
                                 ),
                                 Container(
@@ -221,8 +219,8 @@ class _HomeScreenState extends State<HomeScreen>
                                   _getTotalStudyTime() == 0
                                       ? 'Tourist'
                                       : _getTotalStudyTime() > 120
-                                          ? 'Grinder'
-                                          : 'Minutes',
+                                      ? 'Grinder'
+                                      : 'Minutes',
                                   Icons.timer,
                                 ),
                               ],
@@ -251,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   String _getMotivationalRoast() {
     final progress = _getOverallProgress();
-    
+
     if (progress == 0) {
       return "ZERO PROGRESS? Bold strategy.";
     } else if (progress < 0.2) {
@@ -273,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen>
     final completed = _getCompletedCount();
     final total = _getTotalTopics();
     final time = _getTotalStudyTime();
-    
+
     if (completed == 0) {
       return "The journey of a thousand miles begins with opening the book. You haven't even done that yet.";
     } else if (completed < 3) {
@@ -423,7 +421,8 @@ class _HomeScreenState extends State<HomeScreen>
                         const SizedBox(height: 4),
                         Text(
                           _getModuleRoast(completedTopics, totalTopics),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
                                 color: MangaTheme.shadowGray,
                                 fontStyle: FontStyle.italic,
                               ),
@@ -449,24 +448,25 @@ class _HomeScreenState extends State<HomeScreen>
                       ],
                     ),
                   ),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    color: MangaTheme.primaryBlack,
-                    size: 24,
-                  ),
                 ],
               ),
               const SizedBox(height: 16),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  minHeight: 8,
-                  backgroundColor: MangaTheme.panelGray,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    progress == 1.0
-                        ? MangaTheme.highlightYellow
-                        : MangaTheme.mangaRed,
+              // Enhanced progress bar
+              Container(
+                height: 10,
+                decoration: BoxDecoration(
+                  color: MangaTheme.panelGray,
+                  border: Border.all(color: MangaTheme.inkBlack, width: 2),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(3),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.transparent,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      progress == 1.0 ? MangaTheme.highlightYellow : MangaTheme.mangaRed,
+                    ),
                   ),
                 ),
               ),
