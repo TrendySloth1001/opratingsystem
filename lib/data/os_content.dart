@@ -11,54 +11,215 @@ final List<Module> osModules = [
         title:
             '2.1 — Concept of a Process, Process States, Process Description, PCB',
         content: '''
-**Process Basics:**
-A process is a program in execution. It includes program code, current activity (program counter), stack, data section, and heap.
+PROCESSES — Where Programs Come to Life!
 
-**Process States:**
-- NEW: Process being created
-- READY: Waiting to be assigned to processor
-- RUNNING: Instructions being executed
-- WAITING: Waiting for I/O or event
-- TERMINATED: Process finished execution
+This section covers the fundamental building blocks of operating systems:
+• What processes are and how they differ from programs
+• The lifecycle of a process through various states
+• Process Control Block (PCB) structure
+• Context switching mechanics
+• Process vs Program vs Thread
 
-**Process Control Block (PCB):**
-Data structure containing:
-- Process state
-- Program counter
-- CPU registers
-- CPU scheduling info
-- Memory management info
-- Accounting info
-- I/O status info
-
-**PCB Disadvantages:**
-- Overhead in context switching
-- Large memory requirement
-- Complex management
+Click each question below to reveal detailed answers with diagrams!
 ''',
         pyqs: [
           PYQ(
             question:
                 'What is a process? Draw and Explain Process State Transition Diagram with six states.',
             type: 'theory',
+            answer: '''A process is a program in execution. It's not just code sitting on disk — it's alive, dynamic, and doing work!
+
+KEY COMPONENTS OF A PROCESS:
+1. Program Code (Text Section) - Your actual instructions
+2. Program Counter (PC) - Points to the next instruction to execute
+3. CPU Registers - Temporary storage for current operations
+4. Stack - Function calls and local variables
+5. Data Section - Global variables
+6. Heap - Dynamically allocated memory
+
+PROCESS vs PROGRAM:
+• Program = Passive entity (executable file on disk)
+• Process = Active entity (program in execution)
+• One program can create multiple processes
+
+Example: Opening Chrome twice creates TWO processes from ONE program.
+
+The Five-State Process Model shows how a process transitions through its lifecycle (see diagram below). The six-state model adds SUSPENDED states when processes are swapped to disk.''',
+            hasDiagram: true,
           ),
           PYQ(
             question:
                 'What is an Operating System? Explain its basic functions.',
             type: 'theory',
+            answer: '''An Operating System is the middleman between you (the user) and the hardware. Without it, your computer is just expensive metal.
+
+DEFINITION: Software that manages hardware resources and provides services to application programs.
+
+BASIC FUNCTIONS:
+1. PROCESS MANAGEMENT
+   - Create, schedule, and terminate processes
+   - Handle multitasking and context switching
+   
+2. MEMORY MANAGEMENT  
+   - Allocate and deallocate memory
+   - Virtual memory management
+   - Protection between processes
+
+3. FILE SYSTEM MANAGEMENT
+   - Create, delete, read, write files
+   - Organize data on storage devices
+   - Access control and permissions
+
+4. I/O DEVICE MANAGEMENT
+   - Control and coordinate peripherals
+   - Device drivers and buffering
+   - Interrupt handling
+
+5. SECURITY & PROTECTION
+   - User authentication
+   - Access control
+   - Resource protection
+
+6. NETWORKING
+   - Network protocols
+   - Communication between systems
+
+Think of OS as a resource manager and traffic cop all in one!''',
+            hasDiagram: false,
           ),
           PYQ(
             question: 'Explain the Five-state Process transition diagram.',
             type: 'theory',
+            answer: '''The Five-State Model tracks a process's journey from birth to death. Every process MUST go through these states:
+
+STATE DESCRIPTIONS:
+
+1. NEW - Process is being created
+   Fresh out of the oven! Not ready to run yet.
+
+2. READY - Process is waiting for CPU
+   Standing in line, eager and prepared to execute.
+
+3. RUNNING - Process is executing on CPU
+   The chosen one! Currently using the processor.
+
+4. WAITING (BLOCKED) - Process is waiting for I/O or event
+   Stuck waiting for something (disk read, user input, etc.)
+
+5. TERMINATED (EXIT) - Process has finished execution
+   Dead and gone. Time to clean up resources.
+
+TRANSITIONS (The Journey):
+• NEW → READY: Admit (OS loads process into memory)
+• READY → RUNNING: Dispatch (Scheduler assigns CPU)
+• RUNNING → READY: Interrupt (time slice expired, higher priority process arrives)
+• RUNNING → WAITING: I/O Wait (process needs I/O operation)
+• WAITING → READY: I/O Complete (I/O operation finished)
+• RUNNING → TERMINATED: Exit (process completes or crashes)
+
+IMPORTANT: A process CANNOT go directly from WAITING to RUNNING. It must pass through READY first!
+
+See diagram below for visual representation.''',
+            hasDiagram: true,
           ),
           PYQ(
             question:
                 'What is the role of PCB? Explain the structure of PCB with its disadvantages.',
             type: 'theory',
+            answer: '''The Process Control Block (PCB) is the OS's database entry for each process. Think of it as a process's ID card with all vital info!
+
+ROLE OF PCB:
+The PCB stores ALL information needed to manage a process. When the OS switches between processes (context switch), it saves/restores PCB data.
+
+PCB STRUCTURE (What's Inside):
+
+1. PROCESS ID (PID) - Unique identifier for the process
+
+2. PROCESS STATE - Current state (NEW, READY, RUNNING, WAITING, TERMINATED)
+
+3. PROGRAM COUNTER - Address of next instruction to execute
+
+4. CPU REGISTERS - Contents of all registers (AX, BX, CX, DX, SP, BP, etc.)
+
+5. CPU SCHEDULING INFO
+   - Priority level
+   - Scheduling queue pointers
+   - Time slices
+
+6. MEMORY MANAGEMENT INFO
+   - Base and limit registers
+   - Page tables
+   - Segment tables
+
+7. ACCOUNTING INFORMATION
+   - CPU time used
+   - Clock time elapsed
+   - Time limits
+
+8. I/O STATUS INFORMATION
+   - List of open files
+   - List of allocated devices
+   - I/O requests
+
+DISADVANTAGES OF PCB:
+
+1. OVERHEAD - Context switching requires saving/loading entire PCB (expensive!)
+
+2. MEMORY CONSUMPTION - Each process needs PCB space (scales with process count)
+
+3. CONTEXT SWITCH TIME - More PCB data = longer switch time = performance hit
+
+4. COMPLEXITY - Managing PCBs adds OS complexity
+
+But hey, without PCB, multitasking wouldn't exist. Small price to pay!
+
+See diagram below for PCB structure visualization.''',
+            hasDiagram: true,
           ),
           PYQ(
             question: 'Differentiate between a Process and a Thread.',
             type: 'theory',
+            answer: '''Processes and Threads are both units of execution, but threads are lightweight processes that share resources. Here's the breakdown:
+
+PROCESS:
+• Independent execution unit
+• Has its own memory space (code, data, heap, stack)
+• Heavyweight — expensive to create and switch
+• Isolated from other processes
+• Communication via IPC (Inter-Process Communication)
+• One process crash doesn't affect others
+
+THREAD:
+• Lightweight execution unit WITHIN a process
+• Shares code, data, and heap with other threads in same process
+• Has its own stack and registers
+• Cheap to create and switch
+• Can directly access shared data
+• One thread crash can crash entire process
+
+ANALOGY:
+Process = House with separate address, utilities, furniture
+Thread = Roommates sharing the same house
+
+WHY USE THREADS?
+1. PARALLELISM - Utilize multiple CPU cores
+2. RESPONSIVENESS - UI thread stays responsive while worker threads compute
+3. RESOURCE SHARING - No need for complex IPC
+4. ECONOMY - Faster creation and context switching
+
+COMPARISON TABLE:
+
+| Aspect | Process | Thread |
+|--------|---------|--------|
+| Weight | Heavy | Light |
+| Creation Time | Slow | Fast |
+| Context Switch | Expensive | Cheap |
+| Memory | Separate | Shared |
+| Communication | IPC needed | Direct |
+| Isolation | High | Low |
+
+Example: Chrome browser creates one process per tab (isolation), but each tab has multiple threads (for rendering, JavaScript, etc.)''',
+            hasDiagram: false,
           ),
         ],
       ),

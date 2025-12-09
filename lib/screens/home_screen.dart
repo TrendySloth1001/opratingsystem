@@ -116,6 +116,15 @@ class _HomeScreenState extends State<HomeScreen>
                                 letterSpacing: 4,
                               ),
                         ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Where procrastination goes to die',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: MangaTheme.paperWhite.withOpacity(0.7),
+                                fontStyle: FontStyle.italic,
+                              ),
+                        ),
                       ],
                     ),
                   ),
@@ -146,27 +155,59 @@ class _HomeScreenState extends State<HomeScreen>
                                   size: 32,
                                 ),
                                 const SizedBox(width: 12),
-                                Text(
-                                  'YOUR PROGRESS',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.displaySmall,
+                                Expanded(
+                                  child: Text(
+                                    _getMotivationalRoast(),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.headlineMedium?.copyWith(
+                                          color: MangaTheme.mangaRed,
+                                        ),
+                                  ),
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              _getProgressMessage(),
+                              style: Theme.of(context).textTheme.bodyLarge,
                             ),
                             const SizedBox(height: 20),
                             MangaProgressBar(
                               progress: _getOverallProgress(),
-                              label: 'Overall Completion',
+                              label: _getOverallProgress() == 0
+                                  ? 'Wow, starting from absolute zero'
+                                  : _getOverallProgress() < 0.3
+                                      ? 'Barely scratching the surface'
+                                      : _getOverallProgress() < 0.7
+                                          ? 'Getting somewhere... finally'
+                                          : _getOverallProgress() < 1.0
+                                              ? 'Almost there, champ'
+                                              : 'LEGEND STATUS ACHIEVED',
                             ),
                             const SizedBox(height: 20),
+                            Text(
+                              'THE DAMAGE REPORT',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    letterSpacing: 2,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(height: 12),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 _buildStatItem(
                                   context,
                                   '${_getCompletedCount()}/${_getTotalTopics()}',
-                                  'Topics',
+                                  _getCompletedCount() == 0
+                                      ? 'Slacker'
+                                      : _getCompletedCount() == _getTotalTopics()
+                                          ? 'BEAST'
+                                          : 'Topics',
                                   Icons.book,
                                 ),
                                 Container(
@@ -177,7 +218,11 @@ class _HomeScreenState extends State<HomeScreen>
                                 _buildStatItem(
                                   context,
                                   '${_getTotalStudyTime()}',
-                                  'Minutes',
+                                  _getTotalStudyTime() == 0
+                                      ? 'Tourist'
+                                      : _getTotalStudyTime() > 120
+                                          ? 'Grinder'
+                                          : 'Minutes',
                                   Icons.timer,
                                 ),
                               ],
@@ -202,6 +247,58 @@ class _HomeScreenState extends State<HomeScreen>
         ],
       ),
     );
+  }
+
+  String _getMotivationalRoast() {
+    final progress = _getOverallProgress();
+    
+    if (progress == 0) {
+      return "ZERO PROGRESS? Bold strategy.";
+    } else if (progress < 0.2) {
+      return "Oh look, you opened the app!";
+    } else if (progress < 0.4) {
+      return "Slow and steady... very slow.";
+    } else if (progress < 0.6) {
+      return "Finally! Some actual effort!";
+    } else if (progress < 0.8) {
+      return "Okay, now we're cooking!";
+    } else if (progress < 1.0) {
+      return "SO CLOSE! Don't give up now!";
+    } else {
+      return "ABSOLUTE LEGEND! Go ace that exam!";
+    }
+  }
+
+  String _getProgressMessage() {
+    final completed = _getCompletedCount();
+    final total = _getTotalTopics();
+    final time = _getTotalStudyTime();
+    
+    if (completed == 0) {
+      return "The journey of a thousand miles begins with opening the book. You haven't even done that yet.";
+    } else if (completed < 3) {
+      return "Nice start! Only ${total - completed} more to go. Piece of cake, right?";
+    } else if (completed < total / 2) {
+      return "Halfway? Not even close. But hey, $completed down! Keep the momentum!";
+    } else if (completed < total) {
+      return "You're actually doing this! $time minutes invested. That's like... ${(time / 60).floor()} episodes of anime you sacrificed!";
+    } else {
+      return "ALL TOPICS CONQUERED! You absolute madlad! Time to destroy that exam!";
+    }
+  }
+
+  String _getModuleRoast(int completed, int total) {
+    if (completed == 0) {
+      return "Untouched. Like your gym membership.";
+    } else if (completed == total) {
+      return "CONQUERED! You're basically a professor now.";
+    } else if (completed == 1) {
+      return "One down. Rome wasn't built in a day... but you're testing that theory.";
+    } else if (completed < total / 2) {
+      return "Started strong... then what happened?";
+    } else {
+      return "Almost there! Don't choke now!";
+    }
   }
 
   Widget _buildStatItem(
@@ -322,6 +419,14 @@ class _HomeScreenState extends State<HomeScreen>
                         Text(
                           module.title,
                           style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _getModuleRoast(completedTopics, totalTopics),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: MangaTheme.shadowGray,
+                                fontStyle: FontStyle.italic,
+                              ),
                         ),
                         const SizedBox(height: 8),
                         Row(

@@ -4,6 +4,8 @@ import '../models/study_content.dart';
 import '../services/storage_service.dart';
 import '../theme/manga_theme.dart';
 import '../widgets/manga_widgets.dart';
+import '../widgets/expandable_question.dart';
+import '../widgets/diagrams/process_diagrams.dart';
 
 class TopicDetailScreen extends StatefulWidget {
   final Topic topic;
@@ -53,6 +55,29 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
     });
   }
 
+  Widget? _getDiagramForQuestion(PYQ pyq) {
+    if (pyq.hasDiagram != true) return null;
+
+    // Module 2.1 diagrams
+    if (pyq.question.contains('Process State Transition')) {
+      return const ProcessStateDiagram();
+    }
+    if (pyq.question.contains('Five-state')) {
+      return const ProcessStateDiagram();
+    }
+    if (pyq.question.contains('PCB')) {
+      return const PCBDiagram();
+    }
+    if (pyq.question.contains('Process and a Thread')) {
+      return const ProcessVsProgramDiagram();
+    }
+    if (pyq.question.contains('Context Switch')) {
+      return const ContextSwitchDiagram();
+    }
+
+    return null;
+  }
+
   Future<void> _toggleCompletion() async {
     final minutes = (_elapsedSeconds / 60).ceil();
     await _storage.updateTopicProgress(
@@ -68,13 +93,43 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
     if (_isCompleted) {
       _checkController.forward();
       if (mounted) {
+        final messages = [
+          'BOOM! Another one bites the dust!',
+          'CRUSHED IT! Next victim?',
+          'DEMOLISHED! Keep the momentum!',
+          'DESTROYED! You\'re on fire!',
+          'CONQUERED! Unstoppable force!',
+          'ANNIHILATED! Who\'s next?',
+        ];
+        final randomMsg = messages[minutes % messages.length];
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'NICE! Topic Completed!',
+              randomMsg,
               style: Theme.of(context).textTheme.labelLarge,
             ),
             backgroundColor: MangaTheme.highlightYellow,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: const BorderSide(color: MangaTheme.inkBlack, width: 3),
+            ),
+          ),
+        );
+      }
+    } else {
+      _checkController.reverse();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Unmarked. Need a refresher?',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: MangaTheme.inkBlack,
+                  ),
+            ),
+            backgroundColor: MangaTheme.panelGray,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -199,35 +254,9 @@ class _TopicDetailScreenState extends State<TopicDetailScreen>
                       ),
                       const SizedBox(height: 12),
                       ...widget.topic.pyqs.map(
-                        (pyq) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
-                          child: MangaPanel(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      MangaBadge(
-                                        text: pyq.type.toUpperCase(),
-                                        color: pyq.type == 'theory'
-                                            ? MangaTheme.speedlineBlue
-                                            : MangaTheme.accentOrange,
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    pyq.question,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyLarge,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        (pyq) => ExpandableQuestion(
+                          question: pyq,
+                          diagram: _getDiagramForQuestion(pyq),
                         ),
                       ),
                       const SizedBox(height: 80),

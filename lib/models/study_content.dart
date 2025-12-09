@@ -23,8 +23,15 @@ class Topic {
 class PYQ {
   final String question;
   final String type; // 'theory' or 'numerical'
+  final String? answer;
+  final bool? hasDiagram;
 
-  PYQ({required this.question, required this.type});
+  PYQ({
+    required this.question,
+    required this.type,
+    this.answer,
+    this.hasDiagram = false,
+  });
 }
 
 class StudyProgress {
