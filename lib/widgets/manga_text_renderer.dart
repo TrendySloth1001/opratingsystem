@@ -19,10 +19,10 @@ class MangaTextRenderer extends StatelessWidget {
   List<Widget> _parseAndRender(String text) {
     final List<Widget> widgets = [];
     final lines = text.split('\n');
-    
+
     for (int i = 0; i < lines.length; i++) {
       final line = lines[i];
-      
+
       // Skip empty lines unless between content
       if (line.trim().isEmpty) {
         if (widgets.isNotEmpty) {
@@ -84,7 +84,10 @@ class MangaTextRenderer extends StatelessWidget {
       if (line.contains('╔') || line.contains('║') || line.contains('╠')) {
         final tableLines = <String>[line];
         i++;
-        while (i < lines.length && (lines[i].contains('║') || lines[i].contains('╚') || lines[i].contains('╠'))) {
+        while (i < lines.length &&
+            (lines[i].contains('║') ||
+                lines[i].contains('╚') ||
+                lines[i].contains('╠'))) {
           tableLines.add(lines[i]);
           i++;
         }
@@ -122,8 +125,12 @@ class MangaTextRenderer extends StatelessWidget {
   }
 
   bool _isNumberedHeader(String line) {
-    return line.contains('1️⃣') || line.contains('2️⃣') || line.contains('3️⃣') || 
-           line.contains('4️⃣') || line.contains('5️⃣') || line.contains('6️⃣');
+    return line.contains('1️⃣') ||
+        line.contains('2️⃣') ||
+        line.contains('3️⃣') ||
+        line.contains('4️⃣') ||
+        line.contains('5️⃣') ||
+        line.contains('6️⃣');
   }
 
   Widget _buildEmojiHeader(String text) {
@@ -143,10 +150,7 @@ class MangaTextRenderer extends StatelessWidget {
           letterSpacing: 2.0,
           fontFamily: 'Impact',
           shadows: [
-            Shadow(
-              color: MangaTheme.highlightYellow,
-              offset: Offset(2, 2),
-            ),
+            Shadow(color: MangaTheme.highlightYellow, offset: Offset(2, 2)),
           ],
         ),
       ),
@@ -272,16 +276,11 @@ class MangaTextRenderer extends StatelessWidget {
             color: MangaTheme.mangaRed,
             shape: BoxShape.circle,
             boxShadow: [
-              BoxShadow(
-                color: MangaTheme.inkBlack,
-                offset: Offset(1, 1),
-              ),
+              BoxShadow(color: MangaTheme.inkBlack, offset: Offset(1, 1)),
             ],
           ),
         ),
-        Expanded(
-          child: _buildRichText(text),
-        ),
+        Expanded(child: _buildRichText(text)),
       ],
     );
   }
@@ -295,9 +294,7 @@ class MangaTextRenderer extends StatelessWidget {
           style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(width: 8),
-        Expanded(
-          child: _buildRichText(text.substring(2).trim()),
-        ),
+        Expanded(child: _buildRichText(text.substring(2).trim())),
       ],
     );
   }
@@ -325,55 +322,59 @@ class MangaTextRenderer extends StatelessWidget {
     for (final match in matches) {
       // Add text before match
       if (match.start > currentIndex) {
-        spans.add(TextSpan(
-          text: text.substring(currentIndex, match.start),
+        spans.add(
+          TextSpan(
+            text: text.substring(currentIndex, match.start),
+            style: const TextStyle(
+              fontSize: 15,
+              height: 1.6,
+              color: MangaTheme.inkBlack,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        );
+      }
+
+      // Add bold text with manga-style highlighting
+      spans.add(
+        TextSpan(
+          text: match.group(1),
           style: const TextStyle(
             fontSize: 15,
             height: 1.6,
             color: MangaTheme.inkBlack,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 0.5,
+            backgroundColor: MangaTheme.highlightYellow,
+            shadows: [
+              Shadow(
+                color: MangaTheme.inkBlack,
+                offset: Offset(0.5, 0.5),
+                blurRadius: 0,
+              ),
+            ],
           ),
-        ));
-      }
-
-      // Add bold text with manga-style highlighting
-      spans.add(TextSpan(
-        text: match.group(1),
-        style: const TextStyle(
-          fontSize: 15,
-          height: 1.6,
-          color: MangaTheme.inkBlack,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 0.5,
-          backgroundColor: MangaTheme.highlightYellow,
-          shadows: [
-            Shadow(
-              color: MangaTheme.inkBlack,
-              offset: Offset(0.5, 0.5),
-              blurRadius: 0,
-            ),
-          ],
         ),
-      ));
+      );
 
       currentIndex = match.end;
     }
 
     // Add remaining text
     if (currentIndex < text.length) {
-      spans.add(TextSpan(
-        text: text.substring(currentIndex),
-        style: const TextStyle(
-          fontSize: 15,
-          height: 1.6,
-          color: MangaTheme.inkBlack,
-          fontWeight: FontWeight.w500,
+      spans.add(
+        TextSpan(
+          text: text.substring(currentIndex),
+          style: const TextStyle(
+            fontSize: 15,
+            height: 1.6,
+            color: MangaTheme.inkBlack,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-      ));
+      );
     }
 
-    return RichText(
-      text: TextSpan(children: spans),
-    );
+    return RichText(text: TextSpan(children: spans));
   }
 }

@@ -5849,7 +5849,8 @@ Process spending more time paging than executing.
             question:
                 'Explain Page Replacement Strategies with suitable examples.',
             type: 'theory',
-            answer: '''Page replacement is like playing Tetris with RAM - when memory is full and you need space, which page do you kick out? Let's explore the drama! 🎮
+            answer:
+                '''Page replacement is like playing Tetris with RAM - when memory is full and you need space, which page do you kick out? Let's explore the drama! 🎮
 
 ---
 
@@ -6142,7 +6143,8 @@ Now go crush those page replacement questions! 💪🔥
             question:
                 'Calculate page faults for FIFO, Optimal and LRU for the following reference string: 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1. Frames = 4.',
             type: 'numerical',
-            answer: '''Time to crunch numbers like a boss! Let's calculate page faults for all three algorithms step by step. 📊
+            answer:
+                '''Time to crunch numbers like a boss! Let's calculate page faults for all three algorithms step by step. 📊
 
 ---
 
@@ -6408,7 +6410,8 @@ Now you're ready to ace any page replacement numerical! 💪🔥
           PYQ(
             question: 'Thrashing.',
             type: 'theory',
-            answer: '''Thrashing is when your computer becomes a sweaty, panicking mess - spending all its time swapping pages in and out instead of doing ACTUAL WORK. It's like spinning wheels in mud! 🚗💨
+            answer:
+                '''Thrashing is when your computer becomes a sweaty, panicking mess - spending all its time swapping pages in and out instead of doing ACTUAL WORK. It's like spinning wheels in mud! 🚗💨
 
 ---
 
