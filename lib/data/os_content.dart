@@ -614,7 +614,8 @@ Click questions for roasts and explanations!
           PYQ(
             question: 'Define Thread. Mention benefits of Multithreading.',
             type: 'theory',
-            answer: '''A thread is a lightweight process—basically a mini-process that lives inside a real process. Think of it as a sub-task.
+            answer:
+                '''A thread is a lightweight process—basically a mini-process that lives inside a real process. Think of it as a sub-task.
 
 DEFINITION:
 Thread = Basic unit of CPU utilization
@@ -661,7 +662,8 @@ Multithreading = The reason your devices don't suck!''',
           PYQ(
             question: 'Explain different types of thread in Operating System.',
             type: 'theory',
-            answer: '''There are TWO types of threads based on who manages them. It's like asking: Who's your boss?
+            answer:
+                '''There are TWO types of threads based on who manages them. It's like asking: Who's your boss?
 
 1. USER-LEVEL THREADS (ULT)
 
@@ -733,7 +735,8 @@ Most modern systems use HYBRID approaches (Many-to-Many model) combining benefit
             question:
                 'Differentiate between User Level Thread and Kernel Level Thread.',
             type: 'theory',
-            answer: '''User-Level vs Kernel-Level Threads: The ultimate showdown!
+            answer:
+                '''User-Level vs Kernel-Level Threads: The ultimate showdown!
 
 KEY DIFFERENCES:
 
@@ -784,7 +787,8 @@ Hybrid models (Many-to-Many) map multiple ULTs to multiple KLTs. Get benefits of
           PYQ(
             question: 'Concept of Multithreading.',
             type: 'theory',
-            answer: '''Multithreading is running multiple threads within a single process simultaneously. It's parallel task execution on steroids!
+            answer:
+                '''Multithreading is running multiple threads within a single process simultaneously. It's parallel task execution on steroids!
 
 MULTITHREADING MODELS:
 
@@ -866,7 +870,8 @@ Get ready for some classic OS problems!
             question:
                 'Discuss Producer and Consumer problem with solution using Semaphore.',
             type: 'theory',
-            answer: '''The Producer-Consumer problem is THE classic synchronization problem. It's like a restaurant with chefs and waiters.
+            answer:
+                '''The Producer-Consumer problem is THE classic synchronization problem. It's like a restaurant with chefs and waiters.
 
 THE PROBLEM:
 
@@ -920,7 +925,8 @@ The key: ALWAYS acquire resource semaphore BEFORE mutex!''',
           PYQ(
             question: 'Explain the Critical Section Problem.',
             type: 'theory',
-            answer: '''The Critical Section Problem is about preventing chaos when multiple processes access shared resources.
+            answer:
+                '''The Critical Section Problem is about preventing chaos when multiple processes access shared resources.
 
 WHAT IS CRITICAL SECTION?
 Critical Section = Code segment where shared resources are accessed
@@ -965,7 +971,8 @@ Without solving this:
           PYQ(
             question: 'Explain Principles of Concurrency.',
             type: 'theory',
-            answer: '''Concurrency is multiple processes executing "simultaneously". It's like juggling!
+            answer:
+                '''Concurrency is multiple processes executing "simultaneously". It's like juggling!
 
 CONCURRENCY vs PARALLELISM:
 Concurrency: Multiple processes making progress (may not be simultaneous)
@@ -1032,62 +1039,569 @@ Without concurrency, your computer would do ONE thing at a time. No multitasking
       Topic(
         id: '3.2',
         title: '3.2 — Mutual Exclusion, Requirements, TSL, Semaphores',
-        content: '''
-**Mutual Exclusion:**
-Ensures only one process executes in critical section at a time.
-
-**Requirements:**
-1. Only one process in CS
-2. No assumption about speed/processors
-3. Process outside CS cannot block others
-4. No indefinite postponement
-
-**Hardware Solutions:**
-
-**Test-and-Set Lock (TSL):**
-Atomic instruction that tests and modifies memory location.
-```
-while (TestAndSet(&lock));
-  // critical section
-lock = false;
-```
-
-**Semaphores:**
-Integer variable with two atomic operations:
-- wait(S) / P(S) / down(S)
-- signal(S) / V(S) / up(S)
-
-**Types:**
-- Binary Semaphore (0 or 1)
-- Counting Semaphore (0 to n)
-
-**Busy Waiting Problem:**
-Process continuously checks condition (spinlock).
-Solution: Block and wakeup mechanism using semaphores.
-
-**Dining Philosophers Problem:**
-5 philosophers, 5 chopsticks, need 2 to eat.
-Solution using semaphores prevents deadlock.
-''',
+        content: '''Ready for the REAL synchronization stuff? Buckle up!''',
         pyqs: [
           PYQ(
             question:
                 'Explain the term "Busy Waiting". Give solution to this problem using Semaphore.',
             type: 'theory',
+            answer: '''Alright so imagine you're waiting for the bathroom at a party, but instead of chilling on the couch, you're literally STANDING at the door, trying the handle every 0.5 seconds like a psychopath. THAT'S busy waiting. Total waste of energy, annoying af, and you're blocking the hallway.
+
+**BUSY WAITING (aka SPINLOCK):**
+When a process continuously checks if it can enter the critical section in a tight loop, WASTING CPU CYCLES like crazy.
+
+Think of it like:
+```
+while (bathroom_occupied) {
+    // Do absolutely NOTHING productive
+    // Just keep checking... checking... checking...
+    // CPU fan goes BRRRRRR for NO REASON
+}
+```
+
+**WHY IS THIS BAD?**
+1. **CPU WASTE** - Your processor is running at 100% doing LITERALLY NOTHING
+2. **BATTERY DRAIN** - Laptop users are crying rn
+3. **PRIORITY INVERSION** - Low priority process spinning might prevent high priority process from running
+4. **NOT SCALABLE** - Imagine 100 processes all spinning... RIP CPU
+
+**THE FIX: SEMAPHORES (aka the CIVILIZED way)**
+
+Instead of standing at the door like a maniac, you:
+1. Try to enter (wait operation)
+2. If occupied, OS puts you to SLEEP
+3. When available, OS WAKES YOU UP
+4. You enter, do your thing, signal when done
+
+**SEMAPHORE SOLUTION:**
+
+```c
+// Binary semaphore for mutual exclusion
+semaphore mutex = 1;
+
+// Process code
+wait(mutex);        // Try to enter
+    CRITICAL_SECTION();  // Do your thing
+signal(mutex);      // Release and wake next person
+
+// Wait operation (P / down / acquire):
+wait(S) {
+    while (S <= 0) {
+        // Instead of spinning, BLOCK THIS PROCESS
+        add_to_queue(this_process);
+        sleep();  // Put me to sleep, wake me when ready
+    }
+    S--;
+}
+
+// Signal operation (V / up / release):
+signal(S) {
+    S++;
+    if (queue_not_empty) {
+        wake_up_next_process();  // Wake someone from queue
+    }
+}
+```
+
+**COMPARISON:**
+
+WITH BUSY WAITING (SPINLOCK):
+- Process: "is it ready? is it ready? is it ready?" (1000x per second)
+- CPU: 100% usage
+- Battery: DEAD
+- Other processes: "Can you STOP?!"
+
+WITH SEMAPHORE (BLOCK-WAKEUP):
+- Process: "Wake me when ready" *sleeps peacefully*
+- CPU: Can do OTHER work
+- Battery: Happy
+- Other processes: Can actually RUN
+
+**WHEN TO USE SPINLOCK (yes, sometimes it's okay):**
+- VERY SHORT critical sections (like 5 microseconds)
+- Multiprocessor systems where context switch overhead > spin time
+- Real-time systems where sleep/wake latency is unacceptable
+
+But for most cases? SEMAPHORES ALL THE WAY. Don't be that person spinning at the bathroom door.
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question: 'Explain Producer consumer problem using Semaphores.',
             type: 'theory',
+            answer: '''This is THE CLASSIC problem. Like, if you understand this, you understand half of operating systems. No pressure.
+
+**THE SCENARIO:**
+- PRODUCER = Makes items and puts them in a buffer (like a factory making phones)
+- CONSUMER = Takes items from buffer and uses them (like customers buying phones)
+- BUFFER = Limited storage space (like a warehouse with limited shelves)
+
+**THE PROBLEMS WE NEED TO SOLVE:**
+1. Producer shouldn't add when buffer is FULL (can't stuff 11 items in 10 slots)
+2. Consumer shouldn't remove when buffer is EMPTY (can't buy air)
+3. Producer and Consumer shouldn't access buffer AT THE SAME TIME (data corruption = chaos)
+
+**WITHOUT SEMAPHORES (DISASTER):**
+```
+// Producer
+if (buffer_not_full) {
+    // OS: "lol imma interrupt you right here"
+    buffer[in] = item;  // COULD CORRUPT if consumer also accessing!
+}
+
+// Consumer
+if (buffer_not_empty) {
+    // OS: "surprise context switch!"
+    item = buffer[out];  // COULD READ GARBAGE!
+}
+```
+Result: Race conditions, corrupted data, lost items, duplicate items, CHAOS.
+
+**WITH SEMAPHORES (CIVILIZED SOCIETY):**
+
+```c
+#define BUFFER_SIZE 10
+int buffer[BUFFER_SIZE];
+int in = 0, out = 0;
+
+// Three semaphores for coordination:
+semaphore mutex = 1;        // Mutual exclusion (binary lock)
+semaphore empty = BUFFER_SIZE;  // Count of empty slots
+semaphore full = 0;         // Count of full slots
+
+// PRODUCER CODE:
+void producer() {
+    while (true) {
+        item = produce_item();  // Make something
+        
+        wait(empty);   // Wait for empty slot
+                       // If buffer full, SLEEP until consumer removes something
+        
+        wait(mutex);   // Get exclusive access to buffer
+                       // Critical section START
+        
+        buffer[in] = item;        // Add item
+        in = (in + 1) % BUFFER_SIZE;  // Move pointer
+        
+        signal(mutex); // Release buffer access
+                       // Critical section END
+        
+        signal(full);  // Increment full count
+                       // Wake up consumer if it was waiting
+    }
+}
+
+// CONSUMER CODE:
+void consumer() {
+    while (true) {
+        wait(full);    // Wait for filled slot
+                       // If buffer empty, SLEEP until producer adds something
+        
+        wait(mutex);   // Get exclusive access to buffer
+                       // Critical section START
+        
+        item = buffer[out];       // Take item
+        out = (out + 1) % BUFFER_SIZE;  // Move pointer
+        
+        signal(mutex); // Release buffer access
+                       // Critical section END
+        
+        signal(empty); // Increment empty count
+                       // Wake up producer if it was waiting
+        
+        consume_item(item);  // Use the item
+    }
+}
+```
+
+**HOW IT WORKS (THE MAGIC):**
+
+**SCENARIO 1: Buffer is FULL**
+- Producer tries wait(empty)
+- empty = 0, so producer goes to SLEEP
+- Consumer removes item, does signal(empty)
+- empty++, consumer WAKES producer
+- Producer continues
+
+**SCENARIO 2: Buffer is EMPTY**
+- Consumer tries wait(full)
+- full = 0, so consumer goes to SLEEP
+- Producer adds item, does signal(full)
+- full++, producer WAKES consumer
+- Consumer continues
+
+**SCENARIO 3: Both try to access buffer at same time**
+- One gets mutex first
+- Other waits at wait(mutex)
+- First finishes, does signal(mutex)
+- Second enters
+
+**WHY THREE SEMAPHORES?**
+1. **mutex** = Protects buffer from simultaneous access (MUTUAL EXCLUSION)
+2. **empty** = Counts empty slots, makes producer wait when full (COUNTING)
+3. **full** = Counts full slots, makes consumer wait when empty (COUNTING)
+
+**REAL WORLD EXAMPLES:**
+- Print queue (producers = apps printing, consumer = printer)
+- Network packets (producer = network card, consumer = your app)
+- Keyboard input (producer = keyboard, consumer = text editor)
+- YouTube buffering (producer = download, consumer = video player)
+
+**ORDER MATTERS:**
+ALWAYS do wait(empty/full) BEFORE wait(mutex)!
+If you do it backwards, you can get DEADLOCK. Trust me, you don't want that.
+
+This is the blueprint for SO MANY synchronization problems. Master this, and you're basically a concurrency wizard.
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question:
                 'Explain Dining Philosophers Problem with solution using Semaphore.',
             type: 'theory',
+            answer: '''This problem is LEGENDARY. It's basically "what if we made a deadlock scenario but make it fancy with philosophers?" Let's go.
+
+**THE SETUP (sounds fancy, is actually chaotic):**
+
+5 philosophers sit at a round table. Between each pair of philosophers is ONE chopstick (so 5 chopsticks total).
+
+Philosophers do two things:
+1. THINK (don't need chopsticks)
+2. EAT (need BOTH left AND right chopsticks)
+
+**THE RULES:**
+- Need 2 chopsticks to eat
+- Can only pick up one chopstick at a time
+- Must pick up left chopstick first, then right
+- Put down both after eating
+
+**THE PROBLEM (aka why this is a nightmare):**
+
+SCENARIO: All 5 philosophers get hungry at the SAME TIME
+1. All pick up their LEFT chopstick simultaneously
+2. All try to pick up their RIGHT chopstick
+3. All RIGHT chopsticks are already taken (by the person on their right)
+4. All philosophers holding one chopstick, waiting for the second
+5. Everyone waiting forever
+6. **DEADLOCK** - Everyone starves while holding chopsticks
+
+This is called **CIRCULAR WAIT** - P0 waits for P1, P1 waits for P2, ... P4 waits for P0.
+
+**NAIVE SOLUTION (DOESN'T WORK):**
+
+```c
+semaphore chopstick[5] = {1, 1, 1, 1, 1};  // 5 chopsticks
+
+void philosopher(int i) {
+    while (true) {
+        think();
+        
+        wait(chopstick[i]);           // Pick left
+        wait(chopstick[(i+1) % 5]);   // Pick right
+        
+        eat();
+        
+        signal(chopstick[i]);         // Put down left
+        signal(chopstick[(i+1) % 5]); // Put down right
+    }
+}
+```
+
+**WHY THIS FAILS:**
+If all 5 philosophers execute wait(chopstick[i]) at the same time = INSTANT DEADLOCK.
+
+**SOLUTION 1: MAXIMUM GUESTS (aka "Don't let everyone eat at once")**
+
+```c
+semaphore chopstick[5] = {1, 1, 1, 1, 1};
+semaphore room = 4;  // Only allow 4 philosophers in dining room
+
+void philosopher(int i) {
+    while (true) {
+        think();
+        
+        wait(room);  // Enter dining room (max 4 allowed)
+        
+        wait(chopstick[i]);
+        wait(chopstick[(i+1) % 5]);
+        
+        eat();
+        
+        signal(chopstick[i]);
+        signal(chopstick[(i+1) % 5]);
+        
+        signal(room);  // Leave dining room
+    }
+}
+```
+
+**HOW IT WORKS:**
+With only 4 philosophers allowed, at least ONE must get both chopsticks (pigeonhole principle). That one eats, releases chopsticks, someone else can eat. NO DEADLOCK!
+
+**SOLUTION 2: ASYMMETRIC SOLUTION (aka "One weirdo picks up right first")**
+
+```c
+semaphore chopstick[5] = {1, 1, 1, 1, 1};
+
+void philosopher(int i) {
+    while (true) {
+        think();
+        
+        if (i % 2 == 0) {  // Even numbered philosophers
+            wait(chopstick[i]);           // Left first
+            wait(chopstick[(i+1) % 5]);   // Then right
+        } else {           // Odd numbered philosophers
+            wait(chopstick[(i+1) % 5]);   // Right first
+            wait(chopstick[i]);           // Then left
+        }
+        
+        eat();
+        
+        signal(chopstick[i]);
+        signal(chopstick[(i+1) % 5]);
+    }
+}
+```
+
+**HOW IT WORKS:**
+Breaks the circular wait! Not everyone picks up left first, so the cycle is broken. At least one philosopher can complete their pickup sequence.
+
+**SOLUTION 3: CRITICAL SECTION APPROACH (aka "Only one person picks up chopsticks at a time")**
+
+```c
+semaphore chopstick[5] = {1, 1, 1, 1, 1};
+semaphore mutex = 1;  // Protect the pickup action
+
+void philosopher(int i) {
+    while (true) {
+        think();
+        
+        wait(mutex);  // Only one philosopher can pick up chopsticks at a time
+        wait(chopstick[i]);
+        wait(chopstick[(i+1) % 5]);
+        signal(mutex);
+        
+        eat();
+        
+        signal(chopstick[i]);
+        signal(chopstick[(i+1) % 5]);
+    }
+}
+```
+
+**HOW IT WORKS:**
+Only one philosopher can attempt to pick up chopsticks at a time. Guarantees they get both or neither. Simple but less concurrent.
+
+**WHICH SOLUTION IS BEST?**
+
+**Solution 1 (Max 4):** Good concurrency, simple to understand
+**Solution 2 (Asymmetric):** Maximum concurrency, elegant
+**Solution 3 (Mutex):** Least concurrency, but guaranteed deadlock-free
+
+**REAL WORLD ANALOGY:**
+Replace "philosophers" with "processes" and "chopsticks" with "resources" (like files, printers, database locks). Same problem, different names.
+
+**THE LESSON:**
+This problem teaches you about:
+- Deadlock conditions
+- Resource allocation strategies
+- Importance of ordering in resource acquisition
+- Trade-offs between concurrency and safety
+
+Master this, and you've unlocked advanced synchronization knowledge. Now go eat some noodles (with two chopsticks, properly synchronized).
+''',
+            hasDiagram: false,
           ),
           PYQ(
             question:
                 'Explain Hardware solution proposed to solve the critical section problem.',
             type: 'theory',
+            answer: '''Alright so we've been using semaphores (software solution), but what if we go DEEPER? What if the CPU itself had special instructions to help us? Welcome to HARDWARE SOLUTIONS.
+
+**THE PROBLEM:**
+Reading AND writing a variable needs to be ATOMIC (all-or-nothing, no interruptions). Normal instructions aren't atomic - CPU can interrupt between reading and writing.
+
+**HARDWARE TO THE RESCUE:**
+
+The CPU makers were like "fine, we'll give you special ATOMIC instructions that can't be interrupted." Here they are:
+
+---
+
+**SOLUTION 1: TEST-AND-SET LOCK (TSL)**
+
+This is an ATOMIC hardware instruction that does TWO things in ONE uninterruptible operation:
+1. Read the current value
+2. Set it to TRUE/1
+
+```c
+// TSL instruction (hardware does this ATOMICALLY)
+boolean TestAndSet(boolean *lock) {
+    boolean old = *lock;  // Read current value
+    *lock = true;         // Set to true
+    return old;           // Return what it WAS before
+    // ALL THREE LINES HAPPEN ATOMICALLY - NO INTERRUPTIONS!
+}
+
+// Using TSL for mutual exclusion:
+boolean lock = false;  // Shared lock variable
+
+void process() {
+    while (TestAndSet(&lock)) {
+        // Spin! If it returns true, someone else has the lock
+        // Keep trying until it returns false (was free)
+    }
+    
+    // CRITICAL SECTION
+    // Do your exclusive work here
+    
+    lock = false;  // Release the lock
+}
+```
+
+**HOW IT WORKS:**
+- If lock is FALSE: TSL returns FALSE and sets lock to TRUE (you got it!)
+- If lock is TRUE: TSL returns TRUE and keeps lock TRUE (someone else has it, try again)
+
+**EXAMPLE TIMELINE:**
+
+```
+Time    P1                      P2                  Lock
+------------------------------------------------------------
+T0      TestAndSet(&lock)       -                   false
+        Returns FALSE                               
+        → P1 ENTERS CS                              true
+        
+T1      in CS                   TestAndSet(&lock)   true
+                                Returns TRUE
+                                → P2 SPINS
+                                
+T2      in CS                   Still spinning...   true
+        
+T3      lock = false            TestAndSet(&lock)   false
+        → P1 EXITS                                  
+        
+T4      -                       Returns FALSE       true
+                                → P2 ENTERS CS
+```
+
+---
+
+**SOLUTION 2: SWAP / EXCHANGE**
+
+Similar to TSL but swaps two values atomically:
+
+```c
+// SWAP instruction (hardware does this ATOMICALLY)
+void Swap(boolean *a, boolean *b) {
+    boolean temp = *a;
+    *a = *b;
+    *b = temp;
+    // ALL THREE LINES ATOMIC!
+}
+
+// Using SWAP for mutual exclusion:
+boolean lock = false;
+
+void process() {
+    boolean key = true;  // Local variable
+    
+    while (key == true) {
+        Swap(&lock, &key);
+        // If lock was FALSE, now key is FALSE (got lock!)
+        // If lock was TRUE, key remains TRUE (try again)
+    }
+    
+    // CRITICAL SECTION
+    
+    lock = false;  // Release
+}
+```
+
+---
+
+**SOLUTION 3: COMPARE-AND-SWAP (CAS)**
+
+Modern CPUs use this. It compares and swaps in one atomic operation:
+
+```c
+// CAS instruction (hardware)
+int CompareAndSwap(int *value, int expected, int new_value) {
+    int temp = *value;
+    if (*value == expected) {
+        *value = new_value;
+    }
+    return temp;
+    // ALL THIS IS ATOMIC!
+}
+
+// Using CAS:
+int lock = 0;
+
+void process() {
+    while (CompareAndSwap(&lock, 0, 1) != 0) {
+        // Keep trying until CAS returns 0 (lock was free)
+    }
+    
+    // CRITICAL SECTION
+    
+    lock = 0;  // Release
+}
+```
+
+---
+
+**COMPARISON TABLE:**
+
+| Feature | TSL | SWAP | CAS |
+|---------|-----|------|-----|
+| Operations | Read + Set | Exchange two values | Compare + Set |
+| Atomic? | YES | YES | YES |
+| Busy Waiting? | YES (spinlock) | YES (spinlock) | YES (spinlock) |
+| Portable? | Most CPUs | Most CPUs | Modern CPUs |
+| Use Case | Simple locks | Simple locks | Lock-free algorithms |
+
+---
+
+**ADVANTAGES OF HARDWARE SOLUTIONS:**
+
+1. **WORKS ON MULTIPROCESSOR** - Software solutions often don't
+2. **SIMPLE** - Easy to understand and implement
+3. **FAST** - Single instruction (if you get the lock immediately)
+4. **GENERAL** - Works for any number of processes
+
+**DISADVANTAGES:**
+
+1. **BUSY WAITING** - Still spinning, wasting CPU (same problem as before)
+2. **NOT FAIR** - No guarantee of order (starvation possible)
+3. **DOESN'T SCALE** - On single CPU, spinning is TERRIBLE
+4. **CACHE THRASHING** - On multicore, everyone hitting same variable = cache misses
+
+**WHEN TO USE HARDWARE SOLUTIONS:**
+
+**GOOD FOR:**
+- Multiprocessor systems
+- VERY short critical sections (microseconds)
+- Building higher-level synchronization primitives (like semaphores!)
+
+**BAD FOR:**
+- Single processor systems (use semaphores instead)
+- Long critical sections
+- Many processes competing for same lock
+
+**THE BIGGER PICTURE:**
+
+Hardware solutions are the FOUNDATION. We use them to BUILD semaphores and other synchronization tools that are more programmer-friendly and efficient.
+
+It's like:
+- **Hardware solutions** = Assembly language of synchronization
+- **Semaphores** = High-level language built on top
+
+**FUN FACT:**
+Java's synchronized keyword, Python's threading.Lock(), and C++ std::mutex all use these hardware instructions under the hood!
+
+So yeah, hardware solutions are the OG, but we usually wrap them in nicer abstractions. Now you know what's happening at the CPU level!
+''',
+            hasDiagram: false,
           ),
         ],
       ),

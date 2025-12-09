@@ -353,10 +353,7 @@ class _HomeScreenState extends State<HomeScreen>
             color: isComplete
                 ? MangaTheme.highlightYellow.withOpacity(0.1)
                 : MangaTheme.paperWhite,
-            border: Border.all(
-              color: MangaTheme.inkBlack,
-              width: 4,
-            ),
+            border: Border.all(color: MangaTheme.inkBlack, width: 4),
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
@@ -404,10 +401,11 @@ class _HomeScreenState extends State<HomeScreen>
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: (isComplete
-                                        ? MangaTheme.highlightYellow
-                                        : MangaTheme.mangaRed)
-                                    .withOpacity(0.4),
+                                color:
+                                    (isComplete
+                                            ? MangaTheme.highlightYellow
+                                            : MangaTheme.mangaRed)
+                                        .withOpacity(0.4),
                                 blurRadius: 16,
                                 spreadRadius: 3,
                               ),
@@ -416,9 +414,7 @@ class _HomeScreenState extends State<HomeScreen>
                           child: Center(
                             child: Text(
                               '${module.id}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .displayLarge
+                              style: Theme.of(context).textTheme.displayLarge
                                   ?.copyWith(
                                     color: MangaTheme.inkBlack,
                                     fontWeight: FontWeight.w900,
@@ -443,16 +439,17 @@ class _HomeScreenState extends State<HomeScreen>
                         children: [
                           Text(
                             module.title,
-                            style:
-                                Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                      fontWeight: FontWeight.w900,
-                                      height: 1.2,
-                                    ),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.2,
+                                ),
                           ),
                           const SizedBox(height: 6),
                           Text(
                             _getModuleRoast(completedTopics, totalTopics),
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
                                   color: MangaTheme.shadowGray,
                                   fontStyle: FontStyle.italic,
                                 ),
